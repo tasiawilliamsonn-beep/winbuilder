@@ -9,7 +9,7 @@ Teachers build a unit, share a student portal through Canvas, and read student t
 | File | What it is |
 |---|---|
 | `index.html` | Home page: start a unit by grade and subject, the weekly routine, example portals |
-| `builder.html` | WIN Builder, in 3 steps: **Choose standards** (grade 5 or 6, math or ELA), **Edit the unit**, **Preview and share** |
+| `builder.html` | WIN Builder, in 3 steps: **Choose standards** (grade 5 or 6, math or ELA), **Edit the unit**, **Preview and share** (a Canvas portal or a printable paper packet) |
 | `standards.js` | The grade 5 and grade 6 standards list the builder uses. Edit this file to fix a code or its wording. |
 | `dashboard.html` | Teacher data dashboard: next-day groups, who's missing, skill mastery, misconceptions, mastery by standard, RACE writing |
 | `portals/*.html` | Example student portals (grade 6 math and ELA, 3 days each) |
@@ -52,6 +52,25 @@ Free GitHub Pages sites must come from a public repository. That's fine here: th
 3. Upload that file to your Canvas course, or add it to the `portals` folder in the repository and link students to it.
 4. Create a text-entry Canvas assignment for each WIN day. Students tap **Turn in my work**, copy, and paste.
 5. After class, use Canvas **Download Submissions** and drop the zip on the dashboard.
+
+## Using it without Canvas: the paper packet
+
+In **Preview and share**, the **No Canvas? Print a paper packet** section turns the unit into printable pages:
+
+| Page | Who it's for | What's on it |
+|---|---|---|
+| Teacher lesson plan | You | Learning target, standards, what each station does, the small group lesson script with every blank filled in, and the mistakes to watch for |
+| Answer key | You | Every answer, plus the misconception behind each wrong choice |
+| Class score sheet | You | A row per student and a column per skill. The 60% and 85% cutoffs match the dashboard's groups. Names come from a dashboard roster if you saved one. |
+| Small group notes | Students | Guided notes with fill-in blanks, lines for the example steps, and number lines to mark |
+| Practice worksheet | Students | Name and date lines, the passage with numbered paragraphs (ELA), each problem with work space, and a confidence check |
+| IXL and RACE page | Students | An IXL checklist with a SmartScore goal and a RACE response organizer |
+
+1. Check the pages you want, choose one day or all days, and choose the page order: by day, or with all copies of each worksheet together.
+2. Tap **Preview and print packet**, then **Print or save as PDF**. In the print window, set the destination to **Save as PDF** to get a PDF.
+3. Or tap **Download packet** to save it as a web page. Open it in any browser later and print it from there.
+
+Every page starts on a new sheet and says at the top whether it's a teacher page or a student page, so you can print or pull out just the pages you need.
 
 ## Updating a file
 
