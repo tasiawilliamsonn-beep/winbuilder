@@ -1,0 +1,1882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WIN Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#F3F7FB;--ink:#1B2B40;--soft:#51637A;--card:#FFFFFF;--line:#D5DFEA;--ind:#2A9D8F;--ind-bg:#E3F4F1;--sg:#5B5BD6;--sg-bg:#ECECFB;--ixl:#E0A31B;--ixl-bg:#FDF3DC;--good:#1F8A4C;--good-bg:#E2F5EA;--bad:#C23B4E;--bad-bg:#FBE6E9}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#121A26;--ink:#EEF3F9;--soft:#A9B7C8;--card:#1B2636;--line:#2E3D52;--ind-bg:#16332F;--sg-bg:#23244A;--ixl-bg:#3A2F14;--good-bg:#16331F;--bad-bg:#3A1A20}}
+:root[data-theme="dark"]{--bg:#121A26;--ink:#EEF3F9;--soft:#A9B7C8;--card:#1B2636;--line:#2E3D52;--ind-bg:#16332F;--sg-bg:#23244A;--ixl-bg:#3A2F14;--good-bg:#16331F;--bad-bg:#3A1A20}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",Verdana,system-ui,sans-serif;font-size:1rem;line-height:1.5}
+h1,h2,h3,h4{font-family:"Fredoka","Trebuchet MS",system-ui,sans-serif;line-height:1.15}
+.wrap{max-width:980px;margin:0 auto;padding:1.25rem 1rem 4rem}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--sg);outline-offset:2px}
+header h1{font-size:clamp(1.8rem,4.5vw,2.4rem);margin:0}
+header p{margin:.2rem 0 1rem;color:var(--soft)}
+.toolbar{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.5rem}
+.btn{border:0;border-radius:10px;padding:.55rem 1rem;background:var(--ink);color:var(--bg);font-family:"Fredoka",sans-serif;font-weight:600;display:inline-flex;align-items:center}
+.btn.go{background:var(--ind);color:#fff}
+.btn.ghost{background:var(--card);color:var(--ink);border:2px solid var(--line)}
+.btn.sm{padding:.3rem .7rem;font-size:.9rem}
+.file input{display:none}
+.msg{min-height:1.4em;font-weight:700;color:var(--good);margin:.25rem 0 .75rem}
+.msg.err{color:var(--bad)}
+.panel{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:1rem 1.1rem;margin-bottom:1.25rem}
+.panel h2{margin:0 0 .25rem;font-size:1.35rem}
+.panel .sub{color:var(--soft);margin:0 0 .75rem;font-size:.95rem}
+.panel.ind{border-top:8px solid var(--ind)}.panel.sg{border-top:8px solid var(--sg)}.panel.ixl{border-top:8px solid var(--ixl)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.75rem}
+label.f{display:block;font-weight:700;font-size:.92rem}
+label.f small{font-weight:400;color:var(--soft)}
+input[type=text],input[type=number],textarea,select{width:100%;border:2px solid var(--line);border-radius:10px;padding:.45rem .6rem;background:var(--bg);margin-top:.2rem}
+textarea{min-height:4.5rem}
+.card{border:2px solid var(--line);border-radius:14px;padding:.8rem .9rem;margin-bottom:.8rem;background:var(--card)}
+.card-h{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-bottom:.6rem}
+.card-h b{font-family:"Fredoka",sans-serif;font-size:1.05rem;margin-right:auto}
+.type{font-size:.8rem;font-weight:700;border-radius:999px;padding:.1rem .6rem;background:var(--ind-bg)}
+.row{display:grid;grid-template-columns:1fr 1fr auto;gap:.5rem;align-items:end;margin-bottom:.4rem}
+.row.opt{grid-template-columns:auto 1.4fr 1fr auto}
+.row.opt input[type=radio]{width:22px;height:22px;accent-color:var(--good);margin-bottom:.6rem}
+.adds{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.4rem}
+.live{margin-top:.6rem;background:var(--ind-bg);border-radius:10px;padding:.5rem .75rem;font-size:.95rem}
+.warn{color:var(--bad);font-weight:700}
+.days{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-bottom:1rem}
+.days button.d{border:2px solid var(--line);background:var(--card);border-radius:999px;padding:.4rem 1rem;font-family:"Fredoka",sans-serif;font-weight:600}
+.days button.d[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.help{font-size:.9rem;color:var(--soft);background:var(--sg-bg);border-radius:10px;padding:.5rem .75rem;margin-bottom:.8rem}
+.help code{font-size:.9rem;background:var(--card);border-radius:4px;padding:0 .25rem}
+.note{color:var(--soft);font-size:.9rem}
+.issues{background:var(--bad-bg);border-radius:12px;padding:.6rem 1rem;margin-bottom:1rem}
+.issues ul{margin:.3rem 0 0;padding-left:1.2rem}
+.modal{position:fixed;inset:0;background:rgba(10,20,35,.6);z-index:10;display:flex;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
+.modal[hidden]{display:none}
+.modal-in{background:var(--card);margin:auto;width:min(1000px,96vw);height:92%;border-radius:16px;display:flex;flex-direction:column;overflow:hidden}
+.modal-bar{display:flex;gap:1rem;align-items:center;padding:.6rem 1rem;border-bottom:2px solid var(--line)}
+.modal-bar .note{margin-right:auto}
+iframe{flex:1;border:0;width:100%;background:var(--bg)}
+@media (max-width:640px){.row,.row.opt{grid-template-columns:1fr}.row.opt input[type=radio]{margin:0}}
+.panel.gen{border-top:8px solid var(--sg)}
+.panel.gen summary{cursor:pointer}
+.stdlist{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:.35rem;max-height:340px;overflow:auto;border:2px solid var(--line);border-radius:12px;padding:.6rem}
+label.std{display:flex;gap:.45rem;align-items:flex-start;font-size:.92rem;padding:.25rem .3rem;border-radius:8px}
+label.std:hover{background:var(--bg)}
+label.std input{margin-top:.25rem;width:18px;height:18px;flex:none}
+.ess{display:inline-block;background:var(--ixl);color:#1B2B40;border-radius:6px;padding:0 .35rem;font-size:.75rem;font-weight:700}
+label.chk{display:inline-flex;gap:.35rem;align-items:center;border:2px solid var(--line);border-radius:999px;padding:.25rem .7rem}
+input,select,textarea{box-sizing:border-box;max-width:100%}
+.grid>*,label.f{min-width:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div><h1>WIN Builder</h1><p>Write your own questions. Download a student portal that works with the WIN data dashboard.</p></div>
+  </header>
+  <div class="toolbar">
+    <button class="btn" data-act="preview">Preview as a student</button>
+    <button class="btn go" data-act="download">Download student portal</button>
+    <button class="btn ghost" data-act="saveUnit">Save unit file</button>
+    <label class="btn ghost file">Open unit file<input type="file" id="openUnit" accept=".json"></label>
+    <button class="btn ghost" data-act="example">Load example unit</button>
+    <button class="btn ghost" data-act="newUnit">New unit</button>
+  </div>
+  <p class="msg" id="msg" aria-live="polite"></p>
+  <div id="app"></div>
+</div>
+<div class="modal" id="modal" hidden>
+  <div class="modal-in">
+    <div class="modal-bar"><b>Student preview</b><span class="note">Answers you type here are practice only.</span><button class="btn ghost" data-act="closePreview">Close</button></div>
+    <iframe id="pv" title="Student portal preview"></iframe>
+  </div>
+</div>
+
+<script type="text/plain" id="tpl"><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WIN</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#F3F7FB; --ink:#1B2B40; --soft:#51637A; --card:#FFFFFF; --line:#D5DFEA;
+  --ind:#2A9D8F; --ind-bg:#E3F4F1;
+  --sg:#5B5BD6;  --sg-bg:#ECECFB;
+  --ixl:#E0A31B; --ixl-bg:#FDF3DC;
+  --good:#1F8A4C; --good-bg:#E2F5EA; --bad:#C23B4E; --bad-bg:#FBE6E9;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121A26; --ink:#EEF3F9; --soft:#A9B7C8; --card:#1B2636; --line:#2E3D52;
+    --ind-bg:#16332F; --sg-bg:#23244A; --ixl-bg:#3A2F14; --good-bg:#16331F; --bad-bg:#3A1A20;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121A26; --ink:#EEF3F9; --soft:#A9B7C8; --card:#1B2636; --line:#2E3D52;
+  --ind-bg:#16332F; --sg-bg:#23244A; --ixl-bg:#3A2F14; --good-bg:#16331F; --bad-bg:#3A1A20;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",Verdana,system-ui,sans-serif;font-size:1.125rem;line-height:1.55}
+h1,h2,h3,.fred{font-family:"Fredoka","Trebuchet MS",system-ui,sans-serif;line-height:1.15}
+.wrap{max-width:960px;margin:0 auto;padding:1.25rem 1rem 3rem}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--sg);outline-offset:2px}
+
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:1rem;margin-bottom:1.25rem}
+header.top h1{font-size:clamp(1.9rem,5vw,2.6rem);margin:0}
+header.top p{margin:.25rem 0 0;color:var(--soft)}
+.namebox label{display:block;font-size:.9rem;color:var(--soft)}
+.namebox input{border:2px solid var(--line);background:var(--card);border-radius:10px;padding:.45rem .7rem;width:14rem;max-width:100%}
+
+.days{display:flex;gap:.5rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.days button{border:2px solid var(--line);background:var(--card);border-radius:999px;padding:.5rem 1.1rem;font-family:"Fredoka",sans-serif;font-weight:600}
+.days button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+/* route: the signature element */
+.route{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.75rem}
+.route::before{content:"";position:absolute;top:44px;left:16%;right:16%;height:8px;border-radius:8px;
+  background:repeating-linear-gradient(90deg,var(--line) 0 18px,transparent 18px 28px);z-index:0}
+.stop{position:relative;z-index:1;background:none;border:0;padding:0;text-align:center;display:flex;flex-direction:column;align-items:center;gap:.5rem}
+.stop .dot{width:88px;height:88px;border-radius:50%;display:grid;place-items:center;font-size:2.2rem;border:6px solid var(--c);background:var(--card);transition:transform .15s}
+.stop:hover .dot{transform:scale(1.05)}
+.stop[aria-current="true"] .dot{background:var(--c);box-shadow:0 0 0 6px var(--cb)}
+.stop .nm{font-family:"Fredoka",sans-serif;font-weight:600;font-size:1.15rem}
+.stop .st{font-size:.9rem;color:var(--soft)}
+.stop .st.done{color:var(--good);font-weight:700}
+.stop.ind{--c:var(--ind);--cb:var(--ind-bg)} .stop.sg{--c:var(--sg);--cb:var(--sg-bg)} .stop.ixl{--c:var(--ixl);--cb:var(--ixl-bg)}
+
+.room{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:1.25rem;border-top:10px solid var(--c)}
+.room.ind{--c:var(--ind);--cb:var(--ind-bg)} .room.sg{--c:var(--sg);--cb:var(--sg-bg)} .room.ixl{--c:var(--ixl);--cb:var(--ixl-bg)}
+.room h2{margin:0 0 .25rem;font-size:1.7rem}
+.room .goal{background:var(--cb);border-radius:12px;padding:.7rem 1rem;margin:.75rem 0 1.25rem}
+.room .goal b{font-family:"Fredoka",sans-serif}
+.empty{text-align:center;color:var(--soft);padding:2rem 1rem;border:2px dashed var(--line);border-radius:18px}
+
+/* worksheet */
+.score{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;font-weight:700}
+.bar{flex:1;height:14px;background:var(--line);border-radius:14px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ind);width:0;transition:width .3s}
+.q{border:2px solid var(--line);border-radius:14px;padding:1rem;margin-bottom:1rem}
+.q.right{border-color:var(--good);background:var(--good-bg)}
+.q .num{font-family:"Fredoka",sans-serif;font-weight:700;color:var(--ind)}
+.q .prompt{font-size:1.2rem;margin:.25rem 0 .75rem}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.5rem}
+.opts button{border:2px solid var(--line);background:var(--card);border-radius:12px;padding:.7rem;font-size:1.15rem;min-height:52px}
+.opts button.wrong{border-color:var(--bad);background:var(--bad-bg);text-decoration:line-through}
+.opts button.correct{border-color:var(--good);background:var(--good-bg);font-weight:700}
+.fb{margin-top:.6rem;font-size:1rem;min-height:1.2em}
+.fb.no{color:var(--bad)} .fb.yes{color:var(--good);font-weight:700}
+.hintbtn{background:none;border:0;color:var(--soft);text-decoration:underline;padding:0;margin-top:.4rem;font-size:.95rem}
+.hint{font-size:1rem;color:var(--soft);margin-top:.3rem}
+
+/* fractions */
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1;margin:0 .12em;font-size:.9em}
+.fr span:first-child{border-bottom:2px solid currentColor;padding:0 .15em .08em}
+.fr span:last-child{padding:.08em .15em 0}
+
+/* small group */
+.cue{display:flex;gap:.6rem;align-items:center;background:var(--sg);color:#fff;border-radius:12px;padding:.6rem .9rem;margin-bottom:1rem;font-family:"Fredoka",sans-serif;font-weight:600}
+.step{border-left:6px solid var(--sg);padding:.25rem 0 .25rem 1rem;margin-bottom:1.5rem}
+.step h3{margin:0 0 .4rem;font-size:1.3rem}
+.step .tag{display:inline-block;font-size:.85rem;background:var(--sg-bg);color:var(--ink);border-radius:999px;padding:.1rem .6rem;margin-bottom:.4rem;font-weight:700}
+.blank{border:0;border-bottom:3px solid var(--sg);background:var(--sg-bg);width:7.5rem;padding:.1rem .3rem;border-radius:6px 6px 0 0;text-align:center}
+.blank.ok{border-color:var(--good);background:var(--good-bg)}
+.blank.miss{border-color:var(--bad);background:var(--bad-bg)}
+.reveal{border:2px solid var(--sg);background:var(--card);border-radius:10px;padding:.35rem .9rem;font-size:1rem;margin-top:.5rem}
+.hidden-ans{display:none;margin-top:.5rem;background:var(--sg-bg);border-radius:10px;padding:.6rem .9rem}
+.hidden-ans.show{display:block}
+.stepper{display:flex;justify-content:space-between;gap:1rem;margin-top:1rem}
+.btn{border:0;border-radius:12px;padding:.7rem 1.2rem;background:var(--c);color:#fff;font-family:"Fredoka",sans-serif;font-weight:600;font-size:1.05rem}
+.btn.ghost{background:var(--card);color:var(--ink);border:2px solid var(--line)}
+.btn:disabled{opacity:.4;cursor:default}
+.dots{display:flex;gap:.35rem;align-items:center}
+.dots i{width:10px;height:10px;border-radius:50%;background:var(--line)} .dots i.on{background:var(--sg)}
+textarea{width:100%;min-height:4.5rem;border:2px solid var(--line);border-radius:10px;padding:.6rem;background:var(--card)}
+
+/* ixl */
+.std{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem}
+.std span{border:2px solid var(--ixl);border-radius:10px;padding:.3rem .7rem;font-size:.95rem}
+.skill{display:flex;gap:.9rem;align-items:flex-start;border:2px solid var(--line);border-radius:14px;padding:.8rem 1rem;margin-bottom:.6rem}
+.skill input{width:26px;height:26px;margin-top:.15rem;accent-color:var(--good);flex:none}
+.skill .t{font-weight:700}
+.skill .d{font-size:.95rem;color:var(--soft)}
+.skill.got{background:var(--good-bg);border-color:var(--good)}
+.race{margin-top:1.5rem}
+.race h3{font-size:1.4rem;margin:0 0 .5rem}
+.race .prompt{background:var(--ixl-bg);border-radius:12px;padding:.8rem 1rem;margin-bottom:1rem;font-size:1.15rem}
+.rrow{display:grid;grid-template-columns:56px 1fr;gap:.75rem;margin-bottom:.75rem}
+.rletter{width:56px;height:56px;border-radius:14px;background:var(--ixl);color:#1B2B40;display:grid;place-items:center;font-family:"Fredoka",sans-serif;font-weight:700;font-size:1.8rem}
+.rrow label{display:block;font-weight:700;margin-bottom:.2rem}
+.rrow small{display:block;color:var(--soft);margin-bottom:.3rem}
+.copied{color:var(--good);font-weight:700;margin-left:.75rem}
+
+@media (max-width:640px){
+  .route{grid-template-columns:1fr;gap:.75rem}
+  .route::before{top:0;bottom:0;left:43px;right:auto;width:8px;height:auto;
+    background:repeating-linear-gradient(180deg,var(--line) 0 18px,transparent 18px 28px)}
+  .stop{flex-direction:row;text-align:left;gap:1rem}
+  .stop .dot{width:78px;height:78px;flex:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* interactive work */
+.expr{font-family:"Fredoka",sans-serif;font-size:1.45rem;font-weight:600}
+.stepbox{border-top:2px dashed var(--line);padding-top:.75rem;margin-top:.9rem}
+.stepbox h4{margin:0 0 .2rem;font-family:"Fredoka",sans-serif;font-size:1.1rem;color:var(--ind)}
+.tip{margin:.1rem 0 .5rem;font-size:.98rem;color:var(--soft)}
+.nlwrap,.nlmount{margin:.4rem 0 .9rem}
+.nlwrap .lbl,.nlmount .lbl{font-weight:700;font-size:1.15rem}
+svg.nl{width:100%;max-width:520px;height:auto;display:block;overflow:visible}
+.nl .axis{stroke:var(--ink);stroke-width:3;stroke-linecap:round}
+.nl .tick{stroke:var(--soft);stroke-width:1.5}
+.nl .half{stroke:var(--soft);stroke-dasharray:4 4;stroke-width:2}
+.nl .halft{fill:var(--soft);font-size:11px;text-anchor:middle}
+.nl .mk{cursor:pointer}
+.nl .mk circle{fill:var(--card);stroke:var(--ind);stroke-width:3}
+.nl .mk text{fill:var(--ink);font-size:17px;font-weight:700;text-anchor:middle}
+.nl .mk:hover circle{fill:var(--ind-bg)}
+.nl .mk.bad circle{stroke:var(--bad);fill:var(--bad-bg)}
+.nl .mk.good circle{stroke:var(--good);fill:var(--good)}
+.nl .mk:focus{outline:none} .nl .mk:focus-visible circle{stroke-width:6}
+.nl .pin{fill:var(--sg)} .nl .pint{fill:var(--sg);font-size:14px;font-weight:700;text-anchor:middle}
+.eq{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;font-size:1.4rem;font-family:"Fredoka",sans-serif}
+.eq input{width:6.5rem;border:2px solid var(--line);border-radius:10px;padding:.35rem .5rem;text-align:center;background:var(--card);font-family:"Atkinson Hyperlegible",sans-serif}
+.eq input.ok{border-color:var(--good);background:var(--good-bg)}
+.small{border:2px solid var(--line);background:var(--card);border-radius:10px;padding:.35rem .85rem;font-size:1rem}
+.small.go{background:var(--ind);border-color:var(--ind);color:#fff;font-weight:700}
+.work{margin-top:.9rem;background:var(--card);border:2px solid var(--good);border-radius:12px;padding:.55rem .85rem;font-size:1.02rem}
+.pad{margin-top:.8rem}
+.pad canvas{width:100%;height:220px;border:2px dashed var(--line);border-radius:12px;background:var(--card);touch-action:none;display:block;margin-top:.5rem}
+.padbar{display:flex;gap:.5rem;margin-top:.4rem;align-items:center;font-size:.9rem;color:var(--soft)}
+.ropts{display:flex;flex-wrap:wrap;gap:.5rem}
+.ropts button{border:2px solid var(--line);background:var(--card);border-radius:12px;padding:.6rem .9rem;font-size:1.05rem}
+.ropts button.wrong{border-color:var(--bad);background:var(--bad-bg);text-decoration:line-through}
+.ropts button.correct{border-color:var(--good);background:var(--good-bg);font-weight:700}
+.turnbar{display:flex;justify-content:center;margin:-.5rem 0 1.5rem}
+.turnbtn{border:3px solid var(--ink);background:var(--card);border-radius:999px;padding:.6rem 1.4rem;font-family:"Fredoka",sans-serif;font-weight:600;font-size:1.1rem}
+.turnbtn[aria-current="true"]{background:var(--ink);color:var(--bg)}
+.room.turn{--c:var(--ink);--cb:var(--line)}
+.checklist{list-style:none;padding:0;margin:0 0 1rem}
+.checklist li{padding:.35rem 0;border-bottom:1px solid var(--line)}
+.conf{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.5rem;margin:.5rem 0 1rem}
+.conf button,.chips button{border:2px solid var(--line);background:var(--card);border-radius:14px;padding:.6rem;font-size:1rem}
+.conf button span{display:block;font-size:1.8rem}
+.conf button[aria-pressed="true"],.chips button[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem;margin:.5rem 0 1rem}
+.chips button{border-radius:999px;padding:.4rem .9rem}
+.turn h3{font-size:1.2rem;margin:1rem 0 .2rem}
+.ws{background:var(--sg-bg);border-radius:10px;padding:.5rem .8rem}
+
+/* passage + highlighter */
+.passage{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:.6rem 1rem;margin:0 0 1.25rem}
+.passage summary{cursor:pointer;font-family:"Fredoka",sans-serif;font-weight:600;font-size:1.2rem;padding:.2rem 0}
+.passage p{line-height:1.8;margin:.6rem 0;max-width:70ch}
+.pnum{display:inline-grid;place-items:center;min-width:1.6rem;height:1.6rem;border-radius:50%;background:var(--line);font-size:.8rem;font-weight:700;margin-right:.4rem;vertical-align:middle}
+.sn{cursor:pointer;border-radius:4px;padding:.05rem 0;transition:background .15s}
+.sn:hover{text-decoration:underline dotted}
+.h-y{background:#FFE066;color:#1B2B40}.h-b{background:#A5D8FF;color:#1B2B40}.h-p{background:#FFC9DE;color:#1B2B40}
+.hlbar{display:flex;flex-wrap:wrap;gap:.4rem;margin:.4rem 0}
+.hc{border:2px solid var(--line);border-radius:999px;padding:.3rem .8rem;font-size:.95rem;background:var(--card)}
+.hc-y{background:#FFE066;color:#1B2B40}.hc-b{background:#A5D8FF;color:#1B2B40}.hc-p{background:#FFC9DE;color:#1B2B40}
+.hc[aria-pressed="true"]{border-color:var(--ink);box-shadow:0 0 0 2px var(--ink)}
+.evopts{display:grid;gap:.5rem}
+.evopts button.quote{text-align:left;border:2px solid var(--line);background:var(--card);border-radius:12px;padding:.7rem .9rem;font-size:1.05rem;font-style:italic}
+.evopts button.wrong{border-color:var(--bad);background:var(--bad-bg);text-decoration:line-through}
+.evopts button.correct{border-color:var(--good);background:var(--good-bg);font-weight:700}
+/* RACE room */
+.room.race{--c:#D1495B;--cb:#FBE3E7}
+.stop.race{--c:#D1495B;--cb:#FBE3E7}
+.room.race .rletter{background:#D1495B;color:#fff}
+.evbank{background:var(--bg);border-radius:12px;padding:.6rem .9rem;margin-bottom:1rem}
+.evbank h3{margin:0 0 .4rem;font-size:1.1rem}
+.evi{display:flex;gap:.6rem;align-items:flex-start;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid var(--line)}
+.evi span{font-style:italic;background:#FFE066;color:#1B2B40;border-radius:4px;padding:0 .2rem}
+.starters{display:flex;flex-wrap:wrap;gap:.35rem;margin:.1rem 0 .35rem}
+.starters button{border:1px dashed var(--soft);background:var(--card);border-radius:999px;padding:.15rem .6rem;font-size:.85rem}
+.rcheck{background:var(--card);border:2px solid var(--line);border-radius:12px;padding:.7rem 1rem;margin-top:.5rem}
+.rcheck div{padding:.15rem 0}.rcheck .ok{color:var(--good);font-weight:700}
+/* math tools */
+.toolsbtn{position:fixed;right:1rem;bottom:calc(1rem + env(safe-area-inset-bottom,0px));z-index:20;border:0;border-radius:999px;padding:.75rem 1.1rem;background:var(--ink);color:var(--bg);font-family:"Fredoka",sans-serif;font-weight:600;font-size:1.05rem;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--card);border-top:3px solid var(--ink);border-radius:18px 18px 0 0;max-height:70vh;display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom,0px);box-shadow:0 -6px 24px rgba(0,0,0,.2)}
+.sheet[hidden]{display:none}
+.sheet-bar{display:flex;gap:.5rem;align-items:center;justify-content:space-between;padding:.6rem .8rem;border-bottom:2px solid var(--line)}
+.tabs{display:flex;gap:.35rem;overflow-x:auto}
+.tabs button{border:2px solid var(--line);background:var(--card);border-radius:999px;padding:.3rem .8rem;white-space:nowrap;font-size:.95rem}
+.tabs button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.sheet-body{overflow:auto;padding:.8rem 1rem}
+.calc{max-width:320px;margin:0 auto}
+.calc input{width:100%;font-size:1.6rem;text-align:right;padding:.5rem;border:2px solid var(--line);border-radius:10px;background:var(--bg);margin-bottom:.5rem}
+.keys{display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem}
+.keys button{padding:.8rem 0;font-size:1.25rem;border:2px solid var(--line);border-radius:10px;background:var(--card)}
+table.mult{border-collapse:collapse;margin:0 auto;font-size:.9rem}
+table.mult th,table.mult td{border:1px solid var(--line);width:2.2rem;height:2rem;text-align:center;padding:0}
+table.mult th{background:var(--bg)}table.mult td.line{background:var(--sg-bg)}table.mult td.hit{background:var(--sg);color:#fff;font-weight:700}
+.fbars{display:grid;gap:.35rem;max-width:640px}
+.fbar{display:flex;border:2px solid var(--ink);border-radius:6px;overflow:hidden}
+.fbar span{flex:1;text-align:center;border-right:1px solid var(--ink);padding:.35rem 0;font-size:.8rem;cursor:pointer;background:var(--card)}
+.fbar span:last-child{border-right:0}.fbar span.on{background:var(--ind);color:#fff}
+.nlset{display:flex;flex-wrap:wrap;gap:.6rem;align-items:end;margin-bottom:.5rem}
+.nlset input{width:5rem;border:2px solid var(--line);border-radius:8px;padding:.3rem;background:var(--bg)}
+svg.nltool{width:100%;max-width:700px;display:block;color:var(--ink);cursor:crosshair}
+dl.forms{display:grid;grid-template-columns:max-content 1fr;gap:.35rem 1rem;margin:0}
+dl.forms dt{font-weight:700}dl.forms dd{margin:0}
+.opts.long{grid-template-columns:1fr}
+.opts.long button{text-align:left;padding:.7rem .9rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div><h1 id="hTitle">WIN</h1><p id="hSub"></p></div>
+    <div class="namebox"><label for="stuName">My name</label><input id="stuName" autocomplete="off" placeholder="First and last name"></div>
+  </header>
+  <nav class="days" id="days" aria-label="Choose a day"></nav>
+  <div class="route" id="route"></div>
+  <div id="turnbar"></div>
+  <main id="room"></main>
+</div>
+<script>
+const C = /*__CONFIG__*/null;
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const F = (n,d,w) => (w?w+' ':'') + `<span class="fr"><span>${n}</span><span>${d}</span></span>`;
+const fr = t => esc(t).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/(\d+) (\d+)\/(\d+)|(\d+)\/(\d+)/g,(m,w,n,d,n2,d2)=>w?F(n,d,w):F(n2,d2));
+const store = {
+  get(k,def){try{const v=localStorage.getItem(`win:${C.id}:`+k);return v===null?def:JSON.parse(v)}catch(e){return def}},
+  set(k,v){try{localStorage.setItem(`win:${C.id}:`+k,JSON.stringify(v))}catch(e){}}
+};
+function fmt(v){
+  if(v==null||isNaN(v))return "?";
+  const neg=v<0;v=Math.abs(v);const w=Math.floor(v+1e-9),f=v-w;
+  if(f<1e-6)return (neg?"-":"")+w;
+  if(Math.abs(f-.5)<1e-6)return (neg?"-":"")+(w?w:"")+"½";
+  for(let d=2;d<=12;d++){const n=Math.round(f*d);if(Math.abs(n/d-f)<1e-6)return (neg?"-":"")+(w?w+" ":"")+n+"/"+d}
+  return (neg?"-":"")+(+v.toFixed(2));
+}
+function parseNum(s){
+  s=String(s).replace(/½/g," 1/2").replace(/¼/g," 1/4").replace(/¾/g," 3/4").replace(/,/g,"").replace(/\s+/g," ").trim();
+  let m; if(!s)return NaN;
+  if(m=s.match(/^(-?\d+) (\d+)\/(\d+)$/))return +m[1]+m[2]/m[3];
+  if(m=s.match(/^(-?\d+)\/(\d+)$/))return m[1]/m[2];
+  if(/^-?\d*\.?\d+$/.test(s))return +s;
+  return NaN;
+}
+const calc=(a,o,b)=>o==="+"?a+b:o==="−"?a-b:o==="×"?a*b:o==="÷"?a/b:NaN;
+function parseSpec(str){
+  return String(str||"").split(",").map(t=>t.trim()).filter(Boolean).map(t=>{
+    let m,w=0,n,d;
+    if(m=t.match(/^(\d+)\s+(\d+)\/(\d+)$/)){w=+m[1];n=+m[2];d=+m[3]}
+    else if(m=t.match(/^(\d+)\/(\d+)$/)){n=+m[1];d=+m[2];if(d&&n>=d){w=Math.floor(n/d);n=n%d}}
+    else if(/^\d*\.?\d+$/.test(t))return{fixed:true,v:+t};
+    else return{bad:t};
+    if(!d)return{bad:t};
+    if(n===0)return{fixed:true,v:w};
+    const v=w+n/d;
+    let r; if(!w){const f=n/d;r=f<.25?0:f<.75?.5:1}else r=n/d>=.5?w+1:w;
+    return{n,d,w,v,r};
+  });
+}
+const plain=x=>x.fixed?String(x.v):(x.w?x.w+" ":"")+x.n+"/"+x.d;
+const rv=x=>x.fixed?x.v:x.r;
+const BI={b:{n:"Round fractions to 0, ½, 1",std:"5.NF.A.2"},m:{n:"Round mixed numbers",std:"5.NF.A.2"},reas:{n:"Judge if an answer is reasonable",std:""}};
+const skillOf=id=>{const s=(C.skills||[]).find(x=>x.id===id);return s?{n:s.name,std:s.std||""}:{n:"General",std:""}};
+const REAS_OPTS=["Yes, it's close","No, it's too big","No, it's too small"];
+
+/* prepare questions */
+C.days.forEach(D=>D.ind.forEach(q=>{
+  if(q.type!=="est")return;
+  q._nums=parseSpec(q.nums).filter(x=>!x.bad);
+  q._ans=null;
+  if(q.op&&q._nums.length>1)q._ans=q._nums.slice(1).reduce((a,x)=>calc(a,q.op,rv(x)),rv(q._nums[0]));
+  if(q.claim!==undefined&&q.claim!==""&&q._ans!=null){const c=+q.claim;
+    q._reason=q.reasonAns||(c>q._ans*1.3?REAS_OPTS[1]:c<q._ans*.7?REAS_OPTS[2]:REAS_OPTS[0])}
+}));
+
+/* ---------- number line ---------- */
+function makeLine(host,x,isDone,onRight,fbEl,onWrong){
+  const bench=!x.w, marks=bench?[0,.5,1]:[x.w,x.w+1];
+  const min=marks[0],max=marks[marks.length-1];
+  const X=v=>40+(v-min)/(max-min)*260;
+  let g=`<svg class="nl" viewBox="0 0 340 104" role="group" aria-label="Number line for ${plain(x)}"><line class="axis" x1="20" y1="56" x2="320" y2="56"/>`;
+  if(x.d<=24)for(let k=1;k<x.d;k++){const px=X(min+k/x.d);g+=`<line class="tick" x1="${px}" y1="49" x2="${px}" y2="63"/>`}
+  if(!bench)g+=`<line class="half" x1="${X(x.w+.5)}" y1="38" x2="${X(x.w+.5)}" y2="74"/><text class="halft" x="${X(x.w+.5)}" y="92">halfway</text>`;
+  if(isDone){const px=X(x.v);g+=`<polygon class="pin" points="${px-8},24 ${px+8},24 ${px},38"/><text class="pint" x="${px}" y="16">${plain(x)}</text>`}
+  marks.forEach(m=>{g+=`<g class="mk${isDone&&m===x.r?" good":""}" data-m="${m}" tabindex="${isDone?-1:0}" role="button" aria-label="${fmt(m)}"><circle cx="${X(m)}" cy="56" r="17"/><text x="${X(m)}" y="98">${fmt(m)}</text></g>`});
+  host.innerHTML=g+`</svg>`;
+  const half=x.d%2===0?String(x.d/2):`${Math.floor(x.d/2)}½`;
+  if(isDone){if(fbEl){fbEl.className="fb yes";fbEl.textContent=`${plain(x)} ≈ ${fmt(x.r)}`}return}
+  host.querySelectorAll(".mk").forEach(el=>{
+    const act=()=>{const m=+el.dataset.m;
+      if(Math.abs(m-x.r)<1e-9)onRight();
+      else{el.classList.add("bad");onWrong&&onWrong(m);
+        if(fbEl){fbEl.className="fb no";fbEl.textContent=bench
+          ?`Not yet. Half of ${x.d} is ${half}. Is ${x.n} close to 0, close to ${half}, or close to ${x.d}?`
+          :`Not yet. Look at ${x.n}/${x.d}. Half of ${x.d} is ${half}. Less than that stays at ${x.w}. That much or more goes up to ${x.w+1}.`}}};
+    el.addEventListener("click",act);
+    el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();act()}});
+  });
+}
+
+/* ---------- shell ---------- */
+document.title=`${C.room||""} WIN`.trim();
+$("#hTitle").textContent=`${C.room?C.room+" ":""}WIN`;
+$("#hSub").textContent=`${C.title||""}${C.title?". ":""}Tap the room your group is in.`;
+let day=Math.min(store.get("day",0),C.days.length-1), room=null;
+const nameEl=$("#stuName"); nameEl.value=store.get("name","");
+nameEl.addEventListener("input",()=>store.set("name",nameEl.value));
+C.subject=C.subject||"math";C.third=C.third||(C.subject==="ela"?"race":"ixl");C.tools=C.tools||{calc:false,mult:true,fracbars:true,numline:true,formulas:true};
+const ELA=C.subject==="ela";
+const ROOMS=[{id:"ind",nm:"Independent",icon:ELA?"📖":"✏️"},{id:"sg",nm:"Small group",icon:"👂"},C.third==="race"?{id:"race",nm:"RACE room",icon:"✍️"}:{id:"ixl",nm:"IXL room",icon:"💻"}];
+const getS=i=>(store.get(`w${day}`,{}))[i]||{r:{},e:"",rs:"",wr:[],we:[],wx:[],wa:[],ok:0,done:false};
+const saveS=(i,s)=>{const all=store.get(`w${day}`,{});all[i]=s;store.set(`w${day}`,all)};
+
+function status(d,r){
+  const D=C.days[d];
+  if(r==="ind"){const s=store.get(`w${d}`,{});const n=Object.values(s).filter(x=>x&&x.done).length,t=D.ind.length;return t&&n===t?["All finished","done"]:n?[`${n} of ${t} finished`,""]:["Not started",""]}
+  if(r==="sg")return store.get(`sg${d}done`,false)?["Finished","done"]:["Not started",""];
+  if(r==="race"){const ck=raceChecks(D.race,store.get(`race${d}`,{}));const n=Object.values(ck).filter(Boolean).length;return n===4?["All 4 parts done","done"]:n?[`${n} of 4 parts`,""]:["Not started",""]}
+  const need=Math.min(2,(D.ixl||[]).length);const k=store.get(`ixl${d}`,[]).filter(Boolean).length;return k>=need?["Skills done","done"]:[`${k} of ${need} skills`,""];
+}
+function renderDays(){
+  $("#days").innerHTML=C.days.map((D,i)=>`<button aria-pressed="${i===day}" data-day="${i}">Day ${i+1}</button>`).join("");
+  $("#days").querySelectorAll("button").forEach(b=>b.onclick=()=>{day=+b.dataset.day;store.set("day",day);room=null;render()});
+}
+function renderRoute(){
+  $("#route").innerHTML=ROOMS.map(r=>{const[t,c]=status(day,r.id);return `<button class="stop ${r.id}" data-room="${r.id}" aria-current="${room===r.id}">
+      <span class="dot" aria-hidden="true">${r.icon}</span><span><span class="nm">${r.nm}</span><br><span class="st ${c}">${c?"✓ ":""}${t}</span></span></button>`}).join("");
+  $("#route").querySelectorAll(".stop").forEach(b=>b.onclick=()=>{room=b.dataset.room;render();$("#room").scrollIntoView({behavior:"smooth",block:"start"})});
+}
+function renderTurnBar(){
+  $("#turnbar").className="turnbar";
+  $("#turnbar").innerHTML=`<button class="turnbtn" aria-current="${room==="turn"}">📬 Done with WIN? Turn in my work</button>`;
+  $("#turnbar").firstChild.onclick=()=>{room="turn";render();$("#room").scrollIntoView({behavior:"smooth",block:"start"})};
+}
+function render(){
+  renderDays();renderRoute();renderTurnBar();
+  const D=C.days[day],el=$("#room");
+  if(!room){renderToolsBtn();el.innerHTML=`<div class="empty"><h2 class="fred" style="margin:0 0 .4rem">${fr(D.title)}</h2><p style="margin:0">${fr(D.target)}</p><p style="margin:.6rem 0 0">Tap your room above to start.</p></div>`;return}
+  ({ind:renderInd,sg:renderSG,ixl:renderIXL,race:renderRACE,turn:renderTurn})[room](el,D);
+  renderToolsBtn();
+}
+
+/* ---------- independent ---------- */
+const openPads=new Set();
+function workText(q,s){
+  if(q.type==="mc"||q.type==="evidence")return (q.type==="evidence"?"Evidence: ":"Answer: ")+(q.options[s.val]?.text||"");
+  if(q.type==="num")return "Answer: "+(s.val||"")+(q.unit?" "+q.unit:"");
+  const parts=q._nums.filter(x=>!x.fixed).map(x=>`${plain(x)} ≈ ${fmt(x.r)}`);
+  if(q.op&&s.e)parts.push(`${q._nums.map(x=>fmt(rv(x))).join(` ${q.op} `)} = ${s.e}${q.unit?" "+q.unit:""}`);
+  if(q._reason&&s.rs)parts.push(s.rs);
+  return parts.join("; ");
+}
+function renderInd(el,D){
+  el.innerHTML=`<section class="room ind"><h2>Independent practice</h2>
+    <div class="goal"><b>Goal:</b> ${fr(D.target)}<br>${ELA?"Read the passage and highlight as you go. Then answer the questions. The page checks your answers.":"Work through each step. The page checks your work as you go. Use the scratch pad and math tools to show your thinking."}</div>
+    ${D.passage?passageHTML(D,true):""}
+    <div class="score"><span id="sc"></span><div class="bar"><i id="bar"></i></div></div>
+    ${D.ind.map((q,i)=>`<div class="q" id="q${i}"></div>`).join("")||"<p>No problems today.</p>"}</section>`;
+  D.ind.forEach((q,i)=>renderProblem(i));updScore();hookPassage(el);
+}
+function updScore(){
+  const D=C.days[day],n=Object.values(store.get(`w${day}`,{})).filter(x=>x&&x.done).length;
+  if($("#sc")){$("#sc").textContent=`${n} of ${D.ind.length} finished`;$("#bar").style.width=(D.ind.length?n/D.ind.length*100:0)+"%"}
+  renderRoute();
+}
+function padHTML(i){if(ELA)return "";const open=openPads.has(i);return `<div class="pad"><button class="small" data-pad>✏️ ${open?"Hide":"Show"} scratch pad</button>
+  ${open?`<canvas id="cv${i}" aria-label="Scratch pad"></canvas><div class="padbar"><button class="small" data-clear>Clear</button><span>Draw with your finger.</span></div>`:""}</div>`}
+function hookPad(i,box){if(ELA)return;box.querySelector("[data-pad]").onclick=()=>{openPads.has(i)?openPads.delete(i):openPads.add(i);renderProblem(i)};if(openPads.has(i))mountPad(i)}
+function renderProblem(i){
+  const q=C.days[day].ind[i],s=getS(i),box=$("#q"+i);
+  if(q.type==="mc"||q.type==="num"||q.type==="evidence")return renderSimple(i,q,s,box);
+  const toRound=q._nums.map((x,j)=>[x,j]).filter(([x])=>!x.fixed);
+  const roundedAll=toRound.every(([x,j])=>s.r[j]);
+  const needEq=q._ans!=null, eqDone=!needEq||!!s.e, rDone=!q._reason||s.rs===q._reason;
+  const done=roundedAll&&eqDone&&rDone;
+  if(done&&!s.done){s.done=true;saveS(i,s)}
+  box.className="q"+(done?" right":"");
+  const mixed=toRound.some(([x])=>x.w);
+  let h=`<div class="num">Problem ${i+1}${done?" ✓":""}</div><div class="prompt">${fr(q.prompt)}</div>
+    <div class="expr">${q._nums.map(x=>x.fixed?x.v:F(x.n,x.d,x.w||"")).join(` ${q.op||""} `)}${needEq?" ≈ ?":""}</div>`;
+  if(toRound.length)h+=`<div class="stepbox"><h4>Step 1: Round ${toRound.length>1?"each number":"it"}</h4>
+    <p class="tip">${mixed?"Tap the whole number it's closest to.":"Tap the benchmark it's closest to: 0, ½, or 1."}</p>
+    ${toRound.map(([x,j])=>`<div class="nlwrap"><div class="lbl">${F(x.n,x.d,x.w||"")}</div><div id="nl${i}_${j}"></div><div class="fb" id="nf${i}_${j}" aria-live="polite"></div></div>`).join("")}</div>`;
+  if(needEq&&roundedAll){
+    h+=`<div class="stepbox"><h4>Step ${toRound.length?2:1}: Write your estimate</h4>
+      <div class="eq"><span>${q._nums.map(x=>fmt(rv(x))).join(` ${q.op} `)} =</span>
+      <input id="eq${i}" autocomplete="off" value="${esc(s.e||"")}" ${eqDone?"disabled":""} class="${eqDone?"ok":""}" aria-label="Your estimate">
+      <span>${esc(q.unit||"")}</span>${eqDone?"":`<button class="small go" id="eqc${i}">Check</button>`}</div>
+      <div class="fb" id="ef${i}" aria-live="polite"></div>${eqDone?"":`<p class="tip">Type fractions like 1 1/2 or 1/2.</p>`}</div>`;
+  }
+  if(q._reason&&roundedAll&&eqDone){
+    h+=`<div class="stepbox"><h4>Check if it's reasonable</h4><p style="margin:.2rem 0 .5rem">The answer given was ${fr(String(q.claim))}. Is that reasonable?</p>
+      <div class="ropts">${REAS_OPTS.map(o=>`<button data-ro="${esc(o)}" ${rDone?"disabled":""} class="${rDone&&o===q._reason?"correct":""}">${o}</button>`).join("")}</div>
+      <div class="fb" id="rf${i}" aria-live="polite"></div></div>`;
+  }
+  if(done)h+=`<div class="work"><b>My work:</b> ${esc(workText(q,s))}</div>`;
+  box.innerHTML=h+padHTML(i);
+  toRound.forEach(([x,j])=>makeLine($(`#nl${i}_${j}`),x,!!s.r[j],
+    ()=>{const t=getS(i);t.r[j]=true;saveS(i,t);renderProblem(i);updScore()},$(`#nf${i}_${j}`),
+    m=>{const t=getS(i);(t.wr=t.wr||[]).push([j,m]);saveS(i,t)}));
+  const chk=$(`#eqc${i}`);
+  if(chk){const inp=$(`#eq${i}`);const go=()=>{const v=parseNum(inp.value);
+    if(Math.abs(v-q._ans)<.011){const t=getS(i);t.e=inp.value.trim();saveS(i,t);renderProblem(i);updScore()}
+    else{const t=getS(i);(t.we=t.we||[]).push(inp.value.trim());saveS(i,t);const f=$(`#ef${i}`);f.className="fb no";
+      f.textContent=isNaN(v)?"Type a number, like 7 or 1 1/2.":(q.hint||`Not yet. Work it out: ${q._nums.map(x=>fmt(rv(x))).join(` ${q.op} `)}.`)}};
+    chk.onclick=go;inp.addEventListener("keydown",e=>{if(e.key==="Enter")go()});}
+  box.querySelectorAll("[data-ro]").forEach(b=>b.onclick=()=>{const t=getS(i);
+    if(b.dataset.ro===q._reason){t.rs=q._reason;saveS(i,t);renderProblem(i);updScore()}
+    else{b.classList.add("wrong");b.disabled=true;(t.wx=t.wx||[]).push(b.dataset.ro);saveS(i,t);const f=$(`#rf${i}`);f.className="fb no";f.textContent="Not yet. Compare the answer to your estimate."}});
+  hookPad(i,box);
+}
+function renderSimple(i,q,s,box){
+  const done=!!s.ok; if(done&&!s.done){s.done=true;saveS(i,s)}
+  box.className="q"+(done?" right":"");
+  let h=`<div class="num">Problem ${i+1}${done?" ✓":""}</div><div class="prompt">${fr(q.prompt)}</div>`;
+  if(q.type==="evidence"){
+    h+=`<div class="evopts">${q.options.map((o,k)=>{const wrong=(s.wa||[]).includes(k),right=done&&k===s.val;
+      return `<button data-k="${k}" ${done||wrong?"disabled":""} class="quote ${wrong?"wrong":right?"correct":""}">“${esc(o.text.replace(/^[“"]|[”"]$/g,""))}”</button>`}).join("")}</div>`;
+  } else if(q.type==="mc"){
+    h+=`<div class="opts${ELA||q.options.some(o=>String(o.text).length>28)?" long":""}">${q.options.map((o,k)=>{const wrong=(s.wa||[]).includes(k),right=done&&k===s.val;
+      return `<button data-k="${k}" ${done||wrong?"disabled":""} class="${wrong?"wrong":right?"correct":""}">${fr(o.text)}</button>`}).join("")}</div>`;
+  } else {
+    h+=`<div class="eq"><input id="nm${i}" autocomplete="off" value="${esc(done?s.val:"")}" ${done?"disabled class='ok'":""} aria-label="Your answer"><span>${esc(q.unit||"")}</span>${done?"":`<button class="small go" id="nc${i}">Check</button>`}</div>`;
+  }
+  h+=`<div class="fb" id="sf${i}" aria-live="polite"></div>`;
+  if(done)h+=`<div class="work"><b>My work:</b> ${esc(workText(q,s))}</div>`;
+  box.innerHTML=h+padHTML(i);
+  const miss=v=>{const t=getS(i);(t.wa=t.wa||[]).push(v);saveS(i,t);return t};
+  if(q.type==="mc"||q.type==="evidence")box.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{const k=+b.dataset.k;
+    if(q.options[k].correct){const t=getS(i);t.ok=1;t.val=k;saveS(i,t);if(q.type==="evidence")markEvidence(q.options[k].text);renderProblem(i);updScore()}
+    else{miss(k);b.classList.add("wrong");b.disabled=true;const f=$(`#sf${i}`);f.className="fb no";f.textContent=q.hint||"Not yet. Try again."}});
+  else{const inp=$(`#nm${i}`),b=$(`#nc${i}`);if(b){const go=()=>{const v=inp.value.trim();if(!v)return;
+    if(numMatch(q,v)){const t=getS(i);t.ok=1;t.val=v;saveS(i,t);renderProblem(i);updScore()}
+    else{miss(v);const f=$(`#sf${i}`);f.className="fb no";f.textContent=q.hint||"Not yet. Check your work and try again."}};
+    b.onclick=go;inp.addEventListener("keydown",e=>{if(e.key==="Enter")go()});}}
+  hookPad(i,box);
+}
+const eqVal=(a,b)=>{const x=parseNum(a),y=parseNum(b);if(!isNaN(x)&&!isNaN(y))return Math.abs(x-y)<.011;return String(a).trim().toLowerCase()===String(b).trim().toLowerCase()};
+const numMatch=(q,v)=>[q.answer,...String(q.alts||"").split(",")].filter(x=>String(x).trim()).some(a=>eqVal(v,a));
+function mountPad(i){
+  const cv=$(`#cv${i}`),key=`pad${day}_${i}`,w=cv.getBoundingClientRect().width,hgt=220,dpr=window.devicePixelRatio||1;
+  cv.width=w*dpr;cv.height=hgt*dpr;const ctx=cv.getContext("2d");ctx.scale(dpr,dpr);
+  ctx.lineWidth=3;ctx.lineCap="round";ctx.lineJoin="round";ctx.strokeStyle=getComputedStyle(document.body).color;
+  const saved=store.get(key,null);if(saved){const img=new Image();img.onload=()=>ctx.drawImage(img,0,0,w,hgt);img.src=saved}
+  let drawing=false;const pt=e=>{const r=cv.getBoundingClientRect();return[e.clientX-r.left,e.clientY-r.top]};
+  cv.addEventListener("pointerdown",e=>{drawing=true;cv.setPointerCapture(e.pointerId);const[x,y]=pt(e);ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+.1,y+.1);ctx.stroke()});
+  cv.addEventListener("pointermove",e=>{if(!drawing)return;const[x,y]=pt(e);ctx.lineTo(x,y);ctx.stroke()});
+  const end=()=>{if(!drawing)return;drawing=false;store.set(key,cv.toDataURL("image/png"))};
+  cv.addEventListener("pointerup",end);cv.addEventListener("pointercancel",end);
+  $(`#q${i}`).querySelector("[data-clear]").onclick=()=>{ctx.clearRect(0,0,w,hgt);store.set(key,null)};
+}
+
+/* ---------- small group ---------- */
+const TAGS={listen:"Listen",fill:"Fill in as you listen",watch:"Watch me",wedo:"We do",jot:"Stop and jot"};
+function stepHTML(st){
+  const blanks=[],nls=[],lines=String(st.text||"").split("\n").filter(l=>l.trim());
+  const line=l=>{let t=l.replace(/\[\[(.+?)\]\]/g,(m,a)=>{blanks.push(a);return `\u0001${blanks.length-1}\u0001`}).replace(/\{\{(.+?)\}\}/g,(m,a)=>{nls.push(a);return `\u0002${nls.length-1}\u0002`});
+    t=fr(t).replace(/\u0001(\d+)\u0001/g,(m,k)=>`<input class="blank" data-a="${esc(blanks[+k])}" aria-label="blank">`)
+      .replace(/\u0002(\d+)\u0002/g,(m,k)=>{const x=parseSpec(nls[+k])[0];return x&&!x.fixed&&!x.bad?`<div class="nlmount" data-n="${x.n}" data-d="${x.d}" data-w="${x.w}"><div class="lbl">${F(x.n,x.d,x.w||"")}</div><div class="nlh"></div><div class="fb"></div></div>`:""});
+    return t};
+  let h="";
+  if(st.tag==="watch"){h+=`<p class="fred" style="font-size:1.4rem">${line(lines[0]||"")}</p>`+lines.slice(1).map(l=>`<p class="ws">${line(l)}</p>`).join("")}
+  else h+=lines.map(l=>/^\u0002|^\{\{/.test(l.trim())?line(l):`<p>${line(l)}</p>`).join("");
+  if(st.tag==="jot")h+=`<textarea aria-label="Your answer"></textarea>`;
+  if(st.reveal)h+=`<button class="reveal" data-show>Show answer</button><div class="hidden-ans">${fr(st.reveal)}</div>`;
+  return h;
+}
+let sgStep=0;
+function renderSG(el,D){
+  const steps=D.sg||[];if(!steps.length){el.innerHTML=`<section class="room sg"><h2>Small group lesson</h2><p>Your teacher will tell you what to do.</p></section>`;return}
+  if(sgStep>=steps.length)sgStep=0;const s=steps[sgStep];
+  el.innerHTML=`<section class="room sg"><h2>Small group lesson</h2>
+    <div class="cue"><span aria-hidden="true">👀</span> Eyes on your teacher. Only tap Next when your teacher says so.</div>
+    <div class="goal"><b>Learning target:</b> ${fr(D.target)}</div>
+    <div class="step"><span class="tag">${TAGS[s.tag]||"Listen"}</span><h3>${fr(s.title)}</h3>${stepHTML(s)}</div>
+    <div class="stepper"><button class="btn ghost" id="prev" ${sgStep===0?"disabled":""}>Back</button>
+      <div class="dots" aria-label="Step ${sgStep+1} of ${steps.length}">${steps.map((_,i)=>`<i class="${i<=sgStep?"on":""}"></i>`).join("")}</div>
+      <button class="btn" id="next">${sgStep===steps.length-1?"Finish lesson":"Next"}</button></div></section>`;
+  const ws=[...el.querySelectorAll(".ws")];
+  if(ws.length){let shown=1;ws.forEach((p,k)=>p.hidden=k>0);if(ws.length>1){const b=document.createElement("button");b.className="reveal";b.textContent="Show next step";ws[ws.length-1].after(b);b.onclick=()=>{ws[shown].hidden=false;shown++;if(shown>=ws.length)b.remove()}}}
+  el.querySelectorAll(".nlmount").forEach(m=>{const x=parseSpec(`${+m.dataset.w?m.dataset.w+" ":""}${m.dataset.n}/${m.dataset.d}`)[0];
+    const draw=done=>makeLine(m.querySelector(".nlh"),x,done,()=>draw(true),m.querySelector(".fb"));draw(false)});
+  const saveKey=`sg${day}s${sgStep}`,saved=store.get(saveKey,[]);
+  el.querySelectorAll(".blank,textarea").forEach((inp,i)=>{
+    if(saved[i])inp.value=saved[i];
+    inp.addEventListener("input",()=>{store.set(saveKey,[...el.querySelectorAll(".blank,textarea")].map(x=>x.value));if(inp.classList.contains("blank"))inp.classList.remove("ok","miss")});
+    if(inp.classList.contains("blank"))inp.addEventListener("blur",()=>{const v=inp.value.trim();if(!v)return;
+      const ok=inp.dataset.a.split("|").some(a=>eqVal(v,a));inp.classList.toggle("ok",ok);inp.classList.toggle("miss",!ok)});
+  });
+  el.querySelectorAll("[data-show]").forEach(b=>b.onclick=()=>{b.nextElementSibling.classList.add("show");b.remove()});
+  $("#prev").onclick=()=>{sgStep--;renderSG(el,D)};
+  $("#next").onclick=()=>{if(sgStep===steps.length-1){store.set(`sg${day}done`,true);sgStep=0;room="ixl";render()}else{sgStep++;renderSG(el,D)}};
+  renderRoute();
+}
+
+/* ---------- IXL + RACE ---------- */
+const RACE=[["R","Restate","Turn the question into a sentence."],["A","Answer","Answer the question."],["C","Cite","Show your evidence: the numbers or steps you used."],["E","Explain","Tell why your evidence proves your answer."]];
+function renderIXL(el,D){
+  const key=`ixl${day}`,got=store.get(key,[]),rk=`race${day}`,r=store.get(rk,{});
+  el.innerHTML=`<section class="room ixl"><h2>IXL room</h2>
+    <div class="goal"><b>Your goal:</b> SmartScore ${C.smart||80} on each skill, in order. Check it off when you get there.</div>
+    <div class="std">${(D.standards||[]).map(s=>`<span>${esc(s)}</span>`).join("")}</div>
+    ${(D.ixl||[]).map((k,i)=>`<label class="skill ${got[i]?"got":""}"><input type="checkbox" data-k="${i}" ${got[i]?"checked":""}>
+      <span><span class="t">${esc(k.t)}</span><br><span class="d">${fr(k.d||"")}</span></span></label>`).join("")}
+    <p style="font-size:.95rem;color:var(--soft)">Can't find a skill? Type its name in the IXL search bar.</p>
+    ${D.race?`<div class="race"><h3>RACE response</h3><div class="prompt">${fr(D.race)}</div>
+      ${RACE.map(([l,n,tip])=>`<div class="rrow"><div class="rletter" aria-hidden="true">${l}</div><div><label for="r${l}">${n}</label><small>${tip}</small><textarea id="r${l}" data-r="${l}">${esc(r[l]||"")}</textarea></div></div>`).join("")}</div>`:""}
+  </section>`;
+  el.querySelectorAll("[data-k]").forEach(c=>c.onchange=()=>{const g=store.get(key,[]);g[+c.dataset.k]=c.checked;store.set(key,g);c.closest(".skill").classList.toggle("got",c.checked);renderRoute()});
+  el.querySelectorAll("[data-r]").forEach(t=>t.oninput=()=>{const o=store.get(rk,{});o[t.dataset.r]=t.value;store.set(rk,o)});
+}
+
+
+/* ---------- passage + highlighter ---------- */
+const HL={y:"Evidence",b:"Key idea",p:"Question or new word"};
+let hlColor="y";
+const norm=t=>String(t).toLowerCase().replace(/[“”"'’‘]/g,"").replace(/\s+/g," ").trim();
+function sentences(D){if(D._sent)return D._sent;const paras=String(D.passage.text||"").split(/\n\s*\n/).map(p=>p.replace(/\s+/g," ").trim()).filter(Boolean);
+  let k=0;D._sent=paras.map(p=>(p.match(/[^.!?]+[.!?]+["”’']?(?=\s|$)|[^.!?]+$/g)||[p]).map(x=>({i:k++,t:x.trim()})).filter(x=>x.t));return D._sent}
+function passageHTML(D,open){const hl=store.get(`hl${day}`,{});
+  return `<details class="passage" ${open?"open":""}><summary>📖 ${esc(D.passage.title||"Passage")}</summary>
+    <div class="hlbar" role="toolbar" aria-label="Highlighter">${Object.entries(HL).map(([k,v])=>`<button data-hc="${k}" class="hc hc-${k}" aria-pressed="${hlColor===k}">${v}</button>`).join("")}<button data-hc="x" class="hc hc-x" aria-pressed="${hlColor==="x"}">Eraser</button></div>
+    <p class="tip">Pick a color, then tap a sentence to highlight it.</p>
+    ${sentences(D).map((p,pi)=>`<p><span class="pnum">${pi+1}</span>${p.map(x=>`<span class="sn ${hl[x.i]?"h-"+hl[x.i]:""}" data-s="${x.i}">${esc(x.t)}</span>`).join(" ")}</p>`).join("")}</details>`}
+function hookPassage(el){
+  el.querySelectorAll("[data-hc]").forEach(b=>b.onclick=()=>{hlColor=b.dataset.hc;el.querySelectorAll("[data-hc]").forEach(x=>x.setAttribute("aria-pressed",x===b))});
+  el.querySelectorAll(".sn").forEach(sp=>sp.onclick=()=>{const hl=store.get(`hl${day}`,{}),i=sp.dataset.s;
+    if(hlColor==="x"||hl[i]===hlColor)delete hl[i];else hl[i]=hlColor;store.set(`hl${day}`,hl);
+    sp.className="sn"+(hl[i]?" h-"+hl[i]:"");if(room==="race")refreshEvidence()});
+}
+function markEvidence(text){const D=C.days[day];if(!D.passage)return;const hl=store.get(`hl${day}`,{}),n=norm(text);
+  sentences(D).flat().forEach(x=>{if(n.includes(norm(x.t)))hl[x.i]="y"});store.set(`hl${day}`,hl);
+  document.querySelectorAll(".sn").forEach(sp=>{const c=hl[sp.dataset.s];sp.className="sn"+(c?" h-"+c:"")})}
+
+/* ---------- RACE room ---------- */
+const STOP=new Set("the a an and or but of to in on at for with is are was were be been this that these those it its from by as what how why does do did which who your you their there use evidence text story author".split(" "));
+function raceChecks(prompt,r){r=r||{};const w=t=>String(t||"").toLowerCase().match(/[a-z']+/g)||[];
+  const keys=[...new Set(w(prompt).filter(x=>x.length>3&&!STOP.has(x)))],R=w(r.R),E=w(r.E);
+  return{restate:R.length>=5&&keys.filter(k=>R.includes(k)).length>=Math.min(2,keys.length),answer:w(r.A).length>=4,
+    cite:/["“”]/.test(r.C||"")&&w(r.C).length>=5,explain:E.length>=12&&/(because|shows|this means|proves|so |which|since|this is why)/i.test(r.E||"")}}
+const STARTERS={R:["The question asks","In the text,"],A:["I think","The answer is","Yes, because","No, because"],C:["The text states, “","In paragraph __, the author writes, “","For example, “"],E:["This shows that","This proves","This means that","This is important because"]};
+const RACE_TIPS={R:"Turn the question into a sentence. Use words from the question.",A:"Answer the question in your own words.",C:"Quote the text. Put the author's exact words in quotation marks.",E:"Tell how your quote proves your answer. Use at least 12 words."};
+function renderRACE(el,D){
+  const rk=`race${day}`,r=store.get(rk,{});
+  el.innerHTML=`<section class="room race"><h2>RACE room</h2>
+    <div class="goal"><b>Your task:</b> ${fr(D.race||"Your teacher will give you a question.")}</div>
+    ${D.passage?passageHTML(D,false):""}
+    <div class="evbank"><h3>My evidence</h3><div id="evlist"></div></div>
+    ${RACE.map(([l,n])=>`<div class="rrow"><div class="rletter" aria-hidden="true">${l}</div><div><label for="r${l}">${n}</label><small>${RACE_TIPS[l]}</small>
+      <div class="starters">${STARTERS[l].map(t=>`<button data-st="${l}" data-t="${esc(t)}">${esc(t)}</button>`).join("")}</div>
+      <textarea id="r${l}" data-r="${l}">${esc(r[l]||"")}</textarea></div></div>`).join("")}
+    <div class="rcheck" id="rcheck" aria-live="polite"></div></section>`;
+  hookPassage(el);refreshEvidence();
+  const upd=()=>{const o=store.get(rk,{});const ck=raceChecks(D.race,o);
+    $("#rcheck").innerHTML=`<b>RACE checklist</b>`+[["restate","Restated the question using its key words"],["answer","Answered the question"],["cite","Quoted the text in quotation marks"],["explain","Explained how the quote proves the answer (12+ words)"]].map(([k,t])=>`<div class="${ck[k]?"ok":""}">${ck[k]?"✅":"⬜"} ${t}</div>`).join("");renderRoute()};
+  el.querySelectorAll("[data-r]").forEach(t=>t.oninput=()=>{const o=store.get(rk,{});o[t.dataset.r]=t.value;store.set(rk,o);upd()});
+  el.querySelectorAll("[data-st]").forEach(b=>b.onclick=()=>{const ta=$("#r"+b.dataset.st);ta.value=(ta.value?ta.value.replace(/\s*$/," "):"")+b.dataset.t+(b.dataset.t.endsWith("“")?"":" ");ta.dispatchEvent(new Event("input"));ta.focus()});
+  upd();
+}
+function refreshEvidence(){const D=C.days[day],box=$("#evlist");if(!box)return;const hl=store.get(`hl${day}`,{});
+  const ev=D.passage?sentences(D).flat().filter(x=>hl[x.i]==="y"):[];
+  box.innerHTML=ev.length?ev.map(x=>`<div class="evi"><span>“${esc(x.t)}”</span><button class="small" data-ev="${x.i}">Use in Cite</button></div>`).join(""):`<p class="tip">${D.passage?"Highlight sentences in yellow (Evidence) and they'll show up here.":"Write your evidence in the Cite box."}</p>`;
+  box.querySelectorAll("[data-ev]").forEach(b=>b.onclick=()=>{const x=sentences(D).flat().find(z=>z.i==b.dataset.ev),ta=$("#rC");
+    ta.value=(ta.value?ta.value.replace(/\s*$/," "):"The text states, ")+`“${x.t.replace(/^[“"]|[”"]$/g,"")}”`;ta.dispatchEvent(new Event("input"))})}
+
+/* ---------- math tools ---------- */
+let toolTab=null;
+function renderToolsBtn(){let b=$("#toolsBtn");const on=!ELA&&Object.values(C.tools).some(Boolean);
+  if(!on){if(b)b.remove();return}
+  if(!b){b=document.createElement("button");b.id="toolsBtn";b.className="toolsbtn";b.textContent="🧰 Math tools";document.body.appendChild(b);b.onclick=()=>openTools()}}
+function openTools(tab){const T=C.tools,tabs=[["calc","Calculator"],["mult","Times table"],["fracbars","Fraction bars"],["numline","Number line"],["formulas","Formulas"]].filter(([k])=>T[k]);
+  toolTab=tab||toolTab||tabs[0][0];let sh=$("#toolSheet");if(!sh){sh=document.createElement("div");sh.id="toolSheet";sh.className="sheet";document.body.appendChild(sh)}
+  sh.innerHTML=`<div class="sheet-bar"><div class="tabs">${tabs.map(([k,v])=>`<button data-tt="${k}" aria-pressed="${k===toolTab}">${v}</button>`).join("")}</div><button class="small" id="toolClose">Close</button></div><div class="sheet-body" id="toolBody"></div>`;
+  sh.hidden=false;sh.querySelectorAll("[data-tt]").forEach(b=>b.onclick=()=>openTools(b.dataset.tt));$("#toolClose").onclick=()=>{sh.hidden=true};
+  ({calc:toolCalc,mult:toolMult,fracbars:toolFrac,numline:toolLine,formulas:toolForm})[toolTab]($("#toolBody"))}
+function evalExpr(s){const t=s.replace(/×/g,"*").replace(/÷/g,"/").replace(/−/g,"-").match(/\d*\.?\d+|[-+*/()]/g)||[];let i=0;
+  const num=()=>{let x=t[i++];if(x==="-")return -num();if(x==="(") {const v=add();i++;return v}return parseFloat(x)};
+  const mul=()=>{let v=num();while(t[i]==="*"||t[i]==="/"){const o=t[i++],r=num();v=o==="*"?v*r:v/r}return v};
+  const add=()=>{let v=mul();while(t[i]==="+"||t[i]==="-"){const o=t[i++],r=mul();v=o==="+"?v+r:v-r}return v};
+  const v=add();return isFinite(v)?+v.toFixed(8):NaN}
+function toolCalc(b){let cur="";b.innerHTML=`<div class="calc"><input id="cdisp" readonly aria-label="Calculator display"><div class="keys">${["C","(",")","÷","7","8","9","×","4","5","6","−","1","2","3","+","0",".","⌫","="].map(k=>`<button data-ck="${k}">${k}</button>`).join("")}</div></div>`;
+  b.querySelectorAll("[data-ck]").forEach(k=>k.onclick=()=>{const v=k.dataset.ck;if(v==="C")cur="";else if(v==="⌫")cur=cur.slice(0,-1);else if(v==="="){const r=evalExpr(cur);cur=isNaN(r)?"":String(r);$("#cdisp").value=isNaN(r)?"Error":cur;return}else cur+=v;$("#cdisp").value=cur})}
+function toolMult(b){b.innerHTML=`<div class="scroll"><table class="mult"><tr><th>×</th>${[...Array(12)].map((_,j)=>`<th>${j+1}</th>`).join("")}</tr>${[...Array(12)].map((_,i)=>`<tr><th>${i+1}</th>${[...Array(12)].map((_,j)=>`<td data-r="${i}" data-c="${j}">${(i+1)*(j+1)}</td>`).join("")}</tr>`).join("")}</table></div><p class="tip">Tap a product to see its row and column.</p>`;
+  b.querySelectorAll("td").forEach(td=>td.onclick=()=>{b.querySelectorAll("td").forEach(x=>x.className=(x.dataset.r===td.dataset.r||x.dataset.c===td.dataset.c)?"line":"");td.className="hit"})}
+let fracDen=[2,3,4];
+function toolFrac(b){b.innerHTML=`<div class="chips">${[1,2,3,4,5,6,8,10,12].map(d=>`<button data-fd="${d}" aria-pressed="${fracDen.includes(d)}">${d===1?"1 whole":"1/"+d}</button>`).join("")}</div>
+  <div class="fbars">${fracDen.sort((x,y)=>x-y).map(d=>`<div class="fbar">${[...Array(d)].map(()=>`<span>${d===1?"1":"1/"+d}</span>`).join("")}</div>`).join("")}</div><p class="tip">Tap pieces to shade them. Compare the lengths.</p>`;
+  b.querySelectorAll("[data-fd]").forEach(x=>x.onclick=()=>{const d=+x.dataset.fd;fracDen=fracDen.includes(d)?fracDen.filter(z=>z!==d):[...fracDen,d];toolFrac(b)});
+  b.querySelectorAll(".fbar span").forEach(sp=>sp.onclick=()=>sp.classList.toggle("on"))}
+let nl={a:-10,b:10,s:1,pts:[]};
+function toolLine(b){const {a,b:e,s}=nl,n=Math.round((e-a)/s);const X=v=>20+(v-a)/(e-a)*560;
+  b.innerHTML=`<div class="nlset"><label>From <input type="number" id="nla" value="${a}"></label><label>To <input type="number" id="nlb" value="${e}"></label><label>Step <input type="number" id="nls" value="${s}" step="any"></label><button class="small" id="nlclr">Clear points</button></div>
+  <svg class="nltool" viewBox="0 0 600 90" role="img" aria-label="Number line"><line x1="10" y1="45" x2="590" y2="45" stroke="currentColor" stroke-width="2"/>
+  ${n>0&&n<=40?[...Array(n+1)].map((_,k)=>{const v=+(a+k*s).toFixed(4);return `<line x1="${X(v)}" y1="37" x2="${X(v)}" y2="53" stroke="currentColor"/><text x="${X(v)}" y="72" text-anchor="middle" font-size="12" fill="currentColor">${fmt(v)}</text>`}).join(""):""}
+  ${nl.pts.map(v=>`<circle cx="${X(v)}" cy="45" r="7" fill="var(--sg)"/><text x="${X(v)}" y="25" text-anchor="middle" font-size="13" font-weight="700" fill="var(--sg)">${fmt(v)}</text>`).join("")}</svg><p class="tip">Tap the line to place a point. Up to 40 steps.</p>`;
+  const set=()=>{const A=+$("#nla").value,B=+$("#nlb").value,S=+$("#nls").value;if(B>A&&S>0){nl={a:A,b:B,s:S,pts:[]};toolLine(b)}};
+  ["#nla","#nlb","#nls"].forEach(id=>$(id).onchange=set);$("#nlclr").onclick=()=>{nl.pts=[];toolLine(b)};
+  b.querySelector("svg").onclick=ev=>{const r=ev.currentTarget.getBoundingClientRect(),x=(ev.clientX-r.left)/r.width*600;let v=a+(x-20)/560*(e-a);v=Math.round(v/s)*s;if(v>=a&&v<=e){nl.pts.push(+v.toFixed(4));toolLine(b)}}}
+function toolForm(b){b.innerHTML=`<dl class="forms">${[["Rectangle area","A = l × w"],["Triangle area","A = b × h ÷ 2"],["Parallelogram area","A = b × h"],["Trapezoid area","A = (b₁ + b₂) × h ÷ 2"],["Rectangular prism volume","V = l × w × h, or V = B × h"],["Triangle angles","add to 180°"],["Quadrilateral angles","add to 360°"],["Mean","add the values, divide by how many"],["Median","the middle value after ordering"],["Range","greatest − least"],["IQR","Q3 − Q1"],["Percent","part ÷ whole × 100"],["Unit rate","total ÷ number of units"]].map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>`}
+
+/* ---------- turn in + data code ---------- */
+const CONF=[["😵","I'm lost"],["🤔","I need more help"],["🙂","I almost got it"],["😎","I can teach it"]];
+const HELPED=ELA?["Highlighter","Hints","Small group","Sentence starters","RACE checklist"]:["Number lines","Hints","Small group","Scratch pad","Math tools","IXL"];
+const MIS={blow:"Picked a benchmark that's too low",bhigh:"Picked a benchmark that's too high",trunc:"Dropped the fraction instead of rounding up",up:"Rounded up with a fraction under ½",
+  wop:"Used the wrong operation",exact:"Computed exactly instead of estimating",slip:"Small computation slip after rounding",reas:"Misjudged whether an answer is reasonable"};
+function estMis(q,str){const v=parseNum(str);if(isNaN(v))return "";const r=q._nums.map(rv),a=q._nums.map(x=>x.fixed?x.v:x.v);
+  const fold=(arr,o)=>arr.slice(1).reduce((x,y)=>calc(x,o,y),arr[0]);
+  if(["+","−","×","÷"].some(o=>o!==q.op&&Math.abs(fold(r,o)-v)<.011))return MIS.wop;
+  if(Math.abs(fold(a,q.op)-v)<.2&&Math.abs(q._ans-v)>.011)return MIS.exact;
+  if(Math.abs(v-q._ans)<=1.01)return MIS.slip;return ""}
+function buildPayload(d){
+  const D=C.days[d],w=store.get(`w${d}`,{}),tn=store.get(`turn${d}`,{}),items=[],skills={};
+  const addSk=sk=>{skills[sk.n]=sk.std;return sk.n};
+  D.ind.forEach((q,i)=>{const s=w[i]||{};
+    if(q.type==="est"){
+      q._nums.forEach((x,j)=>{if(x.fixed)return;const wr=(s.wr||[]).filter(z=>z[0]===j);const ok=!!(s.r&&s.r[j]);
+        items.push({q:i,k:"round",sk:[addSk(x.w?BI.m:BI.b)],att:ok||wr.length?1:0,ft:ok&&!wr.length?1:0,
+          wrong:wr.map(([_,m])=>({v:`${plain(x)} → ${fmt(m)}`,m:x.w?(m<x.r?MIS.trunc:MIS.up):(m<x.r?MIS.blow:MIS.bhigh)}))})});
+      if(q._ans!=null){const we=s.we||[];items.push({q:i,k:"est",sk:[addSk(skillOf(q.skill))],att:s.e||we.length?1:0,ft:s.e&&!we.length?1:0,
+        wrong:we.map(v=>({v:`= ${v||"blank"}`,m:estMis(q,v)}))})}
+      if(q._reason){const wx=s.wx||[];items.push({q:i,k:"reas",sk:[addSk(BI.reas)],att:s.rs||wx.length?1:0,ft:s.rs&&!wx.length?1:0,wrong:wx.map(v=>({v,m:MIS.reas}))})}
+    } else {const wa=s.wa||[];
+      items.push({q:i,k:q.type,sk:[addSk(skillOf(q.skill))],att:s.ok||wa.length?1:0,ft:s.ok&&!wa.length?1:0,
+        wrong:wa.map(v=>q.type!=="num"?{v:q.options[v]?.text||"",m:q.options[v]?.mis||""}:{v:String(v),m:((q.wrongs||[]).find(z=>eqVal(v,z.ans))||{}).mis||""})})}
+  });
+  let br=0,bt=0;(D.sg||[]).forEach((st,k)=>{const ans=[...String(st.text||"").matchAll(/\[\[(.+?)\]\]/g)].map(m=>m[1].split("|"));const sv=store.get(`sg${d}s${k}`,[]);
+    ans.forEach((a,j)=>{bt++;if(a.some(x=>eqVal(sv[j]||"",x)&&String(sv[j]||"").trim()))br++})});
+  const jk=(D.sg||[]).map((st,k)=>st.tag==="jot"?k:-1).filter(k=>k>=0);
+  const jot=jk.map(k=>{const sv=store.get(`sg${d}s${k}`,[]);return sv[sv.length-1]||""}).filter(Boolean).join(" | ");
+  const probs=D.ind.map((q,i)=>{const s=w[i]||{};const ex=q.type==="est"?" "+q._nums.map(plain).join(` ${q.op||""} `):"";
+    return{p:(String(q.prompt||"").slice(0,90)+ex).trim(),d:s.done?1:0,w:s.done?workText(q,s):""}});
+  return{v:3,set:C.id,setTitle:C.title||"",name:nameEl.value.trim(),day:d+1,dayTitle:D.title||"",t:Date.now(),
+    skills:Object.entries(skills).map(([n,std])=>({n,std})),items,probs,
+    sg:{done:store.get(`sg${d}done`,false)?1:0,br,bt,jot},ixl:(D.ixl||[]).map((_,i)=>!!store.get(`ixl${d}`,[])[i]),
+    race:store.get(`race${d}`,{}),rc:raceChecks(D.race,store.get(`race${d}`,{})),hl:Object.keys(store.get(`hl${d}`,{})).length,subject:C.subject,conf:tn.conf||0,help:tn.help||[],tricky:tn.tricky||""};
+}
+const enc=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o))));
+function renderTurn(el,D){
+  const k=`turn${day}`,tn=store.get(k,{conf:0,help:[],tricky:""});
+  const fin=Object.values(store.get(`w${day}`,{})).filter(x=>x&&x.done).length;
+  const need=C.third==="race"?0:Math.min(2,(D.ixl||[]).length),ixlN=store.get(`ixl${day}`,[]).filter(Boolean).length,race=store.get(`race${day}`,{}),raceN=["R","A","C","E"].filter(x=>(race[x]||"").trim()).length;
+  el.innerHTML=`<section class="room turn"><h2>Turn in Day ${day+1}</h2>
+    <ul class="checklist">
+      <li>${fin===D.ind.length?"✅":"⬜"} Independent practice: ${fin} of ${D.ind.length} finished</li>
+      <li>${store.get(`sg${day}done`,false)?"✅":"⬜"} Small group lesson</li>
+      ${need?`<li>${ixlN>=need?"✅":"⬜"} IXL skills: ${ixlN} of ${need}</li>`:""}
+      ${D.race?`<li>${raceN===4?"✅":"⬜"} RACE response: ${raceN} of 4 parts</li>`:""}
+      ${D.passage?`<li>🖍️ Highlights in the passage: ${Object.keys(store.get(`hl${day}`,{})).length}</li>`:""}
+    </ul>
+    <h3>How do you feel about today's target?</h3><p class="tip">${fr(D.target)}</p>
+    <div class="conf">${CONF.map(([e,t],i)=>`<button data-c="${i+1}" aria-pressed="${tn.conf===i+1}"><span aria-hidden="true">${e}</span>${t}</button>`).join("")}</div>
+    <h3>What helped you most today?</h3>
+    <div class="chips">${HELPED.map(h=>`<button data-h="${h}" aria-pressed="${tn.help.includes(h)}">${h}</button>`).join("")}</div>
+    <h3>What was tricky today?</h3><textarea id="tricky" aria-label="What was tricky today">${esc(tn.tricky||"")}</textarea>
+    <p class="fb no" id="tmsg" aria-live="polite"></p>
+    <button class="btn" id="turnCopy" style="background:var(--ink);color:var(--bg)">Copy my turn-in</button><span class="copied" id="tcmsg" aria-live="polite"></span>
+    <p class="tip" style="margin-top:.75rem">${esc(C.turnInNote||"Then open today's WIN assignment in Canvas, paste, and submit.")}</p></section>`;
+  const save=()=>store.set(k,tn);
+  el.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{tn.conf=+b.dataset.c;save();el.querySelectorAll("[data-c]").forEach(x=>x.setAttribute("aria-pressed",x===b))});
+  el.querySelectorAll("[data-h]").forEach(b=>b.onclick=()=>{const h=b.dataset.h;tn.help=tn.help.includes(h)?tn.help.filter(x=>x!==h):[...tn.help,h];save();b.setAttribute("aria-pressed",tn.help.includes(h))});
+  $("#tricky").oninput=e=>{tn.tricky=e.target.value;save()};
+  $("#turnCopy").onclick=async()=>{const m=$("#tmsg");
+    if(!nameEl.value.trim()){m.textContent="Type your name at the top first.";nameEl.focus();return}
+    if(!tn.conf){m.textContent="Tap how you feel about today's target first.";return}
+    m.textContent="";
+    const txt=`${nameEl.value.trim()}, WIN Day ${day+1}: ${fin} of ${D.ind.length} problems, confidence ${tn.conf} of 4.\nWIN205:${enc(buildPayload(day))}`;
+    try{await navigator.clipboard.writeText(txt);$("#tcmsg").textContent="Copied. Now paste it in Canvas."}
+    catch(e){$("#tcmsg").textContent="Copy didn't work. Raise your hand."}};
+}
+render();
+
+<\/script>
+</body>
+</html>
+</script>
+<script>
+/* =====================================================================
+   Standards-based generator: Indiana Academic Standards (2023), grade 6.
+   Math items are generated from templates with random numbers.
+   ELA items come from original passages and item banks written for this tool.
+   ===================================================================== */
+const STD={
+ math:[
+  ["6.NS.1","Use positive and negative numbers to represent quantities in real-world contexts; explain the meaning of 0",1],
+  ["6.NS.2","Opposite signs on the number line; the opposite of the opposite",0],
+  ["6.NS.3","Compare and order rational numbers",0],
+  ["6.NS.4","Solve real-world problems with positive fractions and decimals (one or two operations)",1],
+  ["6.NS.5","Order of operations and properties with nonnegative rational numbers and exponents",1],
+  ["6.NS.6","GCF (to 100), LCM (to 12), and the distributive property",0],
+  ["6.NS.7","Create and justify equivalent linear expressions",1],
+  ["6.NS.8","Evaluate positive rational numbers with whole-number exponents",0],
+  ["6.RP.1","Convert between fractions, decimals, and percents without a calculator",1],
+  ["6.RP.2","Unit rates and rate language",0],
+  ["6.RP.3","Tables of equivalent ratios",0],
+  ["6.RP.4","Solve ratio and rate problems (tables, tape diagrams, double number lines, equations)",1],
+  ["6.RP.5","Dependent and independent variables in proportional relationships",1],
+  ["6.AF.1","Write and evaluate expressions with variables",1],
+  ["6.AF.2","Use substitution to find which values make an equation or inequality true",1],
+  ["6.AF.3","Solve one-step equations (x + p = q, x − p = q, px = q, x/p = q)",1],
+  ["6.AF.4","Write inequalities for real-world constraints",0],
+  ["6.AF.5","Coordinate plane: graph points and find distances",1],
+  ["6.GM.1","Convert between customary and metric units given conversion factors",0],
+  ["6.GM.2","Interior angle sums of triangles and quadrilaterals",0],
+  ["6.GM.3","Area of composite shapes",0],
+  ["6.GM.4","Volume of right rectangular prisms with fractional edges",1],
+  ["6.DS.1","Interpret line plots, histograms, and box plots",0],
+  ["6.DS.2","Statistical questions",1],
+  ["6.DS.3","Summarize data: mean, median, range, IQR",1]
+ ],
+ ela:[
+  ["6.RC.1","Analyze what a text says explicitly and draw inferences, citing textual evidence",1],
+  ["6.RC.2","Theme in literature and objective summary",1],
+  ["6.RC.3","How a sentence, scene, or paragraph fits the structure of literature",1],
+  ["6.RC.4","Compare and contrast works of literature on similar themes",0],
+  ["6.RC.5","Central idea of a nonfiction text and objective summary",0],
+  ["6.RC.6","How a key individual, event, or idea is introduced and developed",0],
+  ["6.RC.7","Author's perspective or purpose and how it is conveyed",1],
+  ["6.RC.8","Trace and evaluate claims; supported vs. unsupported",0],
+  ["6.RC.9","Integrate information from different media or formats",0],
+  ["6.RC.10","Use context to determine word meaning",0],
+  ["6.RC.11","Use word relationships (cause/effect, part/whole, item/category)",0],
+  ["6.RC.12","Connotations of words with similar denotations",0],
+  ["6.RC.13","Greek and Latin affixes and roots",1],
+  ["6.W.1","Write arguments",1],
+  ["6.W.2","Write informative compositions",1],
+  ["6.W.3","Write narratives",1],
+  ["6.W.6","Grammar and usage: pronouns; sentence types, fragments, run-ons",1],
+  ["6.W.7","Punctuation: nonrestrictive elements, semicolons, colons",1],
+  ["6.CC.2","Pose and respond to questions with elaboration and detail",1],
+  ["6.CC.3","Review key ideas and paraphrase multiple perspectives",1]
+ ]
+};
+/* ---------- helpers ---------- */
+function rng(seed){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+let R=Math.random;
+const ri=(a,b)=>a+Math.floor(R()*(b-a+1));
+const pick=a=>a[Math.floor(R()*a.length)];
+const shuf=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const gcd=(a,b)=>b?gcd(b,a%b):Math.abs(a);
+const lcm=(a,b)=>a/gcd(a,b)*b;
+function fs(n,d){if(d<0){n=-n;d=-d}const g=gcd(n,d)||1;n/=g;d/=g;if(d===1)return String(n);const w=Math.trunc(n/d),r=Math.abs(n%d);return w?`${w} ${r}/${d}`:`${n}/${d}`}
+const dec=v=>String(+v.toFixed(4));
+const sid=c=>"s"+c.replace(/\W/g,"");
+function MC(prompt,correct,wrongs,std,hint){
+  const seen=new Set([String(correct)]);const w=wrongs.filter(x=>{const k=String(x[0]);if(seen.has(k))return false;seen.add(k);return true});
+  return{type:"mc",prompt,skill:sid(std),hint:hint||"",options:shuf([{text:String(correct),correct:true},...w.map(([t,m])=>({text:String(t),correct:false,mis:m||""}))])}}
+function NUM(prompt,answer,wrongs,std,hint,unit,alts){
+  const w=(wrongs||[]).filter(x=>String(x[0])!==String(answer)&&!isNaN(parseFloat(x[0]))||isNaN(parseFloat(x[0])));
+  return{type:"num",prompt,answer:String(answer),alts:alts||"",unit:unit||"",skill:sid(std),hint:hint||"",wrongs:w.filter(x=>String(x[0])!==String(answer)).map(([a,m])=>({ans:String(a),mis:m}))}}
+const EV=(prompt,correct,wrongs,std,hint)=>{const q=MC(prompt,correct,wrongs,std,hint);q.type="evidence";return q};
+const nm=()=>pick(["Ava","Mateo","Jada","Leo","Priya","Marcus","Sofia","Eli","Nia","Omar","Chloe","Diego"]);
+
+/* ---------- math generators: (level) => question ---------- */
+const MG={
+"6.NS.1":L=>{const n=ri(3,L>1?60:20);const c=pick([["A diver is {n} feet below sea level.",-1,"sea level"],["The temperature is {n} degrees below zero.",-1,"0 degrees"],["Jamal deposits ${n} into his bank account.",1,"no change in the account"],["A plane flies {n} feet above sea level.",1,"sea level"],["Ava owes her brother ${n}.",-1,"owing nothing"],["The team loses {n} yards on a play.",-1,"no gain or loss"],["An elevator rises {n} floors.",1,"no movement"]]);
+  const t=c[0].replace("{n}",n);
+  return R()<.7?MC(`${t} Which number represents this situation?`,c[1]*n,[[-c[1]*n,"Used the wrong sign for the direction"],[0,"Chose 0 instead of the amount"]],"6.NS.1","Is it above or below, gaining or losing? Below and losing are negative.")
+   :MC(`${t} In this situation, what does 0 represent?`,c[2],[["the smallest possible amount","Thought 0 always means the least"],["an amount that can't be measured","Thought 0 means nothing can be measured"]],"6.NS.1","0 is the starting point. What is the starting point here?")},
+"6.NS.2":L=>{const n=ri(2,L>1?50:15),s=pick([1,-1]),v=s*n;const r=R();
+  if(r<.4)return NUM(`What is the opposite of ${v}?`,-v,[[v,"Thought a number is its own opposite"]],"6.NS.2","The opposite is the same distance from 0 on the other side.");
+  if(r<.8)return NUM(`What is −(−${n})?`,n,[[-n,"Thought the opposite of a negative stays negative"]],"6.NS.2","Take the opposite of −"+n+". Which side of 0 is that?");
+  return MC(`On a number line, how are ${n} and −${n} related?`,"They are the same distance from 0 on opposite sides.",[["They are at the same point.","Thought opposites are at the same place"],["They are both to the right of 0.","Thought negative numbers are right of 0"],["−"+n+" is farther from 0.","Thought negative numbers are farther from 0"]],"6.NS.2","Count the steps from 0 to each number.")},
+"6.NS.3":L=>{const r=R();
+  if(r<.35){const a=-ri(2,9),b=a-ri(2,8);return MC(`Which is greater: ${a} or ${b}?`,a,[[b,"Compared negative numbers by size without the sign"]],"6.NS.3","On a number line, the number farther right is greater.")}
+  if(r<.65){const a=-ri(2,8),b=a-ri(2,8);return MC(`Which temperature is colder: ${a}°F or ${b}°F?`,`${b}°F`,[[`${a}°F`,"Thought the number closer to 0 is colder"]],"6.NS.3","Colder means lower. Which is farther below 0?")}
+  const set=shuf([-ri(1,4),ri(1,5),-ri(5,9),L>1?+(ri(1,9)/2).toFixed(1):ri(6,9)]);const asc=[...set].sort((x,y)=>x-y),abs=[...set].sort((x,y)=>Math.abs(x)-Math.abs(y)),desc=[...asc].reverse();
+  const f=a=>a.join(", ");return MC(`Order from least to greatest: ${set.join(", ")}`,f(asc),[[f(abs),"Ordered by distance from 0 instead of value"],[f(desc),"Ordered from greatest to least"]],"6.NS.3","Negative numbers are less than positive numbers. The farther left, the less.")},
+"6.NS.4":L=>{const r=R();
+  if(r<.25){const d=pick(L>1?[6,8,10,12]:[4,6,8]),a=ri(Math.ceil(d/2),d-1),c=ri(1,a-1);const d2=L>1?pick([2,d/2].filter(x=>d%x===0&&x!==d)):d;const c2=L>1?1:c;const ans=fs(a*d2-c2*d,d*d2);
+    return NUM(`${nm()} has ${fs(a,d)} yard of ribbon and uses ${fs(c2,d2)} yard. How much ribbon is left?`,ans,[[fs(a-c2,Math.abs(d-d2)||d),"Subtracted the denominators too"]],"6.NS.4","Use a common denominator, then subtract the numerators.","yard")}
+  if(r<.5){const d=pick([3,4,5,8]),a=ri(1,d-1),k=ri(2,L>1?9:5);return NUM(`Each bag holds ${fs(a,d)} pound of trail mix. How many pounds do ${k} bags hold?`,fs(a*k,d),[[fs(a,d*k),"Multiplied the denominator instead of the numerator"],[fs(a*k,d*k),"Multiplied both the numerator and denominator"]],"6.NS.4",`Add ${fs(a,d)} ${k} times, or multiply the numerator by ${k}.`,"pounds")}
+  if(r<.75){const p=pick([1.25,2.5,0.75,3.2,1.5,4.05]),k=ri(3,L>1?9:5),ans=dec(p*k);return NUM(`Notebooks cost $${p.toFixed(2)} each. How much do ${k} notebooks cost?`,ans,[[dec(p*k*10),"Misplaced the decimal point"],[dec(p+k),"Added instead of multiplied"]],"6.NS.4","Multiply the price by the number of notebooks. Estimate first to check the decimal.","dollars")}
+  const s=pick([[4,3],[2,1],[3,1],[6,2],[8,3]]);const whole=fs(s[1]*ri(2,4),1);const dd=s[0],part=fs(1,dd);const n=+whole*dd;
+  return NUM(`How many ${part}-cup servings are in ${whole} cups of juice?`,n,[[fs(+whole,dd),"Multiplied instead of divided"]],"6.NS.4",`How many ${part}s fit in one cup? Then multiply by ${whole}.`,"servings")},
+"6.NS.5":L=>{const a=ri(2,12),b=ri(2,9),c=ri(2,9),r=R();
+  if(r<.35)return NUM(`Evaluate: ${a} + ${b} × ${c}`,a+b*c,[[(a+b)*c,"Worked left to right instead of multiplying first"]],"6.NS.5","Multiply before you add.");
+  if(r<.6){const d=ri(1,(a+b)*c-1);return NUM(`Evaluate: (${a} + ${b}) × ${c} − ${d}`,(a+b)*c-d,[[a+b*c-d,"Ignored the parentheses"]],"6.NS.5","Parentheses first.")}
+  if(r<.8&&L>1){const e=pick([2,3]),bb=ri(2,5);return NUM(`Evaluate: ${bb}${e===2?"²":"³"} + ${a} × ${c}`,bb**e+a*c,[[bb*e+a*c,"Multiplied the base by the exponent"],[(bb**e+a)*c,"Added before multiplying"]],"6.NS.5","Exponents first, then multiply, then add.")}
+  const x=ri(8,20),y=ri(2,x-2),z=ri(1,6);return NUM(`Evaluate: ${x} − ${y} + ${z}`,x-y+z,[[x-(y+z),"Added before subtracting instead of going left to right"]],"6.NS.5","Add and subtract from left to right.")},
+"6.NS.6":L=>{const r=R();
+  if(r<.4){const g=pick([2,3,4,5,6,8,9,10,12]),pr=pick([[2,3],[3,4],[2,5],[3,5],[4,5],[5,6],[3,7],[2,7]]).map(x=>x*1);const a=g*pr[0],b=g*pr[1];if(b>100)return MG["6.NS.6"](L);
+    const sub=[2,3,4,5,6].filter(f=>f<g&&g%f===0);return NUM(`What is the greatest common factor of ${a} and ${b}?`,g,[[lcm(a,b),"Found the LCM instead of the GCF"],...(sub.length?[[pick(sub),"Found a common factor, but not the greatest"]]:[])],"6.NS.6","List the factors of each number. Which is the largest one they share?")}
+  if(r<.7){const a=ri(2,12),b=ri(2,12);if(a===b)return MG["6.NS.6"](L);return NUM(`What is the least common multiple of ${a} and ${b}?`,lcm(a,b),[[...(gcd(a,b)>1?[[a*b,"Multiplied the numbers instead of finding the least common multiple"]]:[[gcd(a,b),"Found the GCF instead of the LCM"]])][0],[gcd(a,b)>1?gcd(a,b):a*b+a,"Found the GCF instead of the LCM"]],"6.NS.6","List multiples of the bigger number until one is also a multiple of the smaller.")}
+  const g=pick([4,6,8,9,10,12]),m=pick([1,3,5,7]),n=pick([2,5,7,9].filter(x=>gcd(x,m)===1&&x!==m));const a=g*m,b=g*n,f=[2,3].find(x=>g%x===0);
+  return MC(`Use the GCF to rewrite ${a} + ${b}.`,`${g}(${m} + ${n})`,[[`${f}(${a/f} + ${b/f})`,"Used a common factor that isn't the greatest"],[`${g}(${m} + ${b})`,"Divided only one number by the factor"],[`${g}(${m} × ${n})`,"Changed the sum to a product"]],"6.NS.6","Find the GCF of both numbers, then divide each number by it.")},
+"6.NS.7":L=>{const a=ri(2,9),b=ri(2,9),c=ri(2,9),v=pick(["x","n","y"]),r=R();
+  if(r<.45)return MC(`Which expression is equivalent to ${a}(${v} + ${b})?`,`${a}${v} + ${a*b}`,[[`${a}${v} + ${b}`,"Distributed to only the first term"],[`${v} + ${a*b}`,"Distributed to only the second term"],[`${a+b}${v}`,"Combined unlike terms"]],"6.NS.7","Multiply "+a+" by each term inside the parentheses.");
+  if(r<.8)return MC(`Simplify: ${a}${v} + ${b} + ${c}${v}`,`${a+c}${v} + ${b}`,[[`${a+b+c}${v}`,"Combined unlike terms"],[`${a*c}${v} + ${b}`,"Multiplied like terms instead of adding"]],"6.NS.7","Only combine terms with the same variable.");
+  const ok=R()<.5;return MC(`Are ${a}(${v} + ${b}) and ${ok?`${a}${v} + ${a*b}`:`${a}${v} + ${b}`} equivalent?`,ok?"Yes, the distributive property shows they are equal.":"No, the second expression does not multiply "+b+" by "+a+".",[[ok?"No, they have different numbers.":"Yes, they have the same terms.",ok?"Judged by appearance instead of properties":"Missed a distributive property error"],["You can't tell without knowing "+v+".","Didn't know equivalent expressions are equal for every value"]],"6.NS.7","Test it: substitute a number for "+v+" in both.")},
+"6.NS.8":L=>{const r=R();
+  if(r<.35||L===1){const b=ri(2,L>1?9:6),e=pick(L>1?[2,3]:[2]);return NUM(`Evaluate: ${b}${e===2?"²":"³"}`,b**e,[[b*e,"Multiplied the base by the exponent"]],"6.NS.8",`${b}${e===2?"²":"³"} means ${Array(e).fill(b).join(" × ")}.`)}
+  if(r<.7){const n=ri(1,3),d=ri(n+1,5),e=pick([2,3]);return NUM(`Evaluate: (${n}/${d})${e===2?"²":"³"}`,fs(n**e,d**e),[[fs(n*e,d),"Multiplied the numerator by the exponent"],[fs(n**e,d),"Raised only the numerator to the power"]],"6.NS.8","Multiply the fraction by itself. Multiply numerators and denominators.")}
+  const t=ri(2,9);return NUM(`Evaluate: (0.${t})²`,dec((t/10)**2),[[dec(t*2/10),"Multiplied by 2 instead of squaring"],[dec(t*t/10),"Misplaced the decimal point"]],"6.NS.8","0."+t+" × 0."+t+". How many decimal places will the answer have?")},
+"6.RP.1":L=>{const F=pick([[1,2],[1,4],[3,4],[1,5],[2,5],[3,5],[4,5],[1,10],[3,10],[7,10],[1,8],[3,8]].filter(x=>L>1||x[1]!==8));const pct=F[0]/F[1]*100,dv=F[0]/F[1],r=R();
+  if(r<.35)return NUM(`Write ${F[0]}/${F[1]} as a percent.`,dec(pct),[[`${F[0]}${F[1]}`,"Wrote the numerator and denominator as the percent"],[dec(dv),"Stopped at the decimal"]],"6.RP.1","Make an equivalent fraction with a denominator of 100.","%");
+  if(r<.65)return NUM(`Write ${dec(dv)} as a percent.`,dec(pct),[[dec(dv*10),"Moved the decimal the wrong number of places"]],"6.RP.1","Percent means per hundred. Move the decimal two places right.","%");
+  return MC(`Which fraction is equal to ${dec(pct)}%?`,fs(F[0],F[1]),[[fs(pct,10),"Put the percent over 10 instead of 100"],[`${String(pct)[0]}/${String(pct).slice(1)||1}`,"Split the digits into a fraction"],[fs(F[1],F[0]*1),"Flipped the fraction"]],"6.RP.1","Write the percent over 100, then simplify.")},
+"6.RP.2":L=>{const r=R();
+  if(r<.7){const u=ri(2,L>1?9:6),rate=pick(L>1?[1.5,2.25,3,4,6,12]:[2,3,4,5,6]);const tot=dec(u*rate);const c=pick([["notebooks","$","dollars per notebook"],["hours","","miles per hour"],["minutes","","pages per minute"]]);
+    const q=c[0]==="notebooks"?`${u} notebooks cost $${tot}. What is the cost per notebook?`:c[0]==="hours"?`A car travels ${tot} miles in ${u} hours. What is the speed in miles per hour?`:`Nia reads ${tot} pages in ${u} minutes. How many pages per minute is that?`;
+    return NUM(q,dec(rate),[[dec(tot*u),"Multiplied instead of divided"],[dec(u/tot),"Divided in the wrong order"]],"6.RP.2","A unit rate is the amount for 1. Divide the total by the number of units.",c[2].split(" per")[0])}
+  const a=ri(2,6)*6,b=pick([2,3,6]);return MC("Which is a unit rate?",`${a/b} miles per 1 hour`,[[`${a} miles per ${b} hours`,"Chose a rate that isn't for 1 unit"],[`${b} hours per ${a} miles`,"Chose a rate that isn't for 1 unit"]],"6.RP.2","A unit rate compares to exactly 1 of something.")},
+"6.RP.3":L=>{const a=ri(2,5),b=ri(2,7),k=ri(2,L>1?8:4);const it=pick([["cups of flour","cups of sugar"],["red beads","blue beads"],["laps","minutes"]]);
+  return NUM(`A ratio table shows ${a} ${it[0]} for every ${b} ${it[1]}. How many ${it[1]} go with ${a*k} ${it[0]}?`,b*k,[[b+(a*k-a),"Added instead of multiplied (additive thinking)"],[a*k+b,"Added the numbers in the table"]],"6.RP.3",`What did you multiply ${a} by to get ${a*k}? Do the same to ${b}.`,it[1])},
+"6.RP.4":L=>{const r=R();
+  if(r<.4){const p=ri(1,4),q=ri(2,5),k=ri(2,L>1?8:5);return NUM(`The ratio of boys to girls in a club is ${p}:${q}. There are ${(p+q)*k} students. How many are girls?`,q*k,[[p*k,"Found the other part of the ratio"],[Math.round((p+q)*k/q),"Divided the total by one part of the ratio"]],"6.RP.4",`Draw a tape diagram with ${p+q} equal parts. How many students are in each part?`,"girls")}
+  if(r<.75){const pc=pick(L>1?[10,20,25,30,40,75]:[10,25,50]),n=pick([20,40,60,80,120,200]);return NUM(`What is ${pc}% of ${n}?`,dec(pc*n/100),[[dec(n/pc),"Divided by the percent number"],[dec(pc*n/10),"Moved the decimal the wrong number of places"]],"6.RP.4",`${pc}% means ${pc} out of 100. Find 10% or 1% first.`)}
+  const m=ri(20,60),h=ri(2,4),h2=h+ri(1,3);return NUM(`A bus travels ${m*h} miles in ${h} hours. At the same rate, how far will it travel in ${h2} hours?`,m*h2,[[m*h+(h2-h),"Added the hour difference instead of using the rate"]],"6.RP.4","Find the miles for 1 hour first.","miles")},
+"6.RP.5":L=>{const k=ri(3,15),r=R(),who=nm();
+  if(r<.5)return MC(`${who} earns $${k} for each hour worked. Let h = hours and e = earnings. Which equation shows the relationship?`,`e = ${k}h`,[[`h = ${k}e`,"Swapped the dependent and independent variables"],[`e = h + ${k}`,"Added the rate instead of multiplying"],[`e = h ÷ ${k}`,"Divided instead of multiplying"]],"6.RP.5","Earnings depend on hours. Write e = (rate) × h.");
+  if(r<.75)return MC(`${who} earns $${k} for each hour worked. Which is the dependent variable?`,"the earnings",[["the hours worked","Mixed up the dependent and independent variables"],[`the $${k} rate`,"Chose the constant instead of a variable"]],"6.RP.5","Which amount changes because of the other one?");
+  const x=ri(2,9);return NUM(`The equation c = ${k}t shows the cost c of t tickets. What is c when t = ${x}?`,k*x,[[k+x,"Added instead of multiplied"]],"6.RP.5",`Replace t with ${x}, then multiply.`,"dollars")},
+"6.AF.1":L=>{const r=R();
+  if(r<.4){const a=ri(2,9),b=ri(2,9),m=ri(2,9),n=ri(2,9);return NUM(`Evaluate 3a + 2b when a = ${a} and b = ${b}.`.replace("3a",`${m}a`).replace("2b",`${n}b`),m*a+n*b,[[+(`${m}${a}`)+ +(`${n}${b}`),"Wrote the numbers side by side instead of multiplying"],[m+a+n+b,"Added instead of multiplied"]],"6.AF.1",`${m}a means ${m} × a.`)}
+  if(r<.75){const a=ri(2,6),b=ri(1,9);return MC(`Which expression means "${b} more than ${a} times a number n"?`,`${a}n + ${b}`,[[`${b}n + ${a}`,"Mixed up which number multiplies the variable"],[`${a}(n + ${b})`,"Added before multiplying"],[`${a} + n + ${b}`,"Added instead of multiplied"]],"6.AF.1",`"${a} times a number" is ${a}n.`)}
+  const l=ri(3,12),w=ri(2,9);return NUM(`The area of a rectangle is A = l × w. Find A when l = ${l} and w = ${w}.`,l*w,[[2*(l+w),"Used the perimeter formula"],[l+w,"Added instead of multiplied"]],"6.AF.1","Substitute the values, then multiply.","square units")},
+"6.AF.2":L=>{const p=ri(2,9),x=ri(2,12),q=p*x,r=R();
+  if(r<.5)return MC(`Which value from {${shuf([x,q-p,q*p,x+1].filter(v=>v>0)).join(", ")}} makes ${p}x = ${q} true?`,x,[[q-p,"Subtracted instead of divided"],[q*p,"Multiplied instead of divided"],[x+1,"Didn't check by substituting"]],"6.AF.2",`Substitute each value: ${p} × (value). Which gives ${q}?`);
+  const c=ri(2,9),t=ri(8,20);return MC(`Which value makes x + ${c} > ${t} true?`,t-c+ri(1,3),[[t-c,"Chose a value that makes both sides equal"],[t-c-ri(1,3),"Chose a value that makes it false"],[c,"Didn't substitute to check"]],"6.AF.2","Substitute each value. Is the left side more than "+t+"?")},
+"6.AF.3":L=>{const f=pick(["add","sub","mul","div"]),dp=L>1&&R()<.4;const p=dp?pick([1.5,0.5,2.25]):ri(2,12),x=dp?pick([2.5,4,3.75]):ri(2,15);
+  if(f==="add"){const q=dec(x+p);return NUM(`Solve: x + ${p} = ${q}`,dec(x),[[dec(+q+p),"Used the same operation instead of the inverse"]],"6.AF.3",`Subtract ${p} from both sides.`)}
+  if(f==="sub"){const q=dec(x-p);if(+q<0)return MG["6.AF.3"](L);return NUM(`Solve: x − ${p} = ${q}`,dec(x),[[dec(+q-p),"Used the same operation instead of the inverse"]],"6.AF.3",`Add ${p} to both sides.`)}
+  if(f==="mul"){const P=ri(2,9),X=ri(2,12);return NUM(`Solve: ${P}x = ${P*X}`,X,[[P*X*P,"Multiplied instead of divided"],[P*X-P,"Subtracted instead of divided"]],"6.AF.3",`Divide both sides by ${P}.`)}
+  const P=ri(2,9),Q=ri(2,12);return NUM(`Solve: x ÷ ${P} = ${Q}`,P*Q,[[dec(Q/P),"Divided instead of multiplied"]],"6.AF.3",`Multiply both sides by ${P}.`)},
+"6.AF.4":L=>{const n=ri(5,40),c=pick([["You must be at least {n} inches tall to ride.","h ≥ {n}"],["A team can have no more than {n} players.","p ≤ {n}"],["You need more than {n} points to win.","p > {n}"],["The bag must weigh less than {n} pounds.","w < {n}"]]);
+  const t=c[0].replace("{n}",n),ans=c[1].replace("{n}",n),v=ans[0],sym=ans.split(" ")[1];
+  const flip={"≥":"≤","≤":"≥",">":"<","<":">"}[sym],strict={"≥":">","≤":"<",">":"≥","<":"≤"}[sym];
+  if(R()<.8)return MC(`${t} Which inequality shows this?`,ans,[[`${v} ${flip} ${n}`,"Reversed the inequality direction"],[`${v} ${strict} ${n}`,"Mixed up whether the number itself is included"],[`${v} = ${n}`,"Wrote an equation instead of an inequality"]],"6.AF.4","Ask: can the value equal "+n+"? Should it be more or less?");
+  return MC(`How many solutions does x > ${n} have?`,"Infinitely many",[[`One: ${n+1}`,"Thought an inequality has only one solution"],[`One: ${n}`,"Thought an inequality has only one solution"]],"6.AF.4","Is "+(n+1)+" a solution? What about "+(n+2)+", or "+(n+0.5)+"?")},
+"6.AF.5":L=>{if(R()<.6){const a=ri(-6,6),y1=-ri(1,8),y2=ri(1,8);return NUM(`What is the distance between (${a}, ${y1}) and (${a}, ${y2})?`,y2-y1,[[Math.abs(y2+y1),"Didn't count the distance across 0"]],"6.AF.5","The x-coordinates match, so count up and down. Count to 0, then past it.","units")}
+  const x=pick([-1,1])*ri(1,9),y=pick([-1,1])*ri(1,9),q=x>0?(y>0?"I":"IV"):(y>0?"II":"III");const sw=y>0?(x>0?"I":"IV"):(x>0?"II":"III");
+  return MC(`Which quadrant contains the point (${x}, ${y})?`,`Quadrant ${q}`,[...(sw!==q?[[`Quadrant ${sw}`,"Mixed up the x- and y-coordinates"]]:[]),...["I","II","III","IV"].filter(z=>z!==q&&z!==sw).slice(0,2).map(z=>[`Quadrant ${z}`,"Mixed up the quadrant numbers"])],"6.AF.5","x tells left or right. y tells up or down. Quadrant I is top right, then go counterclockwise.")},
+"6.GM.1":L=>{const c=pick([["mile","km",1.6,[5,10,15,20]],["kilogram","pounds",2.2,[2,5,10,4]],["inch","cm",2.5,[2,4,6,10]]]);const n=pick(c[3]),ans=dec(n*c[2]);
+  if(R()<.6)return NUM(`1 ${c[0]} ≈ ${c[2]} ${c[1]}. About how many ${c[1]} is ${n} ${c[0]}s?`,ans,[[dec(n/c[2]),"Divided instead of multiplied"],[dec(n+c[2]),"Added instead of multiplied"]],"6.GM.1",`Each ${c[0]} is ${c[2]} ${c[1]}. Multiply.`,c[1]);
+  return NUM(`1 ${c[0]} ≈ ${c[2]} ${c[1]}. About how many ${c[0]}s is ${ans} ${c[1]}?`,n,[[dec(ans*c[2]),"Multiplied instead of divided"]],"6.GM.1",`How many groups of ${c[2]} are in ${ans}? Divide.`,c[0]+"s")},
+"6.GM.2":L=>{if(R()<.55){const a=ri(30,90),b=ri(20,150-a);return NUM(`A triangle has angles of ${a}° and ${b}°. What is the third angle?`,180-a-b,[[360-a-b,"Used 360° for a triangle"],[a+b,"Added the given angles instead of subtracting from 180°"]],"6.GM.2","The angles of a triangle add to 180°.","degrees")}
+  const a=ri(60,120),b=ri(60,110),c=ri(50,100);if(360-a-b-c<=10)return MG["6.GM.2"](L);return NUM(`A quadrilateral has angles of ${a}°, ${b}°, and ${c}°. What is the fourth angle?`,360-a-b-c,[[Math.abs(180-a-b-c),"Used 180° for a quadrilateral"]],"6.GM.2","The angles of a quadrilateral add to 360°.","degrees")},
+"6.GM.3":L=>{const r=R();
+  if(r<.35){const b=ri(2,10)*2,h=ri(3,12);return NUM(`A triangle has a base of ${b} cm and a height of ${h} cm. What is its area?`,b*h/2,[[b*h,"Forgot to divide by 2"],[b+h,"Added instead of multiplied"]],"6.GM.3","Area of a triangle = base × height ÷ 2.","square cm")}
+  if(r<.7){const w=ri(3,10)*2,h=ri(3,9),th=ri(2,6);return NUM(`A shape is a ${w} ft by ${h} ft rectangle with a triangle on top. The triangle's base is ${w} ft and its height is ${th} ft. What is the total area?`,w*h+w*th/2,[[w*h+w*th,"Forgot to divide the triangle's area by 2"],[w*h,"Left out the triangle"]],"6.GM.3","Find the rectangle's area and the triangle's area, then add.","square feet")}
+  const W=ri(8,14),H=ri(6,10),w=ri(2,W-4),h=ri(2,H-3);return NUM(`An L-shaped room is a ${W} m by ${H} m rectangle with a ${w} m by ${h} m corner cut out. What is the area of the room?`,W*H-w*h,[[W*H,"Didn't subtract the missing corner"],[W*H+w*h,"Added the corner instead of subtracting"]],"6.GM.3","Find the big rectangle's area, then subtract the corner.","square meters")},
+"6.GM.4":L=>{const f=pick(L>1?[[1,2],[3,2],[5,2],[9,4]]:[[1,2],[3,2]]),a=ri(2,6),b=ri(2,5);const v=fs(a*b*f[0],f[1]);
+  return NUM(`A box is ${a} in. long, ${b} in. wide, and ${fs(f[0],f[1])} in. tall. What is its volume?`,v,[[fs(a*f[1]+b*f[1]+f[0],f[1]),"Added the edge lengths instead of multiplying"],[a*b,"Left out one edge length"]],"6.GM.4","V = l × w × h.","cubic inches")},
+"6.DS.1":L=>{const mn=ri(1,5),q1=mn+ri(2,4),md=q1+ri(1,4),q3=md+ri(2,5),mx=q3+ri(2,6);
+  if(R()<.55)return NUM(`A box plot shows: minimum ${mn}, Q1 ${q1}, median ${md}, Q3 ${q3}, maximum ${mx}. What is the interquartile range (IQR)?`,q3-q1,[[mx-mn,"Used the range instead of the IQR"],[md,"Gave the median instead of the IQR"]],"6.DS.1","IQR = Q3 − Q1.");
+  const data=Array.from({length:ri(9,12)},()=>ri(0,5)).sort((x,y)=>x-y),t=ri(2,3);return NUM(`A line plot shows how many books students read: ${data.join(", ")}. How many students read more than ${t} books?`,data.filter(x=>x>t).length,[[data.filter(x=>x>=t).length,"Included the number itself in 'more than'"]],"6.DS.1","Count only the values greater than "+t+".","students")},
+"6.DS.2":L=>{const s=pick([["How many hours do students in my class sleep on school nights?","How many hours did I sleep last night?"],["How tall are the sixth graders at my school?","How tall is the tallest tree in the park?"],["How many pets do students in my grade have?","How many pets does my best friend have?"],["What are the test scores of students in Room 205?","What score did I get on the test?"],["How long do students in my class take to get to school?","What time does school start?"]]);
+  return MC("Which is a statistical question?",s[0],[[s[1],"Chose a question with only one answer (no variability)"],["What is 12 × 12?","Chose a question with one fixed answer"]],"6.DS.2","A statistical question expects many different answers.")},
+"6.DS.3":L=>{const n=pick([5,7]),mean=ri(4,12);let d=Array.from({length:n-1},()=>mean+ri(-4,4));d.push(mean*n-d.reduce((a,b)=>a+b,0));if(d.some(x=>x<0))return MG["6.DS.3"](L);d=shuf(d);
+  const s=[...d].sort((x,y)=>x-y),med=s[(n-1)/2],r=R();
+  if(r<.4)return NUM(`Find the median: ${d.join(", ")}`,med,[[d[(n-1)/2],"Didn't order the data before finding the median"],[mean===med?-1:mean,"Found the mean instead of the median"]].filter(x=>x[0]!==med&&x[0]>=0),"6.DS.3","Put the numbers in order first. The median is the middle.");
+  if(r<.75)return NUM(`Find the mean: ${d.join(", ")}`,mean,[[mean*n,"Forgot to divide by the number of values"],[med===mean?-1:med,"Found the median instead of the mean"]].filter(x=>x[0]!==mean&&x[0]>=0),"6.DS.3","Add the values, then divide by how many there are.");
+  return NUM(`Find the range: ${d.join(", ")}`,s[n-1]-s[0],[[s[n-1],"Gave the largest value instead of the range"]],"6.DS.3","Range = greatest − least.")}
+};
+/* estimation items reuse the portal's number-line type for 6.NS.4 */
+function estItem(L){const w=()=>ri(1,L>1?12:6),f=()=>{const d=pick([3,4,5,6,8,9,10,12]);let n=ri(1,d-1);if(n/d===.25||n/d===.75)n=Math.max(1,n-1);return[n,d]};
+  const op=pick(["+","−","×"]);let a=[w(),...f()],b=[w(),...f()];if(op==="−"&&a[0]<=b[0]+1)a[0]=b[0]+ri(2,5);
+  return{type:"est",prompt:pick(["Estimate.","Estimate by rounding each number first."]),nums:`${a[0]} ${a[1]}/${a[2]}, ${b[0]} ${b[1]}/${b[2]}`,op,skill:sid("6.NS.4")}}
+
+/* ---------- math mini-lessons ---------- */
+const ML={
+"6.NS.1":["Positive and negative numbers describe opposite directions. 0 is the starting point.","Above, gaining, and depositing are [[positive]]. Below, losing, and owing are [[negative]]. 0 is the [[starting point|start]].","A diver is 15 feet below sea level. →?\nStep 1: Find the starting point: sea level is 0.\nStep 2: Below sea level is the negative direction.\nStep 3: The diver is at **−15**.","The temperature rose 8 degrees. Which number? [[8|+8]]","Give your own example of a negative number in real life. What does 0 mean in your example?"],
+"6.NS.2":["Opposites are the same distance from 0 on opposite sides.","The opposite of 6 is [[−6|-6]]. The opposite of −6 is [[6]]. 0 is its own [[opposite]].","−(−9) = ?\nStep 1: The opposite of 9 is −9.\nStep 2: The opposite of −9 is 9.\nStep 3: So −(−9) = **9**.","−(−4) = [[4]]","Why is the opposite of the opposite of a number the number itself?"],
+"6.NS.3":["On a number line, numbers get greater as you move right.","A number to the right is always [[greater|bigger|larger]]. Every negative number is [[less|smaller]] than every positive number.","Order: 3, −7, −2, 5\nStep 1: Negatives come first. −7 is farther left than −2.\nStep 2: Then 3, then 5.\nStep 3: **−7, −2, 3, 5**.","Which is greater, −3 or −8? [[−3|-3]]","Explain why −3 is greater than −8 even though 8 is bigger than 3."],
+"6.NS.4":["Read the problem, decide the operation, then estimate to check your answer.","If the problem puts equal groups together, [[multiply]]. If it asks how many groups fit, [[divide]]. Always [[estimate]] first.","Each bag holds 3/4 pound. How much do 4 bags hold?\nStep 1: Equal groups, so multiply: 4 × 3/4.\nStep 2: 4 × 3 = 12, so 12/4.\nStep 3: 12/4 = **3 pounds**. Estimate: 4 bags of almost 1 pound is almost 4. ✓","Pens cost $1.25 each. How much do 4 pens cost? [[5|5.00|$5|$5.00]]","How did estimating help you check your answer?"],
+"6.NS.5":["Order of operations: parentheses, exponents, multiply and divide left to right, add and subtract left to right.","Do [[parentheses]] first, then [[exponents]]. Multiply and divide from [[left]] to right.","4 + 3 × 2² = ?\nStep 1: Exponent first: 2² = 4.\nStep 2: Multiply: 3 × 4 = 12.\nStep 3: Add: 4 + 12 = **16**.","6 + 2 × 5 = [[16]]","Why do we all need to follow the same order of operations?"],
+"6.NS.6":["The GCF is the greatest factor two numbers share. The LCM is the least multiple they share.","GCF uses [[factors]]. LCM uses [[multiples]].","Rewrite 24 + 36 with the GCF.\nStep 1: Factors of 24 and 36 in common: 1, 2, 3, 4, 6, 12.\nStep 2: The greatest is 12.\nStep 3: 24 + 36 = **12(2 + 3)**.","GCF of 18 and 27: [[9]]","When would you use the LCM in real life?"],
+"6.NS.7":["Equivalent expressions are equal for every value of the variable.","The distributive property: 3(x + 2) = 3x + [[6]]. You can only combine [[like]] terms.","Simplify 4(x + 5) + 2x\nStep 1: Distribute: 4x + 20.\nStep 2: Add 2x: 4x + 2x = 6x.\nStep 3: **6x + 20**.","5(n + 3) = 5n + [[15]]","How can you check whether two expressions are equivalent?"],
+"6.NS.8":["An exponent tells how many times to multiply the base by itself.","3² means 3 × [[3]]. (1/2)² means 1/2 × [[1/2]].","(2/3)² = ?\nStep 1: Multiply the fraction by itself: 2/3 × 2/3.\nStep 2: Numerators: 2 × 2 = 4. Denominators: 3 × 3 = 9.\nStep 3: **4/9**.","4² = [[16]]","Why is 3² not the same as 3 × 2?"],
+"6.RP.1":["Fractions, decimals, and percents are three ways to write the same amount.","Percent means per [[hundred|100]]. To change a decimal to a percent, move the decimal [[two|2]] places right.","Write 3/5 as a percent.\nStep 1: Make the denominator 100: 3/5 = 60/100.\nStep 2: 60 per hundred is 60%.\nStep 3: **3/5 = 0.6 = 60%**.","1/4 = [[25]]%","Which form, fraction, decimal, or percent, is easiest for you? Why?"],
+"6.RP.2":["A unit rate tells how much for exactly 1 unit.","To find a unit rate, [[divide]] the total by the number of units. Rate words include [[per]].","12 pencils cost $6. Cost per pencil?\nStep 1: Divide the cost by the number of pencils.\nStep 2: 6 ÷ 12 = 0.5.\nStep 3: **$0.50 per pencil**.","60 miles in 3 hours is [[20]] miles per hour.","Where do you see unit rates in real life?"],
+"6.RP.3":["In a ratio table, you multiply or divide both quantities by the same number.","To keep a ratio equivalent, [[multiply]] both numbers by the same amount. Adding the same amount does [[not]] keep the ratio.","2 cups flour : 3 cups sugar. How much sugar for 8 cups flour?\nStep 1: 2 × 4 = 8, so the factor is 4.\nStep 2: 3 × 4 = 12.\nStep 3: **12 cups of sugar**.","3 : 5 = 9 : [[15]]","Why doesn't adding the same number to both parts keep a ratio equivalent?"],
+"6.RP.4":["Use a tape diagram, table, or double number line to solve ratio problems.","In a tape diagram, all parts are [[equal]]. Percent is a ratio out of [[100|hundred]].","Boys to girls is 2:3. There are 25 students. How many girls?\nStep 1: Draw 5 equal parts (2 + 3).\nStep 2: 25 ÷ 5 = 5 students per part.\nStep 3: Girls = 3 parts = **15**.","25% of 80 = [[20]]","Which model helps you most for ratio problems? Why?"],
+"6.RP.5":["The dependent variable changes because of the independent variable.","In c = 5t, [[c]] is the dependent variable and [[t]] is the independent variable.","Tickets cost $5 each. Write an equation.\nStep 1: Total cost depends on the number of tickets.\nStep 2: Cost = 5 × tickets.\nStep 3: **c = 5t**.","If c = 5t, then when t = 4, c = [[20]]","How can a table help you write an equation?"],
+"6.AF.1":["A variable stands for a number. Evaluate by substituting and computing.","3n means 3 [[times|×]] n. \"5 more than\" means [[add]] 5.","Evaluate 4a + b when a = 3, b = 2.\nStep 1: Substitute: 4 × 3 + 2.\nStep 2: Multiply: 12 + 2.\nStep 3: **14**.","2x + 1 when x = 5: [[11]]","Write an expression for a real situation. What does your variable stand for?"],
+"6.AF.2":["Substitute each value to see if it makes the equation or inequality true.","A solution makes the statement [[true]]. To check, [[substitute]] the value.","Which makes 3x = 21 true: 6, 7, or 8?\nStep 1: 3 × 6 = 18. No.\nStep 2: 3 × 7 = 21. Yes!\nStep 3: **x = 7**.","Does x = 4 make x + 5 > 8 true? [[yes]]","Why should you always check your answer by substituting?"],
+"6.AF.3":["Use inverse operations to get the variable alone.","The inverse of adding is [[subtracting|subtraction]]. The inverse of multiplying is [[dividing|division]].","Solve 4x = 28.\nStep 1: x is multiplied by 4.\nStep 2: Divide both sides by 4.\nStep 3: **x = 7**. Check: 4 × 7 = 28 ✓","x + 9 = 15, x = [[6]]","Why do you do the same thing to both sides of an equation?"],
+"6.AF.4":["Inequalities show a range of values. Watch whether the number itself is included.","\"At least\" means [[≥|>=]]. \"No more than\" means [[≤|<=]].","You must be at least 48 inches tall to ride.\nStep 1: At least 48 means 48 or more.\nStep 2: 48 is included, so use ≥.\nStep 3: **h ≥ 48**.","\"Fewer than 10\" uses the symbol [[<]]","Give an example of a rule in your life that could be written as an inequality."],
+"6.AF.5":["Points on the same vertical or horizontal line: count the distance, crossing 0 when needed.","The first coordinate is [[x]]. When the signs are different, [[add]] the distances from 0.","Distance from (2, −3) to (2, 4)?\nStep 1: Same x, so count up and down.\nStep 2: −3 to 0 is 3 units. 0 to 4 is 4 units.\nStep 3: 3 + 4 = **7 units**.","Distance from (1, 2) to (6, 2): [[5]]","Why do you add when the points are on opposite sides of 0?"],
+"6.GM.1":["Use the conversion factor. Converting to a smaller unit means more of them.","If 1 mile ≈ 1.6 km, then miles to km means [[multiply]]. Km to miles means [[divide]].","1 kg ≈ 2.2 lb. How many pounds is 5 kg?\nStep 1: Each kg is 2.2 lb.\nStep 2: 5 × 2.2 = 11.\nStep 3: **About 11 lb**.","1 inch ≈ 2.5 cm. 4 inches ≈ [[10]] cm","How can you tell if your converted answer should be bigger or smaller?"],
+"6.GM.2":["Triangle angles add to 180°. Quadrilateral angles add to 360°.","A triangle's angles add to [[180]]°. A quadrilateral's angles add to [[360]]°.","A triangle has angles 50° and 60°. Third angle?\nStep 1: 50 + 60 = 110.\nStep 2: 180 − 110 = 70.\nStep 3: **70°**.","Angles 90°, 90°, 100° in a quadrilateral. Fourth: [[80]]","Why do you think a quadrilateral's angles add to twice a triangle's?"],
+"6.GM.3":["Break a complex shape into rectangles and triangles, then add (or subtract) the areas.","Area of a triangle = base × height ÷ [[2|two]]. For a cut-out corner, [[subtract]] its area.","Rectangle 10 × 4 with a triangle on top (base 10, height 3).\nStep 1: Rectangle: 10 × 4 = 40.\nStep 2: Triangle: 10 × 3 ÷ 2 = 15.\nStep 3: **55 square units**.","Triangle, base 8, height 5: area [[20]]","When would you subtract areas instead of adding them?"],
+"6.GM.4":["Volume = length × width × height, even with fraction edges.","V = l × w × [[h]]. Volume is measured in [[cubic]] units.","Box: 4 × 3 × 1/2.\nStep 1: 4 × 3 = 12.\nStep 2: 12 × 1/2 = 6.\nStep 3: **6 cubic units**.","2 × 5 × 1/2 = [[5]]","Why is volume measured in cubic units?"],
+"6.DS.1":["Graphs summarize data. A box plot shows five numbers: minimum, Q1, median, Q3, maximum.","The IQR is Q3 minus [[Q1|q1]]. The range is maximum minus [[minimum|min]].","Box plot: 2, 5, 8, 12, 15. Find the IQR.\nStep 1: Q3 = 12, Q1 = 5.\nStep 2: 12 − 5 = 7.\nStep 3: **IQR = 7**.","Box plot 1, 4, 6, 9, 14. IQR = [[5]]","What does a big IQR tell you about the data?"],
+"6.DS.2":["A statistical question expects different answers (variability).","\"How old am I?\" is [[not]] statistical. \"How old are students in my school?\" [[is]] statistical.","Is \"How many siblings do my classmates have?\" statistical?\nStep 1: Ask many people.\nStep 2: Expect different answers.\nStep 3: **Yes, it's statistical**.","\"What time is lunch?\" statistical? [[no]]","Write your own statistical question about our class."],
+"6.DS.3":["Mean and median describe the center. Range and IQR describe the spread.","To find the median, first put the data in [[order]]. To find the mean, add and then [[divide]].","Data: 7, 3, 9, 5, 6. Find the median.\nStep 1: Order: 3, 5, 6, 7, 9.\nStep 2: The middle value is the 3rd.\nStep 3: **Median = 6**.","Mean of 4, 6, 8: [[6]]","When is the median a better measure than the mean?"]
+};
+
+/* ---------- ELA passages and item banks (original text) ---------- */
+const PASS={
+maya:{type:"lit",title:"The Last Lap",text:`Maya had never run a full mile without stopping. Every afternoon, she watched the cross-country team loop around the track while she sat on the bleachers with her sketchbook.
+
+"You could try out," Coach Rivera said one day, pausing beside her. Maya laughed and shook her head. "I'm not a runner," she said.
+
+But that night, she laced up her old sneakers and jogged to the end of her street. Her lungs burned before she reached the corner. She walked home slowly, embarrassed, but the next night she went a little farther.
+
+For three weeks, Maya added one mailbox at a time. Some nights it rained, and some nights her legs felt like concrete. She kept going anyway.
+
+On tryout day, Maya finished last. Her face was red and her shirt was soaked, but she had run the entire mile. Coach Rivera wrote something on her clipboard and smiled. "Last isn't the same as done," she said. "See you Monday."`,
+ race:"What does Coach Rivera mean when she says, \"Last isn't the same as done\"? Use evidence from the story.",
+ items:[
+  ["6.RC.2","mc","Which theme is best developed in the story?","Steady effort, even in small steps, leads to growth.",[["Winning is the only thing that matters.","Chose a theme the text doesn't support"],["Coaches always know what is best.","Chose an idea that is too narrow to be the theme"],["Art is more important than sports.","Chose a theme the text doesn't support"]],"A theme is a lesson about life. What does Maya learn by the end?"],
+  ["6.RC.2","evidence","Which sentence best supports the theme that steady effort leads to growth?","For three weeks, Maya added one mailbox at a time.",[["Every afternoon, she watched the cross-country team loop around the track while she sat on the bleachers with her sketchbook.","Chose a detail that doesn't support the point"],["Maya laughed and shook her head.","Chose a detail that doesn't support the point"],["On tryout day, Maya finished last.","Chose evidence that seems related but doesn't prove the point"]],"Look for a sentence that shows effort over time."],
+  ["6.RC.1","mc","What can the reader infer about Maya at the beginning of the story?","She doubts that she can be a runner.",[["She has run on a team before.","Made an inference the text doesn't support"],["She dislikes Coach Rivera.","Made an inference the text doesn't support"],["She wants to stop drawing.","Made an inference the text doesn't support"]],"Reread paragraphs 1 and 2. What does Maya say about herself?"],
+  ["6.RC.1","evidence","Which sentence best supports the inference that Maya doubts herself at first?","Maya had never run a full mile without stopping.",[["For three weeks, Maya added one mailbox at a time.","Chose evidence from the wrong part of the story"],["Coach Rivera wrote something on her clipboard and smiled.","Chose a detail that doesn't support the point"],["She kept going anyway.","Chose evidence from the wrong part of the story"]],"Look at the very beginning of the story."],
+  ["6.RC.3","mc","How does paragraph 4 contribute to the plot?","It shows Maya's slow progress as the story builds toward tryout day.",[["It introduces the main conflict.","Misidentified the part of the plot"],["It resolves the conflict.","Misidentified the part of the plot"],["It describes where the story takes place.","Confused plot with setting"]],"What happens to Maya in paragraph 4? Where does it lead?"],
+  ["6.RC.10","mc","In paragraph 4, \"her legs felt like concrete\" most likely means her legs felt—","heavy and tired",[["strong and powerful","Missed the context clues"],["gray and hard","Read a figurative phrase literally"],["cold and wet","Missed the context clues"]],"How would legs feel after running in the rain every night?"],
+  ["6.RC.12","mc","The author says Maya felt \"embarrassed.\" Which word has a similar meaning but a stronger feeling?","humiliated",[["uncomfortable","Chose a word with a weaker feeling"],["proud","Chose a word with the opposite meaning"],["surprised","Chose a word with a different meaning"]],"Which word would describe feeling even worse?"]
+ ]},
+theo:{type:"lit",title:"The Bread Starter",text:`Theo's grandmother kept a jar of bubbling dough on her kitchen counter. She called it the starter, and she said it was older than Theo.
+
+"You have to feed it every day," she told him the week she went to visit his aunt. "Flour and water. It's not hard, but you can't forget."
+
+Theo forgot on the second day. By the third morning, the starter had sunk into a flat, sour puddle. He stared at it, his stomach twisting.
+
+He could have thrown it out and bought a new one at the store. Instead, he searched online, read four different guides, and fed the starter twice a day. He wrote each feeding on a sticky note and stuck it to the fridge.
+
+When his grandmother came home, the jar was bubbling again. She looked at the row of sticky notes and raised an eyebrow. "Forgot once?" she asked. Theo nodded. She squeezed his shoulder. "Everyone forgets once. Not everyone fixes it."`,
+ race:"How does Theo change from the beginning to the end of the story? Use evidence from the text.",
+ items:[
+  ["6.RC.2","mc","Which theme is best developed in the story?","Taking responsibility for a mistake matters more than never making one.",[["Old things are always better than new things.","Chose a theme the text doesn't support"],["Grandparents should not trust children.","Chose a theme the text doesn't support"],["Baking bread is difficult.","Chose a topic instead of a theme"]],"What lesson does Theo's grandmother point out at the end?"],
+  ["6.RC.2","evidence","Which sentence best supports that theme?","\"Everyone forgets once. Not everyone fixes it.\"",[["Theo's grandmother kept a jar of bubbling dough on her kitchen counter.","Chose a detail that doesn't support the point"],["Theo forgot on the second day.","Chose evidence that seems related but doesn't prove the point"],["She called it the starter, and she said it was older than Theo.","Chose a detail that doesn't support the point"]],"Which sentence states the lesson directly?"],
+  ["6.RC.1","mc","How does Theo most likely feel when he sees the flat starter?","guilty and worried",[["angry at his grandmother","Made an inference the text doesn't support"],["bored and uninterested","Missed the character's reaction"],["proud of himself","Made an inference the text doesn't support"]],"Look at how the author describes Theo's stomach."],
+  ["6.RC.1","evidence","Which detail best shows how Theo feels when he sees the flat starter?","He stared at it, his stomach twisting.",[["By the third morning, the starter had sunk into a flat, sour puddle.","Chose a detail about the object, not the character"],["He wrote each feeding on a sticky note and stuck it to the fridge.","Chose evidence from the wrong part of the story"],["Theo nodded.","Chose a detail that doesn't support the point"]],"Find the sentence about Theo's body or reaction."],
+  ["6.RC.3","mc","Why is paragraph 4 important to the story's structure?","It is the turning point where Theo chooses to fix his mistake.",[["It introduces the setting and characters.","Misidentified the part of the plot"],["It shows the grandmother's point of view.","Confused point of view with plot"],["It is the resolution of the story.","Misidentified the part of the plot"]],"What decision does Theo make in paragraph 4?"],
+  ["6.RC.10","mc","In paragraph 5, \"raised an eyebrow\" most likely shows that the grandmother is—","surprised and curious",[["angry and upset","Missed the context clues"],["tired and sleepy","Missed the context clues"],["confused about where she is","Read a figurative phrase literally"]],"She sees a row of sticky notes she didn't expect."]
+ ]},
+bees:{type:"info",title:"Why Honeybees Dance",text:`A honeybee that finds a good patch of flowers has a problem: how can it tell the rest of the hive where to go? Bees cannot draw maps or speak. Instead, they dance.
+
+Scientists call it the waggle dance. The bee walks in a straight line while shaking its body, then circles back and repeats the move. The direction of the straight line shows the direction of the flowers compared to the sun.
+
+The length of the waggle tells the distance. A longer waggle means the flowers are farther away. Other bees crowd around the dancer, feel its movements in the dark hive, and then fly off to find the food.
+
+Karl von Frisch, an Austrian scientist, spent years studying this behavior. In 1973, he shared the Nobel Prize for his work. Before his research, many people did not believe insects could share such detailed information.
+
+Today, scientists still study the waggle dance. Understanding how bees find food may help farmers protect these insects, which pollinate many of the crops people eat.`,
+ race:"How does the waggle dance help a hive survive? Use evidence from the text.",
+ items:[
+  ["6.RC.5","mc","What is the central idea of the text?","Honeybees use a dance to share where food is located.",[["Karl von Frisch won a Nobel Prize.","Chose a detail instead of the central idea"],["Bees cannot draw maps.","Chose a detail instead of the central idea"],["Farmers grow many crops.","Chose an idea the text barely mentions"]],"What is the whole text mostly about?"],
+  ["6.RC.5","evidence","Which sentence best supports the central idea?","The direction of the straight line shows the direction of the flowers compared to the sun.",[["Karl von Frisch, an Austrian scientist, spent years studying this behavior.","Chose a detail that doesn't support the point"],["Today, scientists still study the waggle dance.","Chose evidence that seems related but doesn't prove the point"],["Bees cannot draw maps or speak.","Chose evidence that seems related but doesn't prove the point"]],"Find the sentence that explains how the dance shares location."],
+  ["6.RC.6","mc","How does the author introduce the idea of the waggle dance?","by first describing a problem bees need to solve",[["by telling a personal story","Misidentified how the idea is introduced"],["by comparing bees to ants","Misidentified how the idea is introduced"],["by starting with the Nobel Prize","Misidentified how the idea is introduced"]],"Reread the first sentence. What question does it ask?"],
+  ["6.RC.7","mc","What is the author's main purpose?","to explain how bees communicate the location of food",[["to persuade readers to become beekeepers","Mixed up informing and persuading"],["to entertain with a story about one bee","Mistook an informational text for a story"],["to warn readers about bee stings","Chose a purpose the text doesn't support"]],"Is the author telling a story, arguing, or explaining?"],
+  ["6.RC.1","mc","Why was von Frisch's research important?","It showed that insects can share detailed information.",[["It proved bees can speak.","Misread the text"],["It taught farmers to grow more flowers.","Made an inference the text doesn't support"],["It showed that bees dislike the sun.","Misread the text"]],"Reread paragraph 4. What did people believe before his research?"],
+  ["6.RC.10","mc","In paragraph 1, \"patch\" most likely means—","a small area",[["a piece of cloth sewn onto clothing","Chose a different meaning of a multiple-meaning word"],["a repair for a computer program","Chose a different meaning of a multiple-meaning word"],["a type of flower","Missed the context clues"]],"The bee finds a ___ of flowers. What makes sense?"]
+ ]},
+sleep:{type:"arg",title:"Later Start Times Would Help Students",text:`Many middle schools start before eight in the morning. I believe schools should start later so students can get the sleep they need.
+
+The American Academy of Pediatrics recommends that middle and high schools start at 8:30 or later. Doctors say that preteens need about 9 to 12 hours of sleep each night, but many get far less.
+
+When students are tired, they have a harder time paying attention and remembering what they learn. Some schools that moved their start times later reported better attendance.
+
+Some people argue that later start times would make after-school sports end too late. However, schools could adjust practice schedules, and a rested athlete is a better athlete.
+
+Besides, everyone knows that students are happier in the morning when they can sleep in. Starting later is simply the right thing to do.`,
+ race:"Is the author's argument convincing? Evaluate one claim that is supported by evidence and one that is not.",
+ items:[
+  ["6.RC.8","evidence","Which claim is NOT supported by evidence?","Besides, everyone knows that students are happier in the morning when they can sleep in.",[["The American Academy of Pediatrics recommends that middle and high schools start at 8:30 or later.","Chose a claim that is supported by evidence"],["Some schools that moved their start times later reported better attendance.","Chose a claim that is supported by evidence"],["Doctors say that preteens need about 9 to 12 hours of sleep each night, but many get far less.","Chose a claim that is supported by evidence"]],"Which sentence gives no source, fact, or example?"],
+  ["6.RC.8","mc","How does the author respond to the counterclaim in paragraph 4?","by suggesting schools adjust practice schedules",[["by agreeing that sports should end","Misread how the author answers the counterclaim"],["by ignoring it","Missed the counterclaim"],["by citing a study about athletes","Added evidence that isn't in the text"]],"Find the word \"However.\" What comes after it?"],
+  ["6.RC.7","mc","What is the author's perspective?","Schools should start later so students can sleep more.",[["Schools should start earlier.","Reversed the author's perspective"],["Start times don't matter.","Missed the author's perspective"],["Sports are more important than sleep.","Confused the counterclaim with the author's view"]],"Look for \"I believe.\""],
+  ["6.RC.7","mc","How does the author mainly support the argument in paragraph 2?","by citing doctors and a medical organization",[["by telling a personal story","Misidentified the type of support"],["by using only opinions","Misidentified the type of support"],["by describing a school schedule","Misidentified the type of support"]],"Who does the author mention in paragraph 2?"],
+  ["6.RC.12","mc","In paragraph 5, the word \"simply\" makes the idea sound—","obvious and easy",[["complicated","Chose the opposite connotation"],["scientific","Missed the word's effect"],["uncertain","Chose the opposite connotation"]],"What does \"simply\" suggest about how hard the decision is?"],
+  ["6.RC.1","mc","Based on paragraph 3, why does the author think tired students struggle in school?","They have a harder time paying attention and remembering.",[["They don't like their teachers.","Made an inference the text doesn't support"],["They spend too much time on sports.","Confused the counterclaim with the reason"],["They miss the bus.","Made an inference the text doesn't support"]],"Reread paragraph 3."],
+  ["6.RC.1","evidence","Which sentence best supports the idea that many preteens don't get enough sleep?","Doctors say that preteens need about 9 to 12 hours of sleep each night, but many get far less.",[["Many middle schools start before eight in the morning.","Chose evidence that seems related but doesn't prove the point"],["Starting later is simply the right thing to do.","Chose an opinion instead of evidence"],["However, schools could adjust practice schedules, and a rested athlete is a better athlete.","Chose a detail that doesn't support the point"]],"Which sentence talks about how much sleep preteens get?"],
+  ["6.RC.5","mc","Which is the best objective summary of the text?","The author argues that schools should start later, citing sleep research, and responds to a concern about sports.",[["The author is right that school starts too early.","Included an opinion in a summary"],["Sports practice ends too late at many schools.","Chose a detail instead of a summary"],["Students should sleep in every day.","Included an opinion in a summary"]],"A summary tells the main points without opinions."]
+ ]}
+};
+const ROOTS=[["port","carry","portable","able to be carried"],["spect","look","spectator","a person who watches"],["aud","hear","audible","able to be heard"],["dict","say","predict","to say what will happen before it happens"],["graph","write","autograph","a person's own written name"],["tele","far","telescope","a tool for seeing things far away"],["bio","life","biology","the study of living things"],["geo","earth","geology","the study of the earth"],["therm","heat","thermometer","a tool that measures heat"],["struct","build","construct","to build"],["rupt","break","erupt","to break out suddenly"],["vis","see","visible","able to be seen"],["chron","time","chronological","in time order"],["tract","pull","tractor","a machine that pulls"]];
+const PREF=[["re","again","rewrite","to write again"],["pre","before","preview","to see before"],["mis","wrongly","misread","to read wrongly"],["un","not","unfair","not fair"],["inter","between","international","between nations"],["sub","under","submarine","a ship that goes under the sea"]];
+const CONNO=[["Jada saves money and rarely wastes anything. Which word describes her in a positive way?","thrifty","cheap","wasteful"],["Leo asks lots of questions because he wants to learn. Which word describes him in a positive way?","curious","nosy","uninterested"],["Priya believes in her abilities. Which word describes her in a positive way?","confident","arrogant","unsure"],["Omar keeps trying even when a puzzle is hard. Which word describes him in a positive way?","determined","stubborn","careless"],["Nia's art style is unlike anyone else's. Which word describes it in a positive way?","unique","weird","ordinary"],["Marcus stays calm before a big test. Which word describes him in a positive way?","relaxed","lazy","nervous"]];
+const REL={part:[["page","book"],["wheel","bicycle"],["branch","tree"],["key","keyboard"],["finger","hand"]],cat:[["apple","fruit"],["hammer","tool"],["robin","bird"],["violin","instrument"],["oak","tree"]],cause:[["rain","flood"],["practice","improvement"],["spark","fire"],["heat","melting"],["exercise","strength"]],opp:[["hot","cold"],["begin","end"],["loud","quiet"]]};
+const RELNM={part:"part/whole",cat:"item/category",cause:"cause/effect",opp:"opposites"};
+const GRAM=[
+ ["Which sentence uses pronouns correctly?","Jamal and I went to the store.",[["Jamal and me went to the store.","Used an object pronoun as a subject"],["Me and Jamal went to the store.","Used an object pronoun as a subject"]]],
+ ["Which sentence uses pronouns correctly?","The coach gave the award to Tia and me.",[["The coach gave the award to Tia and I.","Used a subject pronoun as an object"],["The coach gave the award to I and Tia.","Used a subject pronoun as an object"]]],
+ ["Which sentence has a vague pronoun?","When Sam handed Leo the book, he smiled.",[["When Sam handed Leo the book, Leo smiled.","Didn't recognize a clear antecedent"],["Sam smiled when he handed Leo the book.","Didn't recognize a clear antecedent"]]],
+ ["Which sentence uses a pronoun that agrees with its antecedent?","The dogs wagged their tails.",[["The dogs wagged its tail.","Pronoun doesn't agree in number with its antecedent"],["The dog wagged their tails.","Pronoun doesn't agree in number with its antecedent"]]],
+ ["Which sentence uses a reflexive pronoun correctly?","She taught herself to knit.",[["She taught her to knit by herself own.","Used the wrong type of pronoun"],["Herself taught her to knit.","Used a reflexive pronoun as a subject"]]],
+ ["Which is a sentence fragment?","Because the bus was late.",[["The bus was late.","Didn't recognize a complete sentence"],["The bus was late, so we walked.","Didn't recognize a complete sentence"]]],
+ ["Which is a run-on sentence?","I finished my homework I went outside.",[["I finished my homework, and then I went outside.","Didn't recognize a correctly joined sentence"],["After I finished my homework, I went outside.","Didn't recognize a correctly joined sentence"]]],
+ ["Which is a complex sentence?","When the bell rang, the students lined up.",[["The bell rang, and the students lined up.","Confused compound and complex sentences"],["The bell rang.","Confused simple and complex sentences"]]],
+ ["Which is a compound sentence?","The rain stopped, and we went outside.",[["After the rain stopped, we went outside.","Confused compound and complex sentences"],["We went outside after lunch.","Confused simple and compound sentences"]]]
+];
+const PUNC=[
+ ["Which sentence uses a semicolon correctly?","The rain stopped; we went outside.",[["The rain; stopped and we went outside.","Used a semicolon without two complete sentences"],["The rain stopped; and outside.","Used a semicolon without two complete sentences"]]],
+ ["Which sentence uses a colon correctly?","Bring these items: a pencil, a notebook, and a ruler.",[["Bring: a pencil, a notebook, and a ruler.","Used a colon after an incomplete introduction"],["Bring these items, a pencil: a notebook, and a ruler.","Put the colon in the wrong place"]]],
+ ["Which sentence correctly sets off extra information?","Ms. Lee, our principal, spoke at the assembly.",[["Ms. Lee our principal, spoke at the assembly.","Set off only one side of the extra information"],["Ms. Lee, our principal spoke at the assembly.","Set off only one side of the extra information"]]],
+ ["Which sentence correctly uses dashes to set off extra information?","My cousin—the one who lives in Ohio—is visiting.",[["My cousin—the one who lives in Ohio is visiting.","Set off only one side of the extra information"],["My—cousin the one who lives in Ohio—is visiting.","Put the dashes around the wrong words"]]],
+ ["Which sentence uses parentheses correctly?","The museum (which opened in 1990) is free on Sundays.",[["The museum (which opened) in 1990 is free on Sundays.","Put the parentheses around the wrong words"],["The (museum which opened in 1990) is free on Sundays.","Put the parentheses around the wrong words"]]]
+];
+function elaBank(code){
+  const s=code;
+  if(s==="6.RC.13"){if(R()<.7){const r=pick(ROOTS),others=shuf(ROOTS.filter(x=>x!==r)).slice(0,3);
+      return MC(`The root "${r[0]}" means "${r[1]}." What does "${r[2]}" most likely mean?`,r[3],others.map(o=>[o[3],"Used the wrong root meaning"]),s,`Find "${r[0]}" in the word. It means "${r[1]}."`)}
+    const p=pick(PREF),o=shuf(PREF.filter(x=>x!==p)).slice(0,3);return MC(`The prefix "${p[0]}-" means "${p[1]}." What does "${p[2]}" mean?`,p[3],o.map(x=>[x[3],"Used the wrong prefix meaning"]),s,`"${p[0]}-" means "${p[1]}."`)}
+  if(s==="6.RC.12"){const c=pick(CONNO);return MC(c[0],c[1],[[c[2],"Chose the word with a negative connotation"],[c[3],"Chose a word with a different meaning"]],s,"Both words mean something similar. Which one sounds kinder?")}
+  if(s==="6.RC.11"){const k=pick(["part","cat","cause"]),pr=shuf(REL[k]),ex=pr[0],ans=pr[1];
+    return MC(`Which pair shows the same relationship as "${ex[0]} : ${ex[1]}"?`,`${ans[0]} : ${ans[1]}`,Object.keys(REL).filter(x=>x!==k).map(x=>{const p=pick(REL[x]);return[`${p[0]} : ${p[1]}`,`Chose a ${RELNM[x]} relationship instead of ${RELNM[k]}`]}),s,`How are "${ex[0]}" and "${ex[1]}" related? Is one part of the other, a kind of the other, or the cause of the other?`)}
+  if(s==="6.W.6"){const g=pick(GRAM);return MC(g[0],g[1],g[2],s,"Read each choice aloud. Which one sounds complete and clear?")}
+  if(s==="6.W.7"){const g=pick(PUNC);return MC(g[0],g[1],g[2],s,"Semicolons join two complete sentences. Extra information needs punctuation on both sides.")}
+  return null;
+}
+const EL={
+"6.RC.1":["Good readers find what the text says AND what it suggests, then prove it with evidence.","An inference is a smart guess based on [[evidence|clues]] and what you already know. You prove it by [[citing|quoting]] the text.","The story says: \"Her lungs burned before she reached the corner.\"\nStep 1: What does the text say? Her lungs burned quickly.\nStep 2: What do I know? Burning lungs mean you're out of breath.\nStep 3: Inference: **Maya is not used to running yet.**","\"He stared at it, his stomach twisting.\" Theo feels [[worried|guilty|nervous|upset]].","What is the difference between what a text says and what it suggests?"],
+"6.RC.2":["A theme is a life lesson. Details in the story build it.","A theme is a message about [[life]], not just the topic. A summary should not include [[opinions|opinion]].","Topic: running. What does Maya learn?\nStep 1: What does the character want? To run a full mile.\nStep 2: What changes? She improves one mailbox at a time.\nStep 3: Theme: **Small, steady steps lead to growth.**","The topic is \"mistakes.\" A theme could be: Everyone makes mistakes, but it matters how you [[fix|respond|handle]] them.","How is a theme different from a topic?"],
+"6.RC.3":["Every part of a story has a job: to introduce, build, turn, or resolve.","The [[turning point|climax]] is where things change. The [[resolution|ending]] is where the problem is solved.","Why does paragraph 4 of \"The Last Lap\" matter?\nStep 1: What happens? Maya practices for three weeks.\nStep 2: What does it lead to? Tryout day.\nStep 3: Job: **It builds toward the climax.**","A paragraph that introduces the characters is part of the [[exposition|beginning]].","Pick a paragraph. What would the story lose without it?"],
+"6.RC.5":["The central idea is what the whole text is mostly about. Details support it.","A detail is [[smaller|narrower]] than the central idea. An objective summary leaves out [[opinions|opinion]].","\"Why Honeybees Dance\"\nStep 1: What is each paragraph about? Problem, direction, distance, research, why it matters.\nStep 2: What connects them all? The dance.\nStep 3: Central idea: **Bees use a dance to share where food is.**","\"Karl von Frisch won the Nobel Prize\" is a [[detail]].","How do you know if an idea is central or just a detail?"],
+"6.RC.6":["Authors introduce an idea, then illustrate it with examples and elaborate with more detail.","Authors can introduce ideas with a [[question|problem]], an anecdote, or a fact. Examples [[illustrate|show]] the idea.","How does the bee text introduce the dance?\nStep 1: First sentence: a problem bees have.\nStep 2: Then: bees can't draw or speak.\nStep 3: **The author introduces the dance as the solution to a problem.**","An anecdote is a short [[story]].","Why might an author start with a question?"],
+"6.RC.7":["Authors write to inform, persuade, or entertain. Their word choices show their perspective.","Words like \"I believe\" show the author's [[perspective|opinion]]. A text that explains how something works is written to [[inform|explain]].","\"Later Start Times Would Help Students\"\nStep 1: Look for clues: \"I believe schools should start later.\"\nStep 2: The author gives reasons and evidence.\nStep 3: **Purpose: to persuade.**","A story about a dragon is mostly written to [[entertain]].","How can you tell an author's perspective without being told directly?"],
+"6.RC.8":["Strong claims are backed by reasons and evidence. Weak claims are not.","A supported claim has [[evidence|facts|a source]]. \"Everyone knows\" usually signals an [[unsupported|opinion]] claim.","Is \"Some schools reported better attendance\" supported?\nStep 1: Is there a fact or source? Yes, schools reported it.\nStep 2: Could we check it? Yes.\nStep 3: **Supported.**","\"Starting later is simply the right thing to do.\" This claim is [[unsupported|not supported]].","What makes evidence convincing?"],
+"6.RC.10":["Use the words and sentences around an unknown word to figure out its meaning.","Context clues can be [[examples|definitions|synonyms]] or opposites. Always [[reread|check]] the sentence with your meaning.","\"a good patch of flowers\"\nStep 1: A patch OF flowers.\nStep 2: The bee found it somewhere outside.\nStep 3: **patch = a small area.**","\"Her legs felt like concrete\" means her legs felt [[heavy|tired]].","What do you do when context clues aren't enough?"],
+"6.RC.11":["Knowing how two words are related helps you understand both.","A page is [[part]] of a book. An apple is a kind of [[fruit]].","wheel : bicycle\nStep 1: Is a wheel a part of a bicycle? Yes.\nStep 2: So the relationship is part/whole.\nStep 3: **branch : tree** matches.","spark : fire is a [[cause]]/effect relationship.","Make your own part/whole pair."],
+"6.RC.12":["Words can mean almost the same thing but carry different feelings.","Connotation is the [[feeling]] a word gives. \"Thrifty\" is [[positive]]; \"cheap\" is negative.","curious vs. nosy\nStep 1: Both mean wanting to know things.\nStep 2: \"Nosy\" suggests being rude.\nStep 3: **curious = positive, nosy = negative.**","\"Confident\" is positive; \"[[arrogant]]\" is negative.","Why do authors choose words carefully?"],
+"6.RC.13":["Greek and Latin roots are clues to word meaning.","\"port\" means [[carry]]. \"spect\" means [[look]].","\"spectator\"\nStep 1: Find the root: spect.\nStep 2: spect = look.\nStep 3: **A spectator is a person who watches.**","\"audible\": aud means [[hear]]","List three words with the same root."],
+"6.W.6":["Clear sentences use the right pronouns and complete thoughts.","Use \"I\" as a [[subject]] and \"me\" as an object. A fragment is missing a complete [[thought|idea]].","Jamal and ___ went to the store.\nStep 1: Take out \"Jamal and.\"\nStep 2: \"I went\" sounds right; \"me went\" doesn't.\nStep 3: **Jamal and I went to the store.**","\"Because it rained.\" is a [[fragment]]","How can reading a sentence aloud help you find errors?"],
+"6.W.7":["Punctuation helps readers understand how ideas connect.","A semicolon joins two complete [[sentences]]. A colon can introduce a [[list]].","The rain stopped ___ we went outside.\nStep 1: \"The rain stopped\" is complete.\nStep 2: \"we went outside\" is complete.\nStep 3: **Use a semicolon: The rain stopped; we went outside.**","Extra information needs commas on [[both]] sides.","When would you use a semicolon instead of a period?"]
+};
+const ELA_GENERIC=["We will read closely, talk about the text, and write about it using evidence.","Evidence is a [[quote|quotation]] or detail from the text. RACE means Restate, Answer, Cite, [[Explain]].","Restate: turn the question into a sentence.\nAnswer: give your answer.\nCite: quote the text.\nExplain: tell how the quote proves your answer.","Cite means to use [[evidence|a quote]] from the text.","What makes a written answer strong?"];
+const ELA_PASS_FOR={"6.RC.1":["maya","theo","bees"],"6.RC.2":["maya","theo"],"6.RC.3":["maya","theo"],"6.RC.4":["maya"],"6.RC.5":["bees","sleep"],"6.RC.6":["bees"],"6.RC.7":["bees","sleep"],"6.RC.8":["sleep"],"6.RC.9":["bees"],"6.RC.10":["maya","theo","bees"],"6.RC.12":["maya","sleep"],"6.W.1":["sleep"],"6.W.2":["bees"],"6.W.3":["maya"],"6.CC.2":["theo"],"6.CC.3":["sleep"]};
+const RACE_FOR={"6.RC.4":"Compare how Maya in \"The Last Lap\" and Theo in \"The Bread Starter\" respond to a setback. How are their lessons similar?","6.RC.9":"The text uses both description and numbers (like 1973 and \"longer waggle, farther away\"). How do these details work together to help you understand the dance?","6.W.1":"Should your school start later? State your claim and support it with at least one piece of evidence from the text.","6.W.2":"Explain how the waggle dance works to someone who has never heard of it. Use facts from the text.","6.W.3":"Write what happens on Maya's first Monday of practice. Use details from the story so your ending fits.","6.CC.2":"Write a question you would ask Theo, then answer it the way you think he would, using evidence.","6.CC.3":"Paraphrase the author's view AND the counterclaim in your own words. Then explain which is stronger."};
+
+const SHORT={"6.NS.1": "Positive and negative numbers", "6.NS.2": "Opposites", "6.NS.3": "Comparing rational numbers", "6.NS.4": "Fraction and decimal problems", "6.NS.5": "Order of operations", "6.NS.6": "GCF and LCM", "6.NS.7": "Equivalent expressions", "6.NS.8": "Exponents", "6.RP.1": "Fractions, decimals, percents", "6.RP.2": "Unit rates", "6.RP.3": "Ratio tables", "6.RP.4": "Ratio and percent problems", "6.RP.5": "Dependent and independent variables", "6.AF.1": "Expressions with variables", "6.AF.2": "Substitution", "6.AF.3": "One-step equations", "6.AF.4": "Writing inequalities", "6.AF.5": "Coordinate plane", "6.GM.1": "Unit conversions", "6.GM.2": "Angle sums", "6.GM.3": "Area of composite shapes", "6.GM.4": "Volume", "6.DS.1": "Reading data displays", "6.DS.2": "Statistical questions", "6.DS.3": "Mean, median, range, IQR", "6.RC.1": "Inferences and evidence", "6.RC.2": "Theme", "6.RC.3": "Story structure", "6.RC.4": "Comparing texts", "6.RC.5": "Central idea", "6.RC.6": "How ideas develop", "6.RC.7": "Author's purpose", "6.RC.8": "Evaluating claims", "6.RC.9": "Information in different formats", "6.RC.10": "Context clues", "6.RC.11": "Word relationships", "6.RC.12": "Connotation", "6.RC.13": "Roots and affixes", "6.W.1": "Argument writing", "6.W.2": "Informative writing", "6.W.3": "Narrative writing", "6.W.6": "Grammar and usage", "6.W.7": "Punctuation", "6.CC.2": "Questions with evidence", "6.CC.3": "Paraphrasing perspectives"};
+const TGT={"6.NS.1": "use positive and negative numbers to describe real-world situations and explain what 0 means", "6.NS.2": "find opposites and explain where they sit on a number line", "6.NS.3": "compare and order positive and negative numbers", "6.NS.4": "solve real-world problems with fractions and decimals", "6.NS.5": "use the order of operations to evaluate expressions", "6.NS.6": "find the GCF and LCM and use the distributive property", "6.NS.7": "write and check equivalent expressions", "6.NS.8": "evaluate numbers with exponents", "6.RP.1": "convert between fractions, decimals, and percents without a calculator", "6.RP.2": "find and explain unit rates", "6.RP.3": "complete tables of equivalent ratios", "6.RP.4": "solve ratio, rate, and percent problems", "6.RP.5": "write equations using dependent and independent variables", "6.AF.1": "write and evaluate expressions with variables", "6.AF.2": "use substitution to check whether a value makes an equation or inequality true", "6.AF.3": "solve one-step equations", "6.AF.4": "write inequalities for real-world situations", "6.AF.5": "locate points and find distances on the coordinate plane", "6.GM.1": "convert between customary and metric units", "6.GM.2": "use angle sums to find missing angles in triangles and quadrilaterals", "6.GM.3": "find the area of composite shapes", "6.GM.4": "find the volume of rectangular prisms with fraction edge lengths", "6.DS.1": "read and interpret line plots, histograms, and box plots", "6.DS.2": "recognize and write statistical questions", "6.DS.3": "find the mean, median, range, and IQR of a data set", "6.RC.1": "make inferences and support them with evidence from the text", "6.RC.2": "determine a theme and explain how details develop it", "6.RC.3": "explain how one part of a story fits into the whole", "6.RC.4": "compare how two texts treat a similar theme", "6.RC.5": "determine the central idea of a nonfiction text and summarize it", "6.RC.6": "explain how an author introduces and develops an idea", "6.RC.7": "determine an author's purpose or perspective and how it is shown", "6.RC.8": "tell supported claims from unsupported claims", "6.RC.9": "combine information from different formats to understand a topic", "6.RC.10": "use context clues to figure out word meanings", "6.RC.11": "use word relationships to understand words", "6.RC.12": "explain the connotations of words with similar meanings", "6.RC.13": "use Greek and Latin roots and affixes to figure out word meanings", "6.W.1": "write an argument supported by evidence", "6.W.2": "write to inform using facts from a text", "6.W.3": "write a narrative with details that fit the story", "6.W.6": "use pronouns correctly and write complete sentences", "6.W.7": "use commas, dashes, parentheses, semicolons, and colons correctly", "6.CC.2": "ask and answer questions with detail and evidence", "6.CC.3": "paraphrase different perspectives on an idea"};
+/* ---------- build a unit ---------- */
+function stdInfo(subj,code){return STD[subj].find(x=>x[0]===code)}
+function canFor(code){return code.startsWith("6.RC.")||code.startsWith("6.W.")||code.startsWith("6.CC.")?"ela":"math"}
+function generateUnit({subject,codes,days,perDay,level,seed,title}){
+  R=rng(seed||Date.now());
+  const skills=codes.map(c=>({id:sid(c),name:stdInfo(subject,c)[1],std:"IN "+c}));
+  const plan=[];for(let d=0;d<days;d++){const per=Math.max(1,Math.ceil(codes.length/days));const s=codes.slice((d*per)%codes.length,(d*per)%codes.length+per);plan.push(s.length?s:[codes[d%codes.length]])}
+  const unit={id:(title||"unit").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,30)+"-"+Math.random().toString(36).slice(2,7),
+    title:title||`${subject==="math"?"Math":"ELA"} WIN: ${codes.join(", ")}`,room:"",smart:80,subject,third:subject==="ela"?"race":"ixl",
+    tools:{calc:false,mult:true,fracbars:true,numline:true,formulas:true},turnInNote:"Then open today's WIN assignment in Canvas, paste, and submit.",skills,days:[]};
+  plan.forEach((cs,d)=>{
+    const short=cs.map(c=>c).join(" + ");
+    const day={title:`Day ${d+1}: ${cs.map(c=>SHORT[c]||c).join(" and ")}`,target:"I can "+cs.map(c=>TGT[c]||lower(stdInfo(subject,c)[1])).join(", and I can ")+".",ind:[],sg:[],standards:cs.map(c=>`IN ${c}: ${stdInfo(subject,c)[1]}`),ixl:[],race:""};
+    if(subject==="math"){
+      let est=0;const seen=new Set();for(let i=0;i<perDay;i++){const c=cs[i%cs.length];let q;
+        for(let t=0;t<8;t++){q=c==="6.NS.4"&&est<2&&R()<.35?estItem(level):MG[c](level);const key=q.type==="est"?q.nums:q.prompt.replace(/[\d.]+/g,"#").slice(0,40);if(!seen.has(key)||t===7){seen.add(key);break}}
+        if(q.type==="est")est++;day.ind.push(q)}
+      const L=ML[cs[0]];day.sg=lessonSteps(L);
+      day.ixl=cs.map(c=>({t:`IXL skill plan: Indiana 2023, ${c}`,d:`In IXL, open the Indiana (2023) grade 6 skill plan and choose a skill under ${c}.`})).concat([{t:"IXL Math Arena",d:"Only after you reach your SmartScore goal."}]);
+      day.race=`Explain how you solved problem ${ri(2,Math.max(2,perDay))}. How do you know your answer makes sense?`;
+    } else {
+      const pk=pickPassage(cs,d);const P=PASS[pk];
+      day.passage={title:P.title,text:P.text};
+      const auto=cs.filter(c=>P.items.some(x=>x[0]===c)||elaBank(c)!==null);R=rng((seed||1)+d*97);
+      const pool=[];cs.forEach(c=>P.items.filter(x=>x[0]===c).forEach(x=>pool.push(x)));
+      P.items.filter(x=>!cs.includes(x[0])).forEach(x=>pool.push(x));
+      const qs=[];
+      const seenE=new Set();cs.forEach(c=>{if(!P.items.some(x=>x[0]===c)){for(let k=0;k<Math.ceil(perDay/cs.length);k++){let q=null;for(let t=0;t<10;t++){q=elaBank(c);if(!q||!seenE.has(q.prompt+q.options.find(o=>o.correct).text))break}if(q){seenE.add(q.prompt+q.options.find(o=>o.correct).text);qs.push(q)}}}});
+      pool.forEach(x=>{if(qs.length<perDay)qs.push(itemFrom(x))});
+      day.ind=qs.slice(0,perDay);
+      day.ind.forEach(q=>{if(!skills.find(s=>s.id===q.skill)){const code=q.skill.replace(/^s6/,"6.").replace(/^6\.(RC|W|CC)(\d+)$/,"6.$1.$2");const info=stdInfo("ela",code);skills.push({id:q.skill,name:info?info[1]:code,std:"IN "+code})}});
+      const lk=cs.find(c=>EL[c]);day.sg=lessonSteps(lk?EL[lk]:ELA_GENERIC);
+      day.race=cs.map(c=>RACE_FOR[c]).find(Boolean)||P.race;
+    }
+    unit.days.push(day);
+  });
+  return unit;
+}
+function lower(s){return s.charAt(0).toLowerCase()+s.slice(1).replace(/\.$/,"")}
+function pickPassage(cs,d){const scores={};Object.keys(PASS).forEach(k=>scores[k]=0);cs.forEach(c=>{Object.keys(PASS).forEach(k=>{if(PASS[k].items.some(x=>x[0]===c))scores[k]+=10});(ELA_PASS_FOR[c]||[]).forEach((k,i)=>scores[k]+=3-i)});
+  const best=Object.entries(scores).sort((a,b)=>b[1]-a[1]);const top=best.filter(x=>x[1]===best[0][1]).map(x=>x[0]);return best[0][1]?top[d%top.length]:Object.keys(PASS)[d%4]}
+function itemFrom(x){const[code,type,prompt,correct,wrongs,hint]=x;return type==="evidence"?EV(prompt,correct,wrongs,code,hint):MC(prompt,correct,wrongs,code,hint)}
+function lessonSteps(L){const w=L[2].split("\n");return[
+  {tag:"listen",title:"Today's big idea",text:L[0]},
+  {tag:"fill",title:"Notes",text:L[1].replace(/\. /g,".\n")},
+  {tag:"watch",title:"Watch me",text:w.join("\n")},
+  {tag:"wedo",title:"Try it with me",text:L[3]},
+  {tag:"jot",title:"Stop and jot",text:L[4]}]}
+
+/* ---------- prompt for Copilot or another AI tool ---------- */
+function aiPrompt(subject,codes,days,perDay){
+  const list=codes.map(c=>`- ${c}: ${stdInfo(subject,c)[1]}`).join("\n");
+  return `You are writing remediation practice for Indiana grade 6 ${subject==="math"?"math":"ELA"} students (2023 Indiana Academic Standards). Standards:
+${list}
+
+Write ${days} day(s), ${perDay} practice questions per day. Return ONLY valid JSON (no commentary, no code fences) in exactly this shape:
+{"days":[{"title":"Day 1: ...","target":"I can ...",${subject==="ela"?`"passage":{"title":"...","text":"Original passage, 180-250 words, paragraphs separated by a blank line. No abbreviations with periods."},`:""}
+"questions":[
+ {"type":"mc","standard":"${codes[0]}","prompt":"...","correct":"...","wrong":[{"text":"...","misconception":"short name of the error a student who picks this is making"}],"hint":"..."},
+ ${subject==="math"?`{"type":"num","standard":"${codes[0]}","prompt":"...","answer":"3 1/2","wrong":[{"text":"...","misconception":"..."}],"unit":"","hint":"..."}`:`{"type":"evidence","standard":"${codes[0]}","prompt":"Which sentence best supports ...?","correct":"a sentence copied EXACTLY from the passage","wrong":[{"text":"another exact sentence from the passage","misconception":"..."}],"hint":"..."}`}
+],
+"lesson":{"bigIdea":"...","notes":"sentence with a [[blank]] students fill in","example":"problem\\nStep 1: ...\\nStep 2: ...\\nStep 3: ...","weDo":"practice with a [[answer]] blank","jot":"reflection question"},
+"race":"a question students answer with Restate, Answer, Cite, Explain"}]}
+Rules: 3 wrong answers per multiple-choice question, each with a specific misconception. Use grade-appropriate, original content. Math answers must be exact; write fractions like 3/4 or 2 1/2.`;
+}
+function importAI(json,subject,codes){
+  let o;try{o=JSON.parse(String(json).replace(/^```(json)?|```$/gm,"").trim())}catch(e){throw new Error("That isn't valid JSON. Copy the AI's whole answer, starting with {.")}
+  if(!o.days||!o.days.length)throw new Error("The JSON has no days.");
+  const skills=codes.map(c=>({id:sid(c),name:stdInfo(subject,c)[1],std:"IN "+c}));
+  const days=o.days.map((d,i)=>({title:d.title||`Day ${i+1}`,target:d.target||"",passage:d.passage&&d.passage.text?{title:d.passage.title||"",text:d.passage.text}:undefined,
+    ind:(d.questions||[]).map(q=>{const std=q.standard&&codes.includes(q.standard)?q.standard:codes[0];
+      if(q.type==="num")return{type:"num",prompt:q.prompt||"",answer:String(q.answer??""),alts:"",unit:q.unit||"",skill:sid(std),hint:q.hint||"",wrongs:(q.wrong||[]).map(w=>({ans:String(w.text),mis:w.misconception||""}))};
+      return{type:q.type==="evidence"?"evidence":"mc",prompt:q.prompt||"",skill:sid(std),hint:q.hint||"",options:[{text:String(q.correct??""),correct:true},...(q.wrong||[]).map(w=>({text:String(w.text),correct:false,mis:w.misconception||""}))].sort(()=>Math.random()-.5)}}),
+    sg:d.lesson?lessonSteps([d.lesson.bigIdea||"",d.lesson.notes||"",d.lesson.example||"",d.lesson.weDo||"",d.lesson.jot||""]):[],
+    standards:codes.map(c=>`IN ${c}: ${stdInfo(subject,c)[1]}`),ixl:[],race:d.race||""}));
+  return{skills,days};
+}
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const EXAMPLE={
+ "id": "estimating-fractions",
+ "title": "Estimating with fractions",
+ "room": "Room 205",
+ "smart": 80,
+ "turnInNote": "Then open today's WIN assignment in Canvas, paste, and submit.",
+ "skills": [
+  {
+   "id": "k1",
+   "name": "Estimate sums and differences",
+   "std": "IN 6.NS.4"
+  },
+  {
+   "id": "k2",
+   "name": "Estimate products and quotients",
+   "std": "IN 6.NS.4"
+  },
+  {
+   "id": "k3",
+   "name": "Estimate in word problems",
+   "std": "IN 6.NS.4"
+  }
+ ],
+ "days": [
+  {
+   "title": "Day 1: Benchmark fractions",
+   "target": "I can estimate fractions using the benchmarks 0, ½, and 1.",
+   "ind": [
+    {
+     "type": "est",
+     "prompt": "Which benchmark is this fraction closest to?",
+     "nums": "1/9"
+    },
+    {
+     "type": "est",
+     "prompt": "Which benchmark is this fraction closest to?",
+     "nums": "5/9"
+    },
+    {
+     "type": "est",
+     "prompt": "Which benchmark is this fraction closest to?",
+     "nums": "7/8"
+    },
+    {
+     "type": "est",
+     "prompt": "Which benchmark is this fraction closest to?",
+     "nums": "2/5"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the sum.",
+     "nums": "7/8, 4/9",
+     "op": "+",
+     "skill": "k1"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the sum.",
+     "nums": "1/10, 5/12",
+     "op": "+",
+     "skill": "k1"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the difference.",
+     "nums": "11/12, 1/8",
+     "op": "−",
+     "skill": "k1"
+    },
+    {
+     "type": "est",
+     "prompt": "Maya ran 9/10 mile on Monday and 6/11 mile on Tuesday. About how far did she run in all?",
+     "nums": "9/10, 6/11",
+     "op": "+",
+     "unit": "miles",
+     "skill": "k3"
+    }
+   ],
+   "sg": [
+    {
+     "tag": "listen",
+     "title": "Why estimate?",
+     "text": "Estimating gives you a **close** answer fast. It helps you check if your real answer makes sense.\nToday we use three **benchmarks**: 0, ½, and 1."
+    },
+    {
+     "tag": "fill",
+     "title": "Notes: the three benchmarks",
+     "text": "If the numerator is very small compared to the denominator, the fraction is close to [[0|zero]].\nIf the numerator is about half of the denominator, the fraction is close to [[1/2|½|half|one half]].\nIf the numerator is almost the same as the denominator, the fraction is close to [[1|one]]."
+    },
+    {
+     "tag": "watch",
+     "title": "Teacher example",
+     "text": "3/7 → ?\nStep 1: Find half of the denominator. Half of 7 is **3½**.\nStep 2: Compare the numerator. 3 is very close to 3½.\nStep 3: So 3/7 is about **½**."
+    },
+    {
+     "tag": "wedo",
+     "title": "Try it with me",
+     "text": "8/9 + 1/6 ≈ ?\nTap the benchmark each fraction is closest to.\n{{8/9}}\n{{1/6}}\nEstimate: [[1|one]]",
+     "reveal": "8/9 ≈ 1 and 1/6 ≈ 0, so the sum is about **1**."
+    },
+    {
+     "tag": "jot",
+     "title": "In your own words",
+     "text": "How do you know if a fraction is close to ½?"
+    }
+   ],
+   "standards": [
+    "IN 6.NS.4: Solve real-world problems with positive fractions and decimals",
+    "Grade 5 foundation: estimate with benchmark fractions"
+   ],
+   "ixl": [
+    {
+     "t": "Estimate sums and differences of fractions using benchmarks",
+     "d": "Round each fraction to 0, ½, or 1 before you add."
+    },
+    {
+     "t": "Compare fractions to ½",
+     "d": "Warm-up if you missed problems 1 to 4."
+    },
+    {
+     "t": "IXL Math Arena",
+     "d": "Only after you reach your SmartScore goal."
+    }
+   ],
+   "race": "Is 7/8 + 4/9 more or less than 2? Use benchmarks to prove it."
+  },
+  {
+   "title": "Day 2: Rounding mixed numbers",
+   "target": "I can estimate sums and differences of mixed numbers by rounding to the nearest whole number.",
+   "ind": [
+    {
+     "type": "est",
+     "prompt": "Round to the nearest whole number.",
+     "nums": "3 4/5"
+    },
+    {
+     "type": "est",
+     "prompt": "Round to the nearest whole number.",
+     "nums": "6 1/8"
+    },
+    {
+     "type": "est",
+     "prompt": "Round to the nearest whole number.",
+     "nums": "5 3/7"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the sum.",
+     "nums": "4 7/8, 2 1/6",
+     "op": "+",
+     "skill": "k1"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the difference.",
+     "nums": "9 1/5, 3 5/6",
+     "op": "−",
+     "skill": "k1"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the sum.",
+     "nums": "7 2/3, 1 9/10",
+     "op": "+",
+     "skill": "k1"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the difference.",
+     "nums": "12 1/9, 5 7/8",
+     "op": "−",
+     "skill": "k1"
+    },
+    {
+     "type": "est",
+     "prompt": "A board is 8 5/6 feet long. Leo cuts off 2 1/10 feet. About how much is left?",
+     "nums": "8 5/6, 2 1/10",
+     "op": "−",
+     "unit": "feet",
+     "skill": "k3"
+    }
+   ],
+   "sg": [
+    {
+     "tag": "listen",
+     "title": "From fractions to mixed numbers",
+     "text": "Yesterday we rounded fractions to 0, ½, or 1. Today we round **mixed numbers** to the nearest whole number.\nThe fraction part tells you which way to round."
+    },
+    {
+     "tag": "fill",
+     "title": "Notes: the rounding rule",
+     "text": "If the fraction part is less than ½, the whole number stays the [[same]].\nIf the fraction part is ½ or more, round [[up]] to the next whole number."
+    },
+    {
+     "tag": "watch",
+     "title": "Teacher example",
+     "text": "6 4/5 + 3 2/9 ≈ ?\nStep 1: 4/5 is more than ½, so 6 4/5 rounds to **7**.\nStep 2: 2/9 is less than ½, so 3 2/9 rounds to **3**.\nStep 3: 7 + 3 = **10**."
+    },
+    {
+     "tag": "wedo",
+     "title": "Try it with me",
+     "text": "8 7/10 − 2 1/4 ≈ ?\nTap the whole number each one is closest to.\n{{8 7/10}}\n{{2 1/4}}\nEstimate: [[7|seven]]",
+     "reveal": "9 − 2 = **7**."
+    },
+    {
+     "tag": "jot",
+     "title": "In your own words",
+     "text": "Why does 4 3/8 round to 4 and not 5?"
+    }
+   ],
+   "standards": [
+    "IN 6.NS.4: Solve real-world problems with positive fractions and decimals",
+    "Grade 5 foundation: estimate sums and differences of mixed numbers"
+   ],
+   "ixl": [
+    {
+     "t": "Estimate sums and differences of mixed numbers",
+     "d": "Round each mixed number to the nearest whole first."
+    },
+    {
+     "t": "Add and subtract mixed numbers",
+     "d": "Estimate first, then solve. Does your answer match your estimate?"
+    },
+    {
+     "t": "IXL Math Arena",
+     "d": "Only after you reach your SmartScore goal."
+    }
+   ],
+   "race": "Jada estimated 9 1/5 − 3 5/6 as 6. Is her estimate reasonable?"
+  },
+  {
+   "title": "Day 3: Estimating products",
+   "target": "I can estimate products of fractions and mixed numbers and check if an answer is reasonable.",
+   "ind": [
+    {
+     "type": "est",
+     "prompt": "Estimate the product.",
+     "nums": "5/9, 20",
+     "op": "×",
+     "skill": "k2"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the product.",
+     "nums": "7/8, 16",
+     "op": "×",
+     "skill": "k2"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the product.",
+     "nums": "3 7/8, 5",
+     "op": "×",
+     "skill": "k2"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the product.",
+     "nums": "2 1/9, 6",
+     "op": "×",
+     "skill": "k2"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the product.",
+     "nums": "5 5/6, 3 1/8",
+     "op": "×",
+     "skill": "k2"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the quotient.",
+     "nums": "11 7/8, 2 9/10",
+     "op": "÷",
+     "skill": "k2"
+    },
+    {
+     "type": "est",
+     "prompt": "A recipe uses 2 7/8 cups of flour. Sam makes 4 batches. About how much flour does he need?",
+     "nums": "2 7/8, 4",
+     "op": "×",
+     "unit": "cups",
+     "skill": "k3"
+    },
+    {
+     "type": "est",
+     "prompt": "Jay solved this problem.",
+     "nums": "4 1/9, 2 5/6",
+     "op": "×",
+     "skill": "k2",
+     "claim": "25"
+    }
+   ],
+   "sg": [
+    {
+     "tag": "listen",
+     "title": "Estimating when we multiply",
+     "text": "We can use the same rounding tricks to estimate **products** and **quotients**.\nA good estimate helps you catch a wrong answer before you turn it in."
+    },
+    {
+     "tag": "fill",
+     "title": "Notes: multiplying by a fraction",
+     "text": "When you multiply a number by a fraction less than 1, the answer gets [[smaller|less]].\nTo estimate with mixed numbers, round each one to the nearest [[whole|whole number]] number first."
+    },
+    {
+     "tag": "watch",
+     "title": "Teacher example",
+     "text": "4 6/7 × 5 1/5 ≈ ?\nStep 1: 4 6/7 rounds to **5**.\nStep 2: 5 1/5 rounds to **5**.\nStep 3: 5 × 5 = **25**. The real answer should be close to 25."
+    },
+    {
+     "tag": "wedo",
+     "title": "Try it with me",
+     "text": "2 9/10 × 7 ≈ ?\nTap the whole number 2 9/10 is closest to.\n{{2 9/10}}\nEstimate: [[21|twenty-one]]",
+     "reveal": "2 9/10 ≈ 3, and 3 × 7 = **21**."
+    },
+    {
+     "tag": "jot",
+     "title": "In your own words",
+     "text": "How can an estimate help you catch a mistake?"
+    }
+   ],
+   "standards": [
+    "IN 6.NS.4: Solve real-world problems with positive fractions and decimals",
+    "Grade 5 foundation: multiplying as scaling"
+   ],
+   "ixl": [
+    {
+     "t": "Estimate products of fractions and mixed numbers",
+     "d": "Round, then multiply."
+    },
+    {
+     "t": "Multiply fractions and whole numbers",
+     "d": "Estimate first, then check your real answer."
+    },
+    {
+     "t": "IXL Math Arena",
+     "d": "Only after you reach your SmartScore goal."
+    }
+   ],
+   "race": "Luis says 7/8 × 24 is about 30. Is his estimate reasonable?"
+  }
+ ],
+ "subject": "math",
+ "third": "ixl",
+ "tools": {
+  "calc": false,
+  "mult": true,
+  "fracbars": true,
+  "numline": true,
+  "formulas": true
+ }
+};
+const TPL=$("#tpl").textContent.replace(/<\\\/script/g,"<\/script");
+const TAGS={listen:"Listen",fill:"Fill in as you listen",watch:"Watch me",wedo:"We do",jot:"Stop and jot"};
+const OPS=["","+","−","×","÷"];
+const slug=s=>(String(s||"unit").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"unit").slice(0,40);
+const newId=t=>slug(t)+"-"+Math.random().toString(36).slice(2,7);
+const blankDay=n=>({title:`Day ${n}`,target:"",ind:[],sg:[],standards:[],ixl:[],race:""});
+const blankUnit=()=>({id:newId("unit"),title:"",room:"",subject:"math",third:"ixl",tools:{calc:false,mult:true,fracbars:true,numline:true,formulas:true},smart:80,turnInNote:"Then open today's WIN assignment in Canvas, paste, and submit.",skills:[{id:"k1",name:"",std:""}],days:[blankDay(1)]});
+const store={get(k,d){try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+
+let U=store.get("winbuilder:unit",null)||JSON.parse(JSON.stringify(EXAMPLE));
+let cur=0;
+const save=()=>store.set("winbuilder:unit",U);
+function say(t,err){const m=$("#msg");m.textContent=t;m.className="msg"+(err?" err":"")}
+
+/* ---- same rounding rules as the student portal ---- */
+function parseSpec(str){
+  return String(str||"").split(",").map(t=>t.trim()).filter(Boolean).map(t=>{
+    let m,w=0,n,d;
+    if(m=t.match(/^(\d+)\s+(\d+)\/(\d+)$/)){w=+m[1];n=+m[2];d=+m[3]}
+    else if(m=t.match(/^(\d+)\/(\d+)$/)){n=+m[1];d=+m[2];if(d&&n>=d){w=Math.floor(n/d);n=n%d}}
+    else if(/^\d*\.?\d+$/.test(t))return{fixed:true,v:+t,t};
+    else return{bad:t};
+    if(!d)return{bad:t};
+    if(n===0)return{fixed:true,v:w,t};
+    const f=n/d;let r,tie=false;
+    if(!w){r=f<.25?0:f<.75?.5:1;tie=Math.abs(f-.25)<1e-9||Math.abs(f-.75)<1e-9}else r=f>=.5?w+1:w;
+    return{n,d,w,r,tie,t};
+  });
+}
+function fmt(v){if(v==null||isNaN(v))return "?";const w=Math.floor(v+1e-9),f=v-w;if(f<1e-6)return String(w);if(Math.abs(f-.5)<1e-6)return (w?w:"")+"½";
+  for(let d=2;d<=12;d++){const n=Math.round(f*d);if(Math.abs(n/d-f)<1e-6)return (w?w+" ":"")+n+"/"+d}return String(+v.toFixed(2))}
+const calc=(a,o,b)=>o==="+"?a+b:o==="−"?a-b:o==="×"?a*b:o==="÷"?a/b:NaN;
+function estInfo(q){
+  const nums=parseSpec(q.nums),bad=nums.filter(x=>x.bad),ok=nums.filter(x=>!x.bad),warn=[];
+  if(!ok.length)warn.push("Type at least one number, like 7/8 or 3 1/4.");
+  if(bad.length)warn.push(`Can't read: ${bad.map(x=>x.bad).join(", ")}. Use forms like 7/8, 3 1/4, or 20.`);
+  if(ok.some(x=>x.tie))warn.push("1/4 and 3/4 sit exactly between two benchmarks. The portal rounds them up, but students may argue. Consider another fraction.");
+  if(q.op&&ok.length<2)warn.push("An operation needs at least two numbers.");
+  if(ok.length&&ok.every(x=>x.fixed))warn.push("Add a fraction or mixed number so there's something to round.");
+  let ans=null;if(q.op&&ok.length>1)ans=ok.slice(1).reduce((a,x)=>calc(a,q.op,x.fixed?x.v:x.r),ok[0].fixed?ok[0].v:ok[0].r);
+  if(ans!=null&&(!isFinite(ans)||ans<0))warn.push("The estimate comes out negative or undefined. Change the numbers.");
+  let reason="";if(q.claim!==undefined&&q.claim!==""&&ans!=null){const c=+q.claim;reason=isNaN(c)?"":c>ans*1.3?"No, it's too big":c<ans*.7?"No, it's too small":"Yes, it's close"}
+  return{ok,warn,ans,reason};
+}
+
+/* ---- path binding ---- */
+function setPath(p,v){const k=p.split(".");let o=U;for(let i=0;i<k.length-1;i++)o=o[isNaN(k[i])?k[i]:+k[i]];o[k[k.length-1]]=v}
+const inp=(p,v,ph="",live="")=>`<input type="text" data-p="${p}" value="${esc(v)}" placeholder="${esc(ph)}" ${live?`data-live="${live}"`:""}>`;
+const ta=(p,v,ph="",live="")=>`<textarea data-p="${p}" placeholder="${esc(ph)}" ${live?`data-live="${live}"`:""}>${esc(v)}</textarea>`;
+const skillSel=(p,v)=>`<select data-p="${p}"><option value="">Choose a skill</option>${U.skills.map(s=>`<option value="${esc(s.id)}" ${s.id===v?"selected":""}>${esc(s.name||"(unnamed skill)")}</option>`).join("")}</select>`;
+
+/* ---- render ---- */
+function render(){
+  if(cur>=U.days.length)cur=U.days.length-1;
+  const D=U.days[cur],P=`days.${cur}`;
+  U.subject=U.subject||"math";U.third=U.third||(U.subject==="ela"?"race":"ixl");U.tools=U.tools||{calc:false,mult:true,fracbars:true,numline:true,formulas:true};
+  $("#app").innerHTML=`
+  ${genPanel()}
+  <section class="panel">
+    <h2>Unit</h2><p class="sub">Unit ID: <code>${esc(U.id)}</code>. The dashboard uses this to keep units apart, so keep it the same when you edit a unit.</p>
+    <div class="grid">
+      <label class="f">Unit title${inp("title",U.title,"Estimating with fractions")}</label>
+      <label class="f">Class name<small> shows at the top</small>${inp("room",U.room,"Room 205")}</label>
+      <label class="f">IXL SmartScore goal<input type="number" min="1" max="100" data-p="smart" value="${esc(U.smart)}"></label>
+      <label class="f">Turn-in directions${inp("turnInNote",U.turnInNote)}</label>
+      <label class="f">Subject<select data-p="subject" data-re="1"><option value="math" ${U.subject==="math"?"selected":""}>Math</option><option value="ela" ${U.subject==="ela"?"selected":""}>ELA</option></select></label>
+      <label class="f">Third room<select data-p="third" data-re="1"><option value="ixl" ${U.third==="ixl"?"selected":""}>IXL room</option><option value="race" ${U.third==="race"?"selected":""}>RACE room</option></select></label>
+    </div>
+    ${U.subject==="math"?`<p class="f" style="margin:.75rem 0 .3rem;font-weight:700">Math tools students can open</p><div class="adds">${[["calc","Calculator"],["mult","Times table"],["fracbars","Fraction bars"],["numline","Number line"],["formulas","Formula sheet"]].map(([k,v])=>`<label class="chk"><input type="checkbox" data-tool="${k}" ${U.tools[k]?"checked":""}> ${v}</label>`).join("")}</div><p class="note">Turn the calculator off for standards like 6.RP.1 that say "without a calculator."</p>`:""}
+  </section>
+
+  <section class="panel">
+    <h2>Skills</h2><p class="sub">Every question gets tagged with one skill. The dashboard reports mastery by skill. Estimation questions also track rounding skills automatically.</p>
+    ${U.skills.map((s,i)=>`<div class="row"><label class="f">Skill name${inp(`skills.${i}.name`,s.name,"Estimate sums and differences")}</label>
+      <label class="f">Standard${inp(`skills.${i}.std`,s.std,"IN 6.C.2")}</label>
+      <button class="btn ghost sm" data-act="delSkill" data-i="${i}" ${U.skills.length<2?"disabled":""}>Remove</button></div>`).join("")}
+    <div class="adds"><button class="btn ghost sm" data-act="addSkill">Add skill</button></div>
+  </section>
+
+  <nav class="days">${U.days.map((d,i)=>`<button class="d" data-act="day" data-i="${i}" aria-pressed="${i===cur}">Day ${i+1}</button>`).join("")}
+    <button class="btn ghost sm" data-act="addDay">Add day</button>
+    ${U.days.length>1?`<button class="btn ghost sm" data-act="delDay">Delete Day ${cur+1}</button>`:""}</nav>
+
+  <section class="panel">
+    <div class="grid">
+      <label class="f">Day title${inp(`${P}.title`,D.title,"Day 1: Benchmark fractions")}</label>
+      <label class="f">Learning target${inp(`${P}.target`,D.target,"I can...")}</label>
+    </div>
+    ${U.subject==="ela"||D.passage?`<div class="grid" style="margin-top:.6rem"><label class="f">Passage title${inp(`${P}.passage.title`,(D.passage||{}).title||"")}</label></div>
+      <label class="f" style="margin-top:.5rem">Passage<small> separate paragraphs with a blank line. Avoid abbreviations like "a.m." so sentences highlight correctly.</small><textarea data-p="${P}.passage.text" style="min-height:10rem">${esc((D.passage||{}).text||"")}</textarea></label>`:""}
+  </section>
+
+  <section class="panel ind">
+    <h2>Independent practice</h2><p class="sub">Self-checking. Students see hints when they miss.</p>
+    ${D.ind.map((q,i)=>qCard(q,i,P)).join("")||"<p class='note'>No questions yet.</p>"}
+    <div class="adds">
+      <button class="btn ghost sm" data-act="addQ" data-t="est">Add estimation question</button>
+      <button class="btn ghost sm" data-act="addQ" data-t="mc">Add multiple choice</button>
+      <button class="btn ghost sm" data-act="addQ" data-t="num">Add typed answer</button>
+      ${U.subject==="ela"||D.passage?`<button class="btn ghost sm" data-act="addQ" data-t="evidence">Add evidence question</button>`:""}
+    </div>
+  </section>
+
+  <section class="panel sg">
+    <h2>Small group lesson</h2>
+    <div class="help">Formatting: <code>[[answer]]</code> makes a fill-in blank (separate accepted answers with |, like <code>[[1/2|half]]</code>). <code>{{3 4/5}}</code> makes a tappable number line. <code>**word**</code> is bold. Fractions like 3/4 or 2 1/3 display stacked. In "Watch me," the first line is the problem and each line after it is a step you reveal one at a time.</div>
+    ${D.sg.map((s,i)=>`<div class="card"><div class="card-h"><b>Step ${i+1}</b>
+      <button class="btn ghost sm" data-act="upS" data-i="${i}" ${i===0?"disabled":""}>Move up</button>
+      <button class="btn ghost sm" data-act="downS" data-i="${i}" ${i===D.sg.length-1?"disabled":""}>Move down</button>
+      <button class="btn ghost sm" data-act="delS" data-i="${i}">Delete</button></div>
+      <div class="grid"><label class="f">Step type<select data-p="${P}.sg.${i}.tag" data-re="1">${Object.entries(TAGS).map(([k,v])=>`<option value="${k}" ${s.tag===k?"selected":""}>${v}</option>`).join("")}</select></label>
+      <label class="f">Title${inp(`${P}.sg.${i}.title`,s.title)}</label></div>
+      <label class="f" style="margin-top:.5rem">Text${ta(`${P}.sg.${i}.text`,s.text,s.tag==="jot"?"The question students answer in their own words":"")}</label>
+      ${s.tag==="wedo"?`<label class="f" style="margin-top:.5rem">Answer to reveal<small> optional</small>${inp(`${P}.sg.${i}.reveal`,s.reveal||"")}</label>`:""}
+    </div>`).join("")||"<p class='note'>No steps yet.</p>"}
+    <div class="adds"><button class="btn ghost sm" data-act="addS">Add step</button></div>
+  </section>
+
+  <section class="panel ixl">
+    <h2>${U.third==="race"?"RACE room":"IXL room"}</h2>
+    ${U.third==="race"?`<p class="sub">Students highlight evidence in the passage, then write a RACE response with sentence starters and a live checklist.</p>`:""}
+    ${U.third==="race"?"":D.ixl.map((k,i)=>`<div class="row"><label class="f">IXL skill name or code${inp(`${P}.ixl.${i}.t`,k.t)}</label><label class="f">Directions${inp(`${P}.ixl.${i}.d`,k.d)}</label>
+      <button class="btn ghost sm" data-act="delIxl" data-i="${i}">Remove</button></div>`).join("")}
+    ${U.third==="race"?"":`<div class="adds"><button class="btn ghost sm" data-act="addIxl">Add IXL skill</button></div>`}
+    <label class="f" style="margin-top:.75rem">Standards<small> one per line</small><textarea data-p="${P}.standards" data-lines="1">${esc((D.standards||[]).join("\n"))}</textarea></label>
+    <label class="f" style="margin-top:.5rem">RACE prompt<small>${U.third==="race"?"":" leave blank to skip RACE today"}</small>${ta(`${P}.race`,D.race)}</label>
+  </section>`;
+}
+function qCard(q,i,P){
+  const Q=`${P}.ind.${i}`,label={est:"Estimation",mc:"Multiple choice",num:"Typed answer",evidence:"Evidence"}[q.type];
+  let h=`<div class="card" id="qc${i}"><div class="card-h"><b>Problem ${i+1}</b><span class="type">${label}</span>
+    <button class="btn ghost sm" data-act="upQ" data-i="${i}" ${i===0?"disabled":""}>Move up</button>
+    <button class="btn ghost sm" data-act="downQ" data-i="${i}" ${i===U.days[cur].ind.length-1?"disabled":""}>Move down</button>
+    <button class="btn ghost sm" data-act="dupQ" data-i="${i}">Duplicate</button>
+    <button class="btn ghost sm" data-act="delQ" data-i="${i}">Delete</button></div>
+    <label class="f">Question${ta(`${Q}.prompt`,q.prompt,q.type==="est"?"Estimate the sum.":"Type the question students see")}</label>`;
+  if(q.type==="est"){
+    h+=`<div class="grid" style="margin-top:.5rem">
+      <label class="f">Numbers<small> separated by commas</small>${inp(`${Q}.nums`,q.nums,"7/8, 4 1/9, 20","est")}</label>
+      <label class="f">Operation<select data-p="${Q}.op" data-re="1">${OPS.map(o=>`<option value="${o}" ${(q.op||"")===o?"selected":""}>${o||"None (just round)"}</option>`).join("")}</select></label>
+      ${q.op?`<label class="f">Skill${skillSel(`${Q}.skill`,q.skill)}</label>
+      <label class="f">Unit<small> optional, like miles</small>${inp(`${Q}.unit`,q.unit||"")}</label>
+      <label class="f">Check a claimed answer<small> optional, like 25</small>${inp(`${Q}.claim`,q.claim??"","","est")}</label>
+      <label class="f">Hint for a wrong estimate<small> optional</small>${inp(`${Q}.hint`,q.hint||"")}</label>`:""}
+    </div><div class="live" id="live${i}">${estLive(q)}</div>`;
+  } else if(q.type==="mc"||q.type==="evidence"){
+    h+=`${q.type==="evidence"?`<p class="note" style="margin:.6rem 0 0">Copy sentences exactly from the passage. When a student picks the right one, it gets highlighted in the passage.</p>`:""}<p class="note" style="margin:.6rem 0 .3rem">Pick the correct answer. For wrong answers, name the misconception it shows. The dashboard groups students by it.</p>
+      ${q.options.map((o,k)=>`<div class="row opt"><input type="radio" name="c${i}" data-act="correct" data-i="${i}" data-k="${k}" ${o.correct?"checked":""} aria-label="Correct answer">
+        <label class="f">Answer ${k+1}${inp(`${Q}.options.${k}.text`,o.text)}</label>
+        <label class="f">${o.correct?"<small>Correct answer</small>":"Misconception<small> optional</small>"}${o.correct?"":inp(`${Q}.options.${k}.mis`,o.mis||"","Added the denominators")}</label>
+        <button class="btn ghost sm" data-act="delOpt" data-i="${i}" data-k="${k}" ${q.options.length<3?"disabled":""}>Remove</button></div>`).join("")}
+      <div class="adds"><button class="btn ghost sm" data-act="addOpt" data-i="${i}">Add answer choice</button></div>
+      <div class="grid" style="margin-top:.5rem"><label class="f">Skill${skillSel(`${Q}.skill`,q.skill)}</label><label class="f">Hint<small> shown after a wrong answer</small>${inp(`${Q}.hint`,q.hint||"")}</label></div>`;
+  } else {
+    h+=`<div class="grid" style="margin-top:.5rem">
+      <label class="f">Correct answer${inp(`${Q}.answer`,q.answer||"","3 1/4")}</label>
+      <label class="f">Also accept<small> commas between</small>${inp(`${Q}.alts`,q.alts||"","3.25, 13/4")}</label>
+      <label class="f">Unit<small> optional</small>${inp(`${Q}.unit`,q.unit||"")}</label>
+      <label class="f">Skill${skillSel(`${Q}.skill`,q.skill)}</label>
+      <label class="f">Hint<small> shown after a wrong answer</small>${inp(`${Q}.hint`,q.hint||"")}</label></div>
+      <p class="note" style="margin:.6rem 0 .3rem">Common wrong answers: name the misconception each one shows. Numbers match in any form (3/4 = 0.75).</p>
+      ${(q.wrongs||[]).map((w,k)=>`<div class="row"><label class="f">Wrong answer${inp(`${Q}.wrongs.${k}.ans`,w.ans)}</label><label class="f">Misconception${inp(`${Q}.wrongs.${k}.mis`,w.mis,"Added the denominators")}</label>
+        <button class="btn ghost sm" data-act="delWrong" data-i="${i}" data-k="${k}">Remove</button></div>`).join("")}
+      <div class="adds"><button class="btn ghost sm" data-act="addWrong" data-i="${i}">Add common wrong answer</button></div>`;
+  }
+  return h+`</div>`;
+}
+function estLive(q){
+  const e=estInfo(q);let h="";
+  if(e.ok.length){
+    const r=e.ok.filter(x=>!x.fixed).map(x=>`${x.t} rounds to ${fmt(x.r)}`).join(", ");
+    h+=`<b>Students will see:</b> ${esc(r||"")}${e.ans!=null?`. Estimate: <b>${esc(fmt(e.ans))}</b>`:""}${e.reason?`. Claimed answer check: <b>${e.reason}</b>`:""}.`;
+  }
+  if(e.warn.length)h+=e.warn.map(w=>`<div class="warn">${esc(w)}</div>`).join("");
+  return h||"Type numbers to see the rounding.";
+}
+
+/* ---- events ---- */
+$("#app").addEventListener("input",e=>{
+  const t=e.target,p=t.dataset.p;if(!p||t.tagName==="SELECT")return;
+  if(p.endsWith(".passage.title")||p.endsWith(".passage.text")){const D=U.days[cur];D.passage=D.passage||{title:"",text:""};delete D._sent}
+  let v=t.value;if(t.dataset.lines)v=v.split("\n").map(x=>x.trim()).filter(Boolean);if(t.type==="number")v=+v;
+  setPath(p,v);save();
+  if(t.dataset.live==="est"){const i=+p.split(".")[3];$(`#live${i}`).innerHTML=estLive(U.days[cur].ind[i])}
+});
+$("#app").addEventListener("change",e=>{
+  const t=e.target;
+  if(t.dataset.tool){U.tools[t.dataset.tool]=t.checked;save();return}
+  if(t.dataset.gstd){const c=t.dataset.gstd;G.codes=t.checked?[...G.codes,c]:G.codes.filter(x=>x!==c);return}
+  if(t.dataset.g){G[t.dataset.g]=t.type==="number"?+t.value:t.value;if(t.dataset.g==="subject"){G.codes=[];render()}return}
+  if(t.dataset.act==="correct"){const q=U.days[cur].ind[+t.dataset.i];q.options.forEach((o,k)=>{o.correct=k===+t.dataset.k;if(o.correct)delete o.mis});save();render();return}
+  if(t.tagName==="SELECT"&&t.dataset.p){setPath(t.dataset.p,t.value);save();if(t.dataset.re)render()}
+});
+document.addEventListener("click",async e=>{
+  const b=e.target.closest("[data-act]");if(!b||b.type==="radio")return;
+  const a=b.dataset.act,i=+b.dataset.i,k=+b.dataset.k,D=U.days[cur];
+  const mv=(arr,x,dir)=>{const y=x+dir;if(y<0||y>=arr.length)return;[arr[x],arr[y]]=[arr[y],arr[x]]};
+  const acts={
+    addSkill:()=>U.skills.push({id:"k"+Date.now().toString(36),name:"",std:""}),
+    delSkill:()=>U.skills.splice(i,1),
+    day:()=>{cur=i},
+    addDay:()=>{U.days.push(blankDay(U.days.length+1));cur=U.days.length-1},
+    delDay:()=>{if(confirm(`Delete Day ${cur+1} and everything in it?`)){U.days.splice(cur,1);cur=Math.max(0,cur-1)}},
+    addQ:()=>{const t=b.dataset.t,sk=U.skills[0]?.id||"";
+      D.ind.push(t==="evidence"?{type:"evidence",prompt:"Which sentence best supports ...?",skill:sk,options:[{text:"",correct:true},{text:"",correct:false,mis:"Chose evidence that doesn't prove the point"},{text:"",correct:false,mis:"Chose evidence that doesn't prove the point"}]}:t==="est"?{type:"est",prompt:"Estimate the sum.",nums:"",op:"+",skill:sk}:t==="mc"?{type:"mc",prompt:"",skill:sk,options:[{text:"",correct:true},{text:"",correct:false,mis:""},{text:"",correct:false,mis:""}]}:{type:"num",prompt:"",answer:"",skill:sk,wrongs:[]})},
+    delQ:()=>{if(confirm(`Delete problem ${i+1}?`))D.ind.splice(i,1)},
+    upQ:()=>mv(D.ind,i,-1),downQ:()=>mv(D.ind,i,1),
+    dupQ:()=>D.ind.splice(i+1,0,JSON.parse(JSON.stringify(D.ind[i]))),
+    addOpt:()=>D.ind[i].options.push({text:"",correct:false,mis:""}),
+    delOpt:()=>{const o=D.ind[i].options;const wasC=o[k].correct;o.splice(k,1);if(wasC)o[0].correct=true},
+    addWrong:()=>(D.ind[i].wrongs=D.ind[i].wrongs||[]).push({ans:"",mis:""}),
+    delWrong:()=>D.ind[i].wrongs.splice(k,1),
+    addS:()=>D.sg.push({tag:"listen",title:"",text:""}),
+    delS:()=>D.sg.splice(i,1),upS:()=>mv(D.sg,i,-1),downS:()=>mv(D.sg,i,1),
+    addIxl:()=>D.ixl.push({t:"",d:""}),delIxl:()=>D.ixl.splice(i,1),
+  };
+  if(acts[a]){acts[a]();save();render();return}
+  if(a==="gen"){if(!G.codes.length){say("Check at least one standard.",true);return}
+    if(!confirm("Replace what's in the builder with a new generated unit? Save your current unit file first if you want to keep it."))return;
+    const order=STD[G.subject].map(x=>x[0]).filter(c=>G.codes.includes(c));
+    U=generateUnit({subject:G.subject,codes:order,days:G.days,perDay:G.per,level:G.level,seed:Date.now(),title:G.title||""});cur=0;save();render();showIssues(issues());
+    say(`Generated ${G.days} day${G.days===1?"":"s"}. Preview it, then edit anything you want.`);return}
+  if(a==="genPrompt"){if(!G.codes.length){say("Check at least one standard.",true);return}
+    const txt=aiPrompt(G.subject,STD[G.subject].map(x=>x[0]).filter(c=>G.codes.includes(c)),G.days,G.per);
+    try{await navigator.clipboard.writeText(txt);say("Prompt copied. Paste it into Copilot or another AI tool, then paste its answer below.")}catch(err){$("#aiIn").value=txt;say("Copy didn't work, so the prompt is in the box below. Select it and copy.",true)}return}
+  if(a==="genImport"){try{if(!G.codes.length)throw new Error("Check the standards you used in the prompt first.");const r=importAI($("#aiIn").value,G.subject,STD[G.subject].map(x=>x[0]).filter(c=>G.codes.includes(c)));
+      if(!confirm("Replace what's in the builder with the AI draft?"))return;
+      U={...blankUnit(),id:newId(G.title||"ai-unit"),title:G.title||"AI draft",subject:G.subject,third:G.subject==="ela"?"race":"ixl",skills:r.skills,days:r.days};cur=0;save();render();showIssues(issues());say("AI draft imported. Check every answer before students use it.")}
+    catch(err){say(err.message,true)}return}
+  if(a==="elaExample"){if(confirm("Replace what's here with an ELA example unit?")){U=generateUnit({subject:"ela",codes:["6.RC.1","6.RC.2","6.RC.8","6.RC.13","6.W.7"],days:3,perDay:6,level:1,seed:42,title:"ELA WIN: Evidence and theme"});cur=0;save();render();showIssues([]);say("ELA example loaded.")}return}
+  if(a==="preview"){$("#pv").srcdoc=buildPortal();$("#modal").hidden=false;return}
+  if(a==="closePreview"){$("#modal").hidden=true;$("#pv").srcdoc="";return}
+  if(a==="download"){const iss=issues();showIssues(iss);if(iss.length&&!confirm(`${iss.length} thing${iss.length===1?"":"s"} to fix (listed above). Download anyway?`))return;
+    const r=await saveFile(`win-${slug(U.title)}.html`,buildPortal());say(r==="saved"?"Student portal downloaded. Upload it to Canvas.":r==="declined"?"Download canceled.":"Download didn't work here. Open this builder from the downloaded file and try again.",r!=="saved"&&r!=="declined");return}
+  if(a==="saveUnit"){const r=await saveFile(`${slug(U.title)}-unit.json`,JSON.stringify(U,null,1));say(r==="saved"?"Unit file saved. Share it with colleagues or open it later.":r==="declined"?"Save canceled.":"Saving didn't work here.",r!=="saved"&&r!=="declined");return}
+  if(a==="example"){if(confirm("Replace what's here with the example unit? Save your unit file first if you want to keep it.")){U=JSON.parse(JSON.stringify(EXAMPLE));cur=0;save();render();showIssues([]);say("Example unit loaded.")}return}
+  if(a==="newUnit"){if(confirm("Start a new unit? Save your unit file first if you want to keep this one.")){U=blankUnit();cur=0;save();render();showIssues([]);say("New unit started.")}return}
+});
+$("#openUnit").onchange=async e=>{const f=e.target.files[0];if(!f)return;
+  try{const o=JSON.parse(await f.text());if(!o.id||!Array.isArray(o.days))throw 0;U=o;cur=0;save();render();showIssues([]);say(`Opened "${o.title||"unit"}".`)}
+  catch(err){say("That file isn't a WIN unit file.",true)}e.target.value=""};
+$("#modal").addEventListener("click",e=>{if(e.target.id==="modal"){$("#modal").hidden=true;$("#pv").srcdoc=""}});
+
+/* ---- generator panel ---- */
+const G={subject:"math",codes:[],days:3,per:6,level:1,title:"",open:false};
+document.addEventListener("toggle",e=>{if(e.target.id==="genD")G.open=e.target.open},true);
+function genPanel(){const list=STD[G.subject];
+  return `<section class="panel gen"><details id="genD" ${G.open||(U.days.length===1&&!U.days[0].ind.length)?"open":""}><summary><h2 style="display:inline">Build from standards</h2> <span class="note">Pick the standards students need to relearn. The builder writes the questions, lessons, and RACE prompts.</span></summary>
+    <div class="grid" style="margin-top:.75rem">
+      <label class="f">Subject<select data-g="subject"><option value="math" ${G.subject==="math"?"selected":""}>Math</option><option value="ela" ${G.subject==="ela"?"selected":""}>ELA</option></select></label>
+      <label class="f">Unit title<input type="text" data-g="title" value="${esc(G.title)}" placeholder="Ratios reteach"></label>
+      <label class="f">Days<input type="number" data-g="days" min="1" max="10" value="${G.days}"></label>
+      <label class="f">Questions per day<input type="number" data-g="per" min="3" max="12" value="${G.per}"></label>
+      ${G.subject==="math"?`<label class="f">Number level<select data-g="level"><option value="1" ${G.level==1?"selected":""}>Foundational (friendlier numbers)</option><option value="2" ${G.level==2?"selected":""}>On grade level</option></select></label>`:""}
+    </div>
+    <p class="note" style="margin:.75rem 0 .3rem">Indiana Academic Standards (2023), grade 6. E marks an essential standard.${G.subject==="ela"?" Writing and discussion standards become RACE prompts, since they can't be auto-scored.":""}</p>
+    <div class="stdlist">${list.map(([c,t,e])=>`<label class="std"><input type="checkbox" data-gstd="${c}" ${G.codes.includes(c)?"checked":""}><b>${c}</b>${e?' <span class="ess">E</span>':""} ${esc(t)}</label>`).join("")}</div>
+    <div class="adds" style="margin-top:.75rem"><button class="btn go" data-act="gen">Generate unit</button><button class="btn ghost" data-act="genPrompt">Copy prompt for Copilot</button><button class="btn ghost" data-act="elaExample">Load ELA example</button></div>
+    <details style="margin-top:.6rem"><summary class="note">Use Copilot or another AI tool for new passages or more variety</summary>
+      <p class="note">1. Check standards and tap "Copy prompt for Copilot." 2. Paste it into Copilot. 3. Paste Copilot's whole answer here and import. Always check the answers before students see them.</p>
+      <textarea id="aiIn" placeholder="Paste the AI's JSON answer here"></textarea>
+      <div class="adds"><button class="btn ghost sm" data-act="genImport">Import AI answer</button></div></details>
+  </details></section>`}
+
+/* ---- checks, build, save ---- */
+function issues(){
+  const out=[];if(!U.title)out.push("Give the unit a title.");
+  U.days.forEach((D,d)=>{const L=`Day ${d+1}`;
+    if(!D.ind.length)out.push(`${L}: add at least one independent question.`);
+    D.ind.forEach((q,i)=>{const P=`${L}, problem ${i+1}`;
+      if(q.type==="est"){const e=estInfo(q);e.warn.forEach(w=>{if(!/1\/4 and 3\/4/.test(w))out.push(`${P}: ${w}`)});if(q.op&&!q.skill)out.push(`${P}: choose a skill.`)}
+      if(q.type==="mc"||q.type==="evidence"){if(!q.prompt)out.push(`${P}: type the question.`);
+        if(q.type==="evidence"&&D.passage){const t=String(D.passage.text).replace(/\s+/g," ");q.options.forEach(o=>{if(o.text&&!t.includes(o.text.replace(/^[“"]|[”"]$/g,"").trim()))out.push(`${P}: "${o.text.slice(0,40)}..." isn't an exact sentence from the passage.`)})}if(q.options.some(o=>!String(o.text).trim()))out.push(`${P}: fill in every answer choice or remove the blank ones.`)}
+      if(q.type==="num"){if(!q.prompt)out.push(`${P}: type the question.`);if(!String(q.answer||"").trim())out.push(`${P}: type the correct answer.`)}
+      if(q.type!=="est"&&!q.skill)out.push(`${P}: choose a skill.`);
+    });
+  });
+  if(U.skills.some(s=>!s.name.trim()))out.push("Name every skill or remove the blank ones.");
+  return out;
+}
+function showIssues(list){let el=$("#issues");if(!el){el=document.createElement("div");el.id="issues";$("#app").before(el)}
+  el.className=list.length?"issues":"";el.innerHTML=list.length?`<b>Fix before sharing:</b><ul>${list.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}
+function buildPortal(){return TPL.replace("/*__CONFIG__*/null",JSON.stringify(U).replace(/</g,"\\u003c"))}
+async function saveFile(name,data){
+  let dl=null;try{if(window.claude&&window.claude.use)dl=await window.claude.use("downloads")}catch(e){}
+  if(dl){try{await dl.save({filename:name,data});return "saved"}catch(e){return e&&e.code==="declined"?"declined":"failed"}}
+  try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([data],{type:name.endsWith(".json")?"application/json":"text/html"}));a.download=name;document.body.appendChild(a);a.click();a.remove();return "saved"}catch(e){return "failed"}
+}
+render();
+
+</script>
+</body>
+</html>

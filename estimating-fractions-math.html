@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WIN</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#F3F7FB; --ink:#1B2B40; --soft:#51637A; --card:#FFFFFF; --line:#D5DFEA;
+  --ind:#2A9D8F; --ind-bg:#E3F4F1;
+  --sg:#5B5BD6;  --sg-bg:#ECECFB;
+  --ixl:#E0A31B; --ixl-bg:#FDF3DC;
+  --good:#1F8A4C; --good-bg:#E2F5EA; --bad:#C23B4E; --bad-bg:#FBE6E9;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121A26; --ink:#EEF3F9; --soft:#A9B7C8; --card:#1B2636; --line:#2E3D52;
+    --ind-bg:#16332F; --sg-bg:#23244A; --ixl-bg:#3A2F14; --good-bg:#16331F; --bad-bg:#3A1A20;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121A26; --ink:#EEF3F9; --soft:#A9B7C8; --card:#1B2636; --line:#2E3D52;
+  --ind-bg:#16332F; --sg-bg:#23244A; --ixl-bg:#3A2F14; --good-bg:#16331F; --bad-bg:#3A1A20;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",Verdana,system-ui,sans-serif;font-size:1.125rem;line-height:1.55}
+h1,h2,h3,.fred{font-family:"Fredoka","Trebuchet MS",system-ui,sans-serif;line-height:1.15}
+.wrap{max-width:960px;margin:0 auto;padding:1.25rem 1rem 3rem}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--sg);outline-offset:2px}
+
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:1rem;margin-bottom:1.25rem}
+header.top h1{font-size:clamp(1.9rem,5vw,2.6rem);margin:0}
+header.top p{margin:.25rem 0 0;color:var(--soft)}
+.namebox label{display:block;font-size:.9rem;color:var(--soft)}
+.namebox input{border:2px solid var(--line);background:var(--card);border-radius:10px;padding:.45rem .7rem;width:14rem;max-width:100%}
+
+.days{display:flex;gap:.5rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.days button{border:2px solid var(--line);background:var(--card);border-radius:999px;padding:.5rem 1.1rem;font-family:"Fredoka",sans-serif;font-weight:600}
+.days button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+/* route: the signature element */
+.route{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.75rem}
+.route::before{content:"";position:absolute;top:44px;left:16%;right:16%;height:8px;border-radius:8px;
+  background:repeating-linear-gradient(90deg,var(--line) 0 18px,transparent 18px 28px);z-index:0}
+.stop{position:relative;z-index:1;background:none;border:0;padding:0;text-align:center;display:flex;flex-direction:column;align-items:center;gap:.5rem}
+.stop .dot{width:88px;height:88px;border-radius:50%;display:grid;place-items:center;font-size:2.2rem;border:6px solid var(--c);background:var(--card);transition:transform .15s}
+.stop:hover .dot{transform:scale(1.05)}
+.stop[aria-current="true"] .dot{background:var(--c);box-shadow:0 0 0 6px var(--cb)}
+.stop .nm{font-family:"Fredoka",sans-serif;font-weight:600;font-size:1.15rem}
+.stop .st{font-size:.9rem;color:var(--soft)}
+.stop .st.done{color:var(--good);font-weight:700}
+.stop.ind{--c:var(--ind);--cb:var(--ind-bg)} .stop.sg{--c:var(--sg);--cb:var(--sg-bg)} .stop.ixl{--c:var(--ixl);--cb:var(--ixl-bg)}
+
+.room{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:1.25rem;border-top:10px solid var(--c)}
+.room.ind{--c:var(--ind);--cb:var(--ind-bg)} .room.sg{--c:var(--sg);--cb:var(--sg-bg)} .room.ixl{--c:var(--ixl);--cb:var(--ixl-bg)}
+.room h2{margin:0 0 .25rem;font-size:1.7rem}
+.room .goal{background:var(--cb);border-radius:12px;padding:.7rem 1rem;margin:.75rem 0 1.25rem}
+.room .goal b{font-family:"Fredoka",sans-serif}
+.empty{text-align:center;color:var(--soft);padding:2rem 1rem;border:2px dashed var(--line);border-radius:18px}
+
+/* worksheet */
+.score{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;font-weight:700}
+.bar{flex:1;height:14px;background:var(--line);border-radius:14px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ind);width:0;transition:width .3s}
+.q{border:2px solid var(--line);border-radius:14px;padding:1rem;margin-bottom:1rem}
+.q.right{border-color:var(--good);background:var(--good-bg)}
+.q .num{font-family:"Fredoka",sans-serif;font-weight:700;color:var(--ind)}
+.q .prompt{font-size:1.2rem;margin:.25rem 0 .75rem}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.5rem}
+.opts button{border:2px solid var(--line);background:var(--card);border-radius:12px;padding:.7rem;font-size:1.15rem;min-height:52px}
+.opts button.wrong{border-color:var(--bad);background:var(--bad-bg);text-decoration:line-through}
+.opts button.correct{border-color:var(--good);background:var(--good-bg);font-weight:700}
+.fb{margin-top:.6rem;font-size:1rem;min-height:1.2em}
+.fb.no{color:var(--bad)} .fb.yes{color:var(--good);font-weight:700}
+.hintbtn{background:none;border:0;color:var(--soft);text-decoration:underline;padding:0;margin-top:.4rem;font-size:.95rem}
+.hint{font-size:1rem;color:var(--soft);margin-top:.3rem}
+
+/* fractions */
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1;margin:0 .12em;font-size:.9em}
+.fr span:first-child{border-bottom:2px solid currentColor;padding:0 .15em .08em}
+.fr span:last-child{padding:.08em .15em 0}
+
+/* small group */
+.cue{display:flex;gap:.6rem;align-items:center;background:var(--sg);color:#fff;border-radius:12px;padding:.6rem .9rem;margin-bottom:1rem;font-family:"Fredoka",sans-serif;font-weight:600}
+.step{border-left:6px solid var(--sg);padding:.25rem 0 .25rem 1rem;margin-bottom:1.5rem}
+.step h3{margin:0 0 .4rem;font-size:1.3rem}
+.step .tag{display:inline-block;font-size:.85rem;background:var(--sg-bg);color:var(--ink);border-radius:999px;padding:.1rem .6rem;margin-bottom:.4rem;font-weight:700}
+.blank{border:0;border-bottom:3px solid var(--sg);background:var(--sg-bg);width:7.5rem;padding:.1rem .3rem;border-radius:6px 6px 0 0;text-align:center}
+.blank.ok{border-color:var(--good);background:var(--good-bg)}
+.blank.miss{border-color:var(--bad);background:var(--bad-bg)}
+.reveal{border:2px solid var(--sg);background:var(--card);border-radius:10px;padding:.35rem .9rem;font-size:1rem;margin-top:.5rem}
+.hidden-ans{display:none;margin-top:.5rem;background:var(--sg-bg);border-radius:10px;padding:.6rem .9rem}
+.hidden-ans.show{display:block}
+.stepper{display:flex;justify-content:space-between;gap:1rem;margin-top:1rem}
+.btn{border:0;border-radius:12px;padding:.7rem 1.2rem;background:var(--c);color:#fff;font-family:"Fredoka",sans-serif;font-weight:600;font-size:1.05rem}
+.btn.ghost{background:var(--card);color:var(--ink);border:2px solid var(--line)}
+.btn:disabled{opacity:.4;cursor:default}
+.dots{display:flex;gap:.35rem;align-items:center}
+.dots i{width:10px;height:10px;border-radius:50%;background:var(--line)} .dots i.on{background:var(--sg)}
+textarea{width:100%;min-height:4.5rem;border:2px solid var(--line);border-radius:10px;padding:.6rem;background:var(--card)}
+
+/* ixl */
+.std{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem}
+.std span{border:2px solid var(--ixl);border-radius:10px;padding:.3rem .7rem;font-size:.95rem}
+.skill{display:flex;gap:.9rem;align-items:flex-start;border:2px solid var(--line);border-radius:14px;padding:.8rem 1rem;margin-bottom:.6rem}
+.skill input{width:26px;height:26px;margin-top:.15rem;accent-color:var(--good);flex:none}
+.skill .t{font-weight:700}
+.skill .d{font-size:.95rem;color:var(--soft)}
+.skill.got{background:var(--good-bg);border-color:var(--good)}
+.race{margin-top:1.5rem}
+.race h3{font-size:1.4rem;margin:0 0 .5rem}
+.race .prompt{background:var(--ixl-bg);border-radius:12px;padding:.8rem 1rem;margin-bottom:1rem;font-size:1.15rem}
+.rrow{display:grid;grid-template-columns:56px 1fr;gap:.75rem;margin-bottom:.75rem}
+.rletter{width:56px;height:56px;border-radius:14px;background:var(--ixl);color:#1B2B40;display:grid;place-items:center;font-family:"Fredoka",sans-serif;font-weight:700;font-size:1.8rem}
+.rrow label{display:block;font-weight:700;margin-bottom:.2rem}
+.rrow small{display:block;color:var(--soft);margin-bottom:.3rem}
+.copied{color:var(--good);font-weight:700;margin-left:.75rem}
+
+@media (max-width:640px){
+  .route{grid-template-columns:1fr;gap:.75rem}
+  .route::before{top:0;bottom:0;left:43px;right:auto;width:8px;height:auto;
+    background:repeating-linear-gradient(180deg,var(--line) 0 18px,transparent 18px 28px)}
+  .stop{flex-direction:row;text-align:left;gap:1rem}
+  .stop .dot{width:78px;height:78px;flex:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* interactive work */
+.expr{font-family:"Fredoka",sans-serif;font-size:1.45rem;font-weight:600}
+.stepbox{border-top:2px dashed var(--line);padding-top:.75rem;margin-top:.9rem}
+.stepbox h4{margin:0 0 .2rem;font-family:"Fredoka",sans-serif;font-size:1.1rem;color:var(--ind)}
+.tip{margin:.1rem 0 .5rem;font-size:.98rem;color:var(--soft)}
+.nlwrap,.nlmount{margin:.4rem 0 .9rem}
+.nlwrap .lbl,.nlmount .lbl{font-weight:700;font-size:1.15rem}
+svg.nl{width:100%;max-width:520px;height:auto;display:block;overflow:visible}
+.nl .axis{stroke:var(--ink);stroke-width:3;stroke-linecap:round}
+.nl .tick{stroke:var(--soft);stroke-width:1.5}
+.nl .half{stroke:var(--soft);stroke-dasharray:4 4;stroke-width:2}
+.nl .halft{fill:var(--soft);font-size:11px;text-anchor:middle}
+.nl .mk{cursor:pointer}
+.nl .mk circle{fill:var(--card);stroke:var(--ind);stroke-width:3}
+.nl .mk text{fill:var(--ink);font-size:17px;font-weight:700;text-anchor:middle}
+.nl .mk:hover circle{fill:var(--ind-bg)}
+.nl .mk.bad circle{stroke:var(--bad);fill:var(--bad-bg)}
+.nl .mk.good circle{stroke:var(--good);fill:var(--good)}
+.nl .mk:focus{outline:none} .nl .mk:focus-visible circle{stroke-width:6}
+.nl .pin{fill:var(--sg)} .nl .pint{fill:var(--sg);font-size:14px;font-weight:700;text-anchor:middle}
+.eq{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;font-size:1.4rem;font-family:"Fredoka",sans-serif}
+.eq input{width:6.5rem;border:2px solid var(--line);border-radius:10px;padding:.35rem .5rem;text-align:center;background:var(--card);font-family:"Atkinson Hyperlegible",sans-serif}
+.eq input.ok{border-color:var(--good);background:var(--good-bg)}
+.small{border:2px solid var(--line);background:var(--card);border-radius:10px;padding:.35rem .85rem;font-size:1rem}
+.small.go{background:var(--ind);border-color:var(--ind);color:#fff;font-weight:700}
+.work{margin-top:.9rem;background:var(--card);border:2px solid var(--good);border-radius:12px;padding:.55rem .85rem;font-size:1.02rem}
+.pad{margin-top:.8rem}
+.pad canvas{width:100%;height:220px;border:2px dashed var(--line);border-radius:12px;background:var(--card);touch-action:none;display:block;margin-top:.5rem}
+.padbar{display:flex;gap:.5rem;margin-top:.4rem;align-items:center;font-size:.9rem;color:var(--soft)}
+.ropts{display:flex;flex-wrap:wrap;gap:.5rem}
+.ropts button{border:2px solid var(--line);background:var(--card);border-radius:12px;padding:.6rem .9rem;font-size:1.05rem}
+.ropts button.wrong{border-color:var(--bad);background:var(--bad-bg);text-decoration:line-through}
+.ropts button.correct{border-color:var(--good);background:var(--good-bg);font-weight:700}
+.turnbar{display:flex;justify-content:center;margin:-.5rem 0 1.5rem}
+.turnbtn{border:3px solid var(--ink);background:var(--card);border-radius:999px;padding:.6rem 1.4rem;font-family:"Fredoka",sans-serif;font-weight:600;font-size:1.1rem}
+.turnbtn[aria-current="true"]{background:var(--ink);color:var(--bg)}
+.room.turn{--c:var(--ink);--cb:var(--line)}
+.checklist{list-style:none;padding:0;margin:0 0 1rem}
+.checklist li{padding:.35rem 0;border-bottom:1px solid var(--line)}
+.conf{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.5rem;margin:.5rem 0 1rem}
+.conf button,.chips button{border:2px solid var(--line);background:var(--card);border-radius:14px;padding:.6rem;font-size:1rem}
+.conf button span{display:block;font-size:1.8rem}
+.conf button[aria-pressed="true"],.chips button[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem;margin:.5rem 0 1rem}
+.chips button{border-radius:999px;padding:.4rem .9rem}
+.turn h3{font-size:1.2rem;margin:1rem 0 .2rem}
+.ws{background:var(--sg-bg);border-radius:10px;padding:.5rem .8rem}
+
+/* passage + highlighter */
+.passage{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:.6rem 1rem;margin:0 0 1.25rem}
+.passage summary{cursor:pointer;font-family:"Fredoka",sans-serif;font-weight:600;font-size:1.2rem;padding:.2rem 0}
+.passage p{line-height:1.8;margin:.6rem 0;max-width:70ch}
+.pnum{display:inline-grid;place-items:center;min-width:1.6rem;height:1.6rem;border-radius:50%;background:var(--line);font-size:.8rem;font-weight:700;margin-right:.4rem;vertical-align:middle}
+.sn{cursor:pointer;border-radius:4px;padding:.05rem 0;transition:background .15s}
+.sn:hover{text-decoration:underline dotted}
+.h-y{background:#FFE066;color:#1B2B40}.h-b{background:#A5D8FF;color:#1B2B40}.h-p{background:#FFC9DE;color:#1B2B40}
+.hlbar{display:flex;flex-wrap:wrap;gap:.4rem;margin:.4rem 0}
+.hc{border:2px solid var(--line);border-radius:999px;padding:.3rem .8rem;font-size:.95rem;background:var(--card)}
+.hc-y{background:#FFE066;color:#1B2B40}.hc-b{background:#A5D8FF;color:#1B2B40}.hc-p{background:#FFC9DE;color:#1B2B40}
+.hc[aria-pressed="true"]{border-color:var(--ink);box-shadow:0 0 0 2px var(--ink)}
+.evopts{display:grid;gap:.5rem}
+.evopts button.quote{text-align:left;border:2px solid var(--line);background:var(--card);border-radius:12px;padding:.7rem .9rem;font-size:1.05rem;font-style:italic}
+.evopts button.wrong{border-color:var(--bad);background:var(--bad-bg);text-decoration:line-through}
+.evopts button.correct{border-color:var(--good);background:var(--good-bg);font-weight:700}
+/* RACE room */
+.room.race{--c:#D1495B;--cb:#FBE3E7}
+.stop.race{--c:#D1495B;--cb:#FBE3E7}
+.room.race .rletter{background:#D1495B;color:#fff}
+.evbank{background:var(--bg);border-radius:12px;padding:.6rem .9rem;margin-bottom:1rem}
+.evbank h3{margin:0 0 .4rem;font-size:1.1rem}
+.evi{display:flex;gap:.6rem;align-items:flex-start;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid var(--line)}
+.evi span{font-style:italic;background:#FFE066;color:#1B2B40;border-radius:4px;padding:0 .2rem}
+.starters{display:flex;flex-wrap:wrap;gap:.35rem;margin:.1rem 0 .35rem}
+.starters button{border:1px dashed var(--soft);background:var(--card);border-radius:999px;padding:.15rem .6rem;font-size:.85rem}
+.rcheck{background:var(--card);border:2px solid var(--line);border-radius:12px;padding:.7rem 1rem;margin-top:.5rem}
+.rcheck div{padding:.15rem 0}.rcheck .ok{color:var(--good);font-weight:700}
+/* math tools */
+.toolsbtn{position:fixed;right:1rem;bottom:calc(1rem + env(safe-area-inset-bottom,0px));z-index:20;border:0;border-radius:999px;padding:.75rem 1.1rem;background:var(--ink);color:var(--bg);font-family:"Fredoka",sans-serif;font-weight:600;font-size:1.05rem;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--card);border-top:3px solid var(--ink);border-radius:18px 18px 0 0;max-height:70vh;display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom,0px);box-shadow:0 -6px 24px rgba(0,0,0,.2)}
+.sheet[hidden]{display:none}
+.sheet-bar{display:flex;gap:.5rem;align-items:center;justify-content:space-between;padding:.6rem .8rem;border-bottom:2px solid var(--line)}
+.tabs{display:flex;gap:.35rem;overflow-x:auto}
+.tabs button{border:2px solid var(--line);background:var(--card);border-radius:999px;padding:.3rem .8rem;white-space:nowrap;font-size:.95rem}
+.tabs button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.sheet-body{overflow:auto;padding:.8rem 1rem}
+.calc{max-width:320px;margin:0 auto}
+.calc input{width:100%;font-size:1.6rem;text-align:right;padding:.5rem;border:2px solid var(--line);border-radius:10px;background:var(--bg);margin-bottom:.5rem}
+.keys{display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem}
+.keys button{padding:.8rem 0;font-size:1.25rem;border:2px solid var(--line);border-radius:10px;background:var(--card)}
+table.mult{border-collapse:collapse;margin:0 auto;font-size:.9rem}
+table.mult th,table.mult td{border:1px solid var(--line);width:2.2rem;height:2rem;text-align:center;padding:0}
+table.mult th{background:var(--bg)}table.mult td.line{background:var(--sg-bg)}table.mult td.hit{background:var(--sg);color:#fff;font-weight:700}
+.fbars{display:grid;gap:.35rem;max-width:640px}
+.fbar{display:flex;border:2px solid var(--ink);border-radius:6px;overflow:hidden}
+.fbar span{flex:1;text-align:center;border-right:1px solid var(--ink);padding:.35rem 0;font-size:.8rem;cursor:pointer;background:var(--card)}
+.fbar span:last-child{border-right:0}.fbar span.on{background:var(--ind);color:#fff}
+.nlset{display:flex;flex-wrap:wrap;gap:.6rem;align-items:end;margin-bottom:.5rem}
+.nlset input{width:5rem;border:2px solid var(--line);border-radius:8px;padding:.3rem;background:var(--bg)}
+svg.nltool{width:100%;max-width:700px;display:block;color:var(--ink);cursor:crosshair}
+dl.forms{display:grid;grid-template-columns:max-content 1fr;gap:.35rem 1rem;margin:0}
+dl.forms dt{font-weight:700}dl.forms dd{margin:0}
+.opts.long{grid-template-columns:1fr}
+.opts.long button{text-align:left;padding:.7rem .9rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div><h1 id="hTitle">WIN</h1><p id="hSub"></p></div>
+    <div class="namebox"><label for="stuName">My name</label><input id="stuName" autocomplete="off" placeholder="First and last name"></div>
+  </header>
+  <nav class="days" id="days" aria-label="Choose a day"></nav>
+  <div class="route" id="route"></div>
+  <div id="turnbar"></div>
+  <main id="room"></main>
+</div>
+<script>
+const C = {"id": "estimating-fractions", "title": "Estimating with fractions", "room": "Room 205", "smart": 80, "turnInNote": "Then open today's WIN assignment in Canvas, paste, and submit.", "skills": [{"id": "k1", "name": "Estimate sums and differences", "std": "IN 6.NS.4"}, {"id": "k2", "name": "Estimate products and quotients", "std": "IN 6.NS.4"}, {"id": "k3", "name": "Estimate in word problems", "std": "IN 6.NS.4"}], "days": [{"title": "Day 1: Benchmark fractions", "target": "I can estimate fractions using the benchmarks 0, ½, and 1.", "ind": [{"type": "est", "prompt": "Which benchmark is this fraction closest to?", "nums": "1/9"}, {"type": "est", "prompt": "Which benchmark is this fraction closest to?", "nums": "5/9"}, {"type": "est", "prompt": "Which benchmark is this fraction closest to?", "nums": "7/8"}, {"type": "est", "prompt": "Which benchmark is this fraction closest to?", "nums": "2/5"}, {"type": "est", "prompt": "Estimate the sum.", "nums": "7/8, 4/9", "op": "+", "skill": "k1"}, {"type": "est", "prompt": "Estimate the sum.", "nums": "1/10, 5/12", "op": "+", "skill": "k1"}, {"type": "est", "prompt": "Estimate the difference.", "nums": "11/12, 1/8", "op": "−", "skill": "k1"}, {"type": "est", "prompt": "Maya ran 9/10 mile on Monday and 6/11 mile on Tuesday. About how far did she run in all?", "nums": "9/10, 6/11", "op": "+", "unit": "miles", "skill": "k3"}], "sg": [{"tag": "listen", "title": "Why estimate?", "text": "Estimating gives you a **close** answer fast. It helps you check if your real answer makes sense.\nToday we use three **benchmarks**: 0, ½, and 1."}, {"tag": "fill", "title": "Notes: the three benchmarks", "text": "If the numerator is very small compared to the denominator, the fraction is close to [[0|zero]].\nIf the numerator is about half of the denominator, the fraction is close to [[1/2|½|half|one half]].\nIf the numerator is almost the same as the denominator, the fraction is close to [[1|one]]."}, {"tag": "watch", "title": "Teacher example", "text": "3/7 → ?\nStep 1: Find half of the denominator. Half of 7 is **3½**.\nStep 2: Compare the numerator. 3 is very close to 3½.\nStep 3: So 3/7 is about **½**."}, {"tag": "wedo", "title": "Try it with me", "text": "8/9 + 1/6 ≈ ?\nTap the benchmark each fraction is closest to.\n{{8/9}}\n{{1/6}}\nEstimate: [[1|one]]", "reveal": "8/9 ≈ 1 and 1/6 ≈ 0, so the sum is about **1**."}, {"tag": "jot", "title": "In your own words", "text": "How do you know if a fraction is close to ½?"}], "standards": ["IN 6.NS.4: Solve real-world problems with positive fractions and decimals", "Grade 5 foundation: estimate with benchmark fractions"], "ixl": [{"t": "Estimate sums and differences of fractions using benchmarks", "d": "Round each fraction to 0, ½, or 1 before you add."}, {"t": "Compare fractions to ½", "d": "Warm-up if you missed problems 1 to 4."}, {"t": "IXL Math Arena", "d": "Only after you reach your SmartScore goal."}], "race": "Is 7/8 + 4/9 more or less than 2? Use benchmarks to prove it."}, {"title": "Day 2: Rounding mixed numbers", "target": "I can estimate sums and differences of mixed numbers by rounding to the nearest whole number.", "ind": [{"type": "est", "prompt": "Round to the nearest whole number.", "nums": "3 4/5"}, {"type": "est", "prompt": "Round to the nearest whole number.", "nums": "6 1/8"}, {"type": "est", "prompt": "Round to the nearest whole number.", "nums": "5 3/7"}, {"type": "est", "prompt": "Estimate the sum.", "nums": "4 7/8, 2 1/6", "op": "+", "skill": "k1"}, {"type": "est", "prompt": "Estimate the difference.", "nums": "9 1/5, 3 5/6", "op": "−", "skill": "k1"}, {"type": "est", "prompt": "Estimate the sum.", "nums": "7 2/3, 1 9/10", "op": "+", "skill": "k1"}, {"type": "est", "prompt": "Estimate the difference.", "nums": "12 1/9, 5 7/8", "op": "−", "skill": "k1"}, {"type": "est", "prompt": "A board is 8 5/6 feet long. Leo cuts off 2 1/10 feet. About how much is left?", "nums": "8 5/6, 2 1/10", "op": "−", "unit": "feet", "skill": "k3"}], "sg": [{"tag": "listen", "title": "From fractions to mixed numbers", "text": "Yesterday we rounded fractions to 0, ½, or 1. Today we round **mixed numbers** to the nearest whole number.\nThe fraction part tells you which way to round."}, {"tag": "fill", "title": "Notes: the rounding rule", "text": "If the fraction part is less than ½, the whole number stays the [[same]].\nIf the fraction part is ½ or more, round [[up]] to the next whole number."}, {"tag": "watch", "title": "Teacher example", "text": "6 4/5 + 3 2/9 ≈ ?\nStep 1: 4/5 is more than ½, so 6 4/5 rounds to **7**.\nStep 2: 2/9 is less than ½, so 3 2/9 rounds to **3**.\nStep 3: 7 + 3 = **10**."}, {"tag": "wedo", "title": "Try it with me", "text": "8 7/10 − 2 1/4 ≈ ?\nTap the whole number each one is closest to.\n{{8 7/10}}\n{{2 1/4}}\nEstimate: [[7|seven]]", "reveal": "9 − 2 = **7**."}, {"tag": "jot", "title": "In your own words", "text": "Why does 4 3/8 round to 4 and not 5?"}], "standards": ["IN 6.NS.4: Solve real-world problems with positive fractions and decimals", "Grade 5 foundation: estimate sums and differences of mixed numbers"], "ixl": [{"t": "Estimate sums and differences of mixed numbers", "d": "Round each mixed number to the nearest whole first."}, {"t": "Add and subtract mixed numbers", "d": "Estimate first, then solve. Does your answer match your estimate?"}, {"t": "IXL Math Arena", "d": "Only after you reach your SmartScore goal."}], "race": "Jada estimated 9 1/5 − 3 5/6 as 6. Is her estimate reasonable?"}, {"title": "Day 3: Estimating products", "target": "I can estimate products of fractions and mixed numbers and check if an answer is reasonable.", "ind": [{"type": "est", "prompt": "Estimate the product.", "nums": "5/9, 20", "op": "×", "skill": "k2"}, {"type": "est", "prompt": "Estimate the product.", "nums": "7/8, 16", "op": "×", "skill": "k2"}, {"type": "est", "prompt": "Estimate the product.", "nums": "3 7/8, 5", "op": "×", "skill": "k2"}, {"type": "est", "prompt": "Estimate the product.", "nums": "2 1/9, 6", "op": "×", "skill": "k2"}, {"type": "est", "prompt": "Estimate the product.", "nums": "5 5/6, 3 1/8", "op": "×", "skill": "k2"}, {"type": "est", "prompt": "Estimate the quotient.", "nums": "11 7/8, 2 9/10", "op": "÷", "skill": "k2"}, {"type": "est", "prompt": "A recipe uses 2 7/8 cups of flour. Sam makes 4 batches. About how much flour does he need?", "nums": "2 7/8, 4", "op": "×", "unit": "cups", "skill": "k3"}, {"type": "est", "prompt": "Jay solved this problem.", "nums": "4 1/9, 2 5/6", "op": "×", "skill": "k2", "claim": "25"}], "sg": [{"tag": "listen", "title": "Estimating when we multiply", "text": "We can use the same rounding tricks to estimate **products** and **quotients**.\nA good estimate helps you catch a wrong answer before you turn it in."}, {"tag": "fill", "title": "Notes: multiplying by a fraction", "text": "When you multiply a number by a fraction less than 1, the answer gets [[smaller|less]].\nTo estimate with mixed numbers, round each one to the nearest [[whole|whole number]] number first."}, {"tag": "watch", "title": "Teacher example", "text": "4 6/7 × 5 1/5 ≈ ?\nStep 1: 4 6/7 rounds to **5**.\nStep 2: 5 1/5 rounds to **5**.\nStep 3: 5 × 5 = **25**. The real answer should be close to 25."}, {"tag": "wedo", "title": "Try it with me", "text": "2 9/10 × 7 ≈ ?\nTap the whole number 2 9/10 is closest to.\n{{2 9/10}}\nEstimate: [[21|twenty-one]]", "reveal": "2 9/10 ≈ 3, and 3 × 7 = **21**."}, {"tag": "jot", "title": "In your own words", "text": "How can an estimate help you catch a mistake?"}], "standards": ["IN 6.NS.4: Solve real-world problems with positive fractions and decimals", "Grade 5 foundation: multiplying as scaling"], "ixl": [{"t": "Estimate products of fractions and mixed numbers", "d": "Round, then multiply."}, {"t": "Multiply fractions and whole numbers", "d": "Estimate first, then check your real answer."}, {"t": "IXL Math Arena", "d": "Only after you reach your SmartScore goal."}], "race": "Luis says 7/8 × 24 is about 30. Is his estimate reasonable?"}], "subject": "math", "third": "ixl", "tools": {"calc": false, "mult": true, "fracbars": true, "numline": true, "formulas": true}};
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const F = (n,d,w) => (w?w+' ':'') + `<span class="fr"><span>${n}</span><span>${d}</span></span>`;
+const fr = t => esc(t).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/(\d+) (\d+)\/(\d+)|(\d+)\/(\d+)/g,(m,w,n,d,n2,d2)=>w?F(n,d,w):F(n2,d2));
+const store = {
+  get(k,def){try{const v=localStorage.getItem(`win:${C.id}:`+k);return v===null?def:JSON.parse(v)}catch(e){return def}},
+  set(k,v){try{localStorage.setItem(`win:${C.id}:`+k,JSON.stringify(v))}catch(e){}}
+};
+function fmt(v){
+  if(v==null||isNaN(v))return "?";
+  const neg=v<0;v=Math.abs(v);const w=Math.floor(v+1e-9),f=v-w;
+  if(f<1e-6)return (neg?"-":"")+w;
+  if(Math.abs(f-.5)<1e-6)return (neg?"-":"")+(w?w:"")+"½";
+  for(let d=2;d<=12;d++){const n=Math.round(f*d);if(Math.abs(n/d-f)<1e-6)return (neg?"-":"")+(w?w+" ":"")+n+"/"+d}
+  return (neg?"-":"")+(+v.toFixed(2));
+}
+function parseNum(s){
+  s=String(s).replace(/½/g," 1/2").replace(/¼/g," 1/4").replace(/¾/g," 3/4").replace(/,/g,"").replace(/\s+/g," ").trim();
+  let m; if(!s)return NaN;
+  if(m=s.match(/^(-?\d+) (\d+)\/(\d+)$/))return +m[1]+m[2]/m[3];
+  if(m=s.match(/^(-?\d+)\/(\d+)$/))return m[1]/m[2];
+  if(/^-?\d*\.?\d+$/.test(s))return +s;
+  return NaN;
+}
+const calc=(a,o,b)=>o==="+"?a+b:o==="−"?a-b:o==="×"?a*b:o==="÷"?a/b:NaN;
+function parseSpec(str){
+  return String(str||"").split(",").map(t=>t.trim()).filter(Boolean).map(t=>{
+    let m,w=0,n,d;
+    if(m=t.match(/^(\d+)\s+(\d+)\/(\d+)$/)){w=+m[1];n=+m[2];d=+m[3]}
+    else if(m=t.match(/^(\d+)\/(\d+)$/)){n=+m[1];d=+m[2];if(d&&n>=d){w=Math.floor(n/d);n=n%d}}
+    else if(/^\d*\.?\d+$/.test(t))return{fixed:true,v:+t};
+    else return{bad:t};
+    if(!d)return{bad:t};
+    if(n===0)return{fixed:true,v:w};
+    const v=w+n/d;
+    let r; if(!w){const f=n/d;r=f<.25?0:f<.75?.5:1}else r=n/d>=.5?w+1:w;
+    return{n,d,w,v,r};
+  });
+}
+const plain=x=>x.fixed?String(x.v):(x.w?x.w+" ":"")+x.n+"/"+x.d;
+const rv=x=>x.fixed?x.v:x.r;
+const BI={b:{n:"Round fractions to 0, ½, 1",std:"5.NF.A.2"},m:{n:"Round mixed numbers",std:"5.NF.A.2"},reas:{n:"Judge if an answer is reasonable",std:""}};
+const skillOf=id=>{const s=(C.skills||[]).find(x=>x.id===id);return s?{n:s.name,std:s.std||""}:{n:"General",std:""}};
+const REAS_OPTS=["Yes, it's close","No, it's too big","No, it's too small"];
+
+/* prepare questions */
+C.days.forEach(D=>D.ind.forEach(q=>{
+  if(q.type!=="est")return;
+  q._nums=parseSpec(q.nums).filter(x=>!x.bad);
+  q._ans=null;
+  if(q.op&&q._nums.length>1)q._ans=q._nums.slice(1).reduce((a,x)=>calc(a,q.op,rv(x)),rv(q._nums[0]));
+  if(q.claim!==undefined&&q.claim!==""&&q._ans!=null){const c=+q.claim;
+    q._reason=q.reasonAns||(c>q._ans*1.3?REAS_OPTS[1]:c<q._ans*.7?REAS_OPTS[2]:REAS_OPTS[0])}
+}));
+
+/* ---------- number line ---------- */
+function makeLine(host,x,isDone,onRight,fbEl,onWrong){
+  const bench=!x.w, marks=bench?[0,.5,1]:[x.w,x.w+1];
+  const min=marks[0],max=marks[marks.length-1];
+  const X=v=>40+(v-min)/(max-min)*260;
+  let g=`<svg class="nl" viewBox="0 0 340 104" role="group" aria-label="Number line for ${plain(x)}"><line class="axis" x1="20" y1="56" x2="320" y2="56"/>`;
+  if(x.d<=24)for(let k=1;k<x.d;k++){const px=X(min+k/x.d);g+=`<line class="tick" x1="${px}" y1="49" x2="${px}" y2="63"/>`}
+  if(!bench)g+=`<line class="half" x1="${X(x.w+.5)}" y1="38" x2="${X(x.w+.5)}" y2="74"/><text class="halft" x="${X(x.w+.5)}" y="92">halfway</text>`;
+  if(isDone){const px=X(x.v);g+=`<polygon class="pin" points="${px-8},24 ${px+8},24 ${px},38"/><text class="pint" x="${px}" y="16">${plain(x)}</text>`}
+  marks.forEach(m=>{g+=`<g class="mk${isDone&&m===x.r?" good":""}" data-m="${m}" tabindex="${isDone?-1:0}" role="button" aria-label="${fmt(m)}"><circle cx="${X(m)}" cy="56" r="17"/><text x="${X(m)}" y="98">${fmt(m)}</text></g>`});
+  host.innerHTML=g+`</svg>`;
+  const half=x.d%2===0?String(x.d/2):`${Math.floor(x.d/2)}½`;
+  if(isDone){if(fbEl){fbEl.className="fb yes";fbEl.textContent=`${plain(x)} ≈ ${fmt(x.r)}`}return}
+  host.querySelectorAll(".mk").forEach(el=>{
+    const act=()=>{const m=+el.dataset.m;
+      if(Math.abs(m-x.r)<1e-9)onRight();
+      else{el.classList.add("bad");onWrong&&onWrong(m);
+        if(fbEl){fbEl.className="fb no";fbEl.textContent=bench
+          ?`Not yet. Half of ${x.d} is ${half}. Is ${x.n} close to 0, close to ${half}, or close to ${x.d}?`
+          :`Not yet. Look at ${x.n}/${x.d}. Half of ${x.d} is ${half}. Less than that stays at ${x.w}. That much or more goes up to ${x.w+1}.`}}};
+    el.addEventListener("click",act);
+    el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();act()}});
+  });
+}
+
+/* ---------- shell ---------- */
+document.title=`${C.room||""} WIN`.trim();
+$("#hTitle").textContent=`${C.room?C.room+" ":""}WIN`;
+$("#hSub").textContent=`${C.title||""}${C.title?". ":""}Tap the room your group is in.`;
+let day=Math.min(store.get("day",0),C.days.length-1), room=null;
+const nameEl=$("#stuName"); nameEl.value=store.get("name","");
+nameEl.addEventListener("input",()=>store.set("name",nameEl.value));
+C.subject=C.subject||"math";C.third=C.third||(C.subject==="ela"?"race":"ixl");C.tools=C.tools||{calc:false,mult:true,fracbars:true,numline:true,formulas:true};
+const ELA=C.subject==="ela";
+const ROOMS=[{id:"ind",nm:"Independent",icon:ELA?"📖":"✏️"},{id:"sg",nm:"Small group",icon:"👂"},C.third==="race"?{id:"race",nm:"RACE room",icon:"✍️"}:{id:"ixl",nm:"IXL room",icon:"💻"}];
+const getS=i=>(store.get(`w${day}`,{}))[i]||{r:{},e:"",rs:"",wr:[],we:[],wx:[],wa:[],ok:0,done:false};
+const saveS=(i,s)=>{const all=store.get(`w${day}`,{});all[i]=s;store.set(`w${day}`,all)};
+
+function status(d,r){
+  const D=C.days[d];
+  if(r==="ind"){const s=store.get(`w${d}`,{});const n=Object.values(s).filter(x=>x&&x.done).length,t=D.ind.length;return t&&n===t?["All finished","done"]:n?[`${n} of ${t} finished`,""]:["Not started",""]}
+  if(r==="sg")return store.get(`sg${d}done`,false)?["Finished","done"]:["Not started",""];
+  if(r==="race"){const ck=raceChecks(D.race,store.get(`race${d}`,{}));const n=Object.values(ck).filter(Boolean).length;return n===4?["All 4 parts done","done"]:n?[`${n} of 4 parts`,""]:["Not started",""]}
+  const need=Math.min(2,(D.ixl||[]).length);const k=store.get(`ixl${d}`,[]).filter(Boolean).length;return k>=need?["Skills done","done"]:[`${k} of ${need} skills`,""];
+}
+function renderDays(){
+  $("#days").innerHTML=C.days.map((D,i)=>`<button aria-pressed="${i===day}" data-day="${i}">Day ${i+1}</button>`).join("");
+  $("#days").querySelectorAll("button").forEach(b=>b.onclick=()=>{day=+b.dataset.day;store.set("day",day);room=null;render()});
+}
+function renderRoute(){
+  $("#route").innerHTML=ROOMS.map(r=>{const[t,c]=status(day,r.id);return `<button class="stop ${r.id}" data-room="${r.id}" aria-current="${room===r.id}">
+      <span class="dot" aria-hidden="true">${r.icon}</span><span><span class="nm">${r.nm}</span><br><span class="st ${c}">${c?"✓ ":""}${t}</span></span></button>`}).join("");
+  $("#route").querySelectorAll(".stop").forEach(b=>b.onclick=()=>{room=b.dataset.room;render();$("#room").scrollIntoView({behavior:"smooth",block:"start"})});
+}
+function renderTurnBar(){
+  $("#turnbar").className="turnbar";
+  $("#turnbar").innerHTML=`<button class="turnbtn" aria-current="${room==="turn"}">📬 Done with WIN? Turn in my work</button>`;
+  $("#turnbar").firstChild.onclick=()=>{room="turn";render();$("#room").scrollIntoView({behavior:"smooth",block:"start"})};
+}
+function render(){
+  renderDays();renderRoute();renderTurnBar();
+  const D=C.days[day],el=$("#room");
+  if(!room){renderToolsBtn();el.innerHTML=`<div class="empty"><h2 class="fred" style="margin:0 0 .4rem">${fr(D.title)}</h2><p style="margin:0">${fr(D.target)}</p><p style="margin:.6rem 0 0">Tap your room above to start.</p></div>`;return}
+  ({ind:renderInd,sg:renderSG,ixl:renderIXL,race:renderRACE,turn:renderTurn})[room](el,D);
+  renderToolsBtn();
+}
+
+/* ---------- independent ---------- */
+const openPads=new Set();
+function workText(q,s){
+  if(q.type==="mc"||q.type==="evidence")return (q.type==="evidence"?"Evidence: ":"Answer: ")+(q.options[s.val]?.text||"");
+  if(q.type==="num")return "Answer: "+(s.val||"")+(q.unit?" "+q.unit:"");
+  const parts=q._nums.filter(x=>!x.fixed).map(x=>`${plain(x)} ≈ ${fmt(x.r)}`);
+  if(q.op&&s.e)parts.push(`${q._nums.map(x=>fmt(rv(x))).join(` ${q.op} `)} = ${s.e}${q.unit?" "+q.unit:""}`);
+  if(q._reason&&s.rs)parts.push(s.rs);
+  return parts.join("; ");
+}
+function renderInd(el,D){
+  el.innerHTML=`<section class="room ind"><h2>Independent practice</h2>
+    <div class="goal"><b>Goal:</b> ${fr(D.target)}<br>${ELA?"Read the passage and highlight as you go. Then answer the questions. The page checks your answers.":"Work through each step. The page checks your work as you go. Use the scratch pad and math tools to show your thinking."}</div>
+    ${D.passage?passageHTML(D,true):""}
+    <div class="score"><span id="sc"></span><div class="bar"><i id="bar"></i></div></div>
+    ${D.ind.map((q,i)=>`<div class="q" id="q${i}"></div>`).join("")||"<p>No problems today.</p>"}</section>`;
+  D.ind.forEach((q,i)=>renderProblem(i));updScore();hookPassage(el);
+}
+function updScore(){
+  const D=C.days[day],n=Object.values(store.get(`w${day}`,{})).filter(x=>x&&x.done).length;
+  if($("#sc")){$("#sc").textContent=`${n} of ${D.ind.length} finished`;$("#bar").style.width=(D.ind.length?n/D.ind.length*100:0)+"%"}
+  renderRoute();
+}
+function padHTML(i){if(ELA)return "";const open=openPads.has(i);return `<div class="pad"><button class="small" data-pad>✏️ ${open?"Hide":"Show"} scratch pad</button>
+  ${open?`<canvas id="cv${i}" aria-label="Scratch pad"></canvas><div class="padbar"><button class="small" data-clear>Clear</button><span>Draw with your finger.</span></div>`:""}</div>`}
+function hookPad(i,box){if(ELA)return;box.querySelector("[data-pad]").onclick=()=>{openPads.has(i)?openPads.delete(i):openPads.add(i);renderProblem(i)};if(openPads.has(i))mountPad(i)}
+function renderProblem(i){
+  const q=C.days[day].ind[i],s=getS(i),box=$("#q"+i);
+  if(q.type==="mc"||q.type==="num"||q.type==="evidence")return renderSimple(i,q,s,box);
+  const toRound=q._nums.map((x,j)=>[x,j]).filter(([x])=>!x.fixed);
+  const roundedAll=toRound.every(([x,j])=>s.r[j]);
+  const needEq=q._ans!=null, eqDone=!needEq||!!s.e, rDone=!q._reason||s.rs===q._reason;
+  const done=roundedAll&&eqDone&&rDone;
+  if(done&&!s.done){s.done=true;saveS(i,s)}
+  box.className="q"+(done?" right":"");
+  const mixed=toRound.some(([x])=>x.w);
+  let h=`<div class="num">Problem ${i+1}${done?" ✓":""}</div><div class="prompt">${fr(q.prompt)}</div>
+    <div class="expr">${q._nums.map(x=>x.fixed?x.v:F(x.n,x.d,x.w||"")).join(` ${q.op||""} `)}${needEq?" ≈ ?":""}</div>`;
+  if(toRound.length)h+=`<div class="stepbox"><h4>Step 1: Round ${toRound.length>1?"each number":"it"}</h4>
+    <p class="tip">${mixed?"Tap the whole number it's closest to.":"Tap the benchmark it's closest to: 0, ½, or 1."}</p>
+    ${toRound.map(([x,j])=>`<div class="nlwrap"><div class="lbl">${F(x.n,x.d,x.w||"")}</div><div id="nl${i}_${j}"></div><div class="fb" id="nf${i}_${j}" aria-live="polite"></div></div>`).join("")}</div>`;
+  if(needEq&&roundedAll){
+    h+=`<div class="stepbox"><h4>Step ${toRound.length?2:1}: Write your estimate</h4>
+      <div class="eq"><span>${q._nums.map(x=>fmt(rv(x))).join(` ${q.op} `)} =</span>
+      <input id="eq${i}" autocomplete="off" value="${esc(s.e||"")}" ${eqDone?"disabled":""} class="${eqDone?"ok":""}" aria-label="Your estimate">
+      <span>${esc(q.unit||"")}</span>${eqDone?"":`<button class="small go" id="eqc${i}">Check</button>`}</div>
+      <div class="fb" id="ef${i}" aria-live="polite"></div>${eqDone?"":`<p class="tip">Type fractions like 1 1/2 or 1/2.</p>`}</div>`;
+  }
+  if(q._reason&&roundedAll&&eqDone){
+    h+=`<div class="stepbox"><h4>Check if it's reasonable</h4><p style="margin:.2rem 0 .5rem">The answer given was ${fr(String(q.claim))}. Is that reasonable?</p>
+      <div class="ropts">${REAS_OPTS.map(o=>`<button data-ro="${esc(o)}" ${rDone?"disabled":""} class="${rDone&&o===q._reason?"correct":""}">${o}</button>`).join("")}</div>
+      <div class="fb" id="rf${i}" aria-live="polite"></div></div>`;
+  }
+  if(done)h+=`<div class="work"><b>My work:</b> ${esc(workText(q,s))}</div>`;
+  box.innerHTML=h+padHTML(i);
+  toRound.forEach(([x,j])=>makeLine($(`#nl${i}_${j}`),x,!!s.r[j],
+    ()=>{const t=getS(i);t.r[j]=true;saveS(i,t);renderProblem(i);updScore()},$(`#nf${i}_${j}`),
+    m=>{const t=getS(i);(t.wr=t.wr||[]).push([j,m]);saveS(i,t)}));
+  const chk=$(`#eqc${i}`);
+  if(chk){const inp=$(`#eq${i}`);const go=()=>{const v=parseNum(inp.value);
+    if(Math.abs(v-q._ans)<.011){const t=getS(i);t.e=inp.value.trim();saveS(i,t);renderProblem(i);updScore()}
+    else{const t=getS(i);(t.we=t.we||[]).push(inp.value.trim());saveS(i,t);const f=$(`#ef${i}`);f.className="fb no";
+      f.textContent=isNaN(v)?"Type a number, like 7 or 1 1/2.":(q.hint||`Not yet. Work it out: ${q._nums.map(x=>fmt(rv(x))).join(` ${q.op} `)}.`)}};
+    chk.onclick=go;inp.addEventListener("keydown",e=>{if(e.key==="Enter")go()});}
+  box.querySelectorAll("[data-ro]").forEach(b=>b.onclick=()=>{const t=getS(i);
+    if(b.dataset.ro===q._reason){t.rs=q._reason;saveS(i,t);renderProblem(i);updScore()}
+    else{b.classList.add("wrong");b.disabled=true;(t.wx=t.wx||[]).push(b.dataset.ro);saveS(i,t);const f=$(`#rf${i}`);f.className="fb no";f.textContent="Not yet. Compare the answer to your estimate."}});
+  hookPad(i,box);
+}
+function renderSimple(i,q,s,box){
+  const done=!!s.ok; if(done&&!s.done){s.done=true;saveS(i,s)}
+  box.className="q"+(done?" right":"");
+  let h=`<div class="num">Problem ${i+1}${done?" ✓":""}</div><div class="prompt">${fr(q.prompt)}</div>`;
+  if(q.type==="evidence"){
+    h+=`<div class="evopts">${q.options.map((o,k)=>{const wrong=(s.wa||[]).includes(k),right=done&&k===s.val;
+      return `<button data-k="${k}" ${done||wrong?"disabled":""} class="quote ${wrong?"wrong":right?"correct":""}">“${esc(o.text.replace(/^[“"]|[”"]$/g,""))}”</button>`}).join("")}</div>`;
+  } else if(q.type==="mc"){
+    h+=`<div class="opts${ELA||q.options.some(o=>String(o.text).length>28)?" long":""}">${q.options.map((o,k)=>{const wrong=(s.wa||[]).includes(k),right=done&&k===s.val;
+      return `<button data-k="${k}" ${done||wrong?"disabled":""} class="${wrong?"wrong":right?"correct":""}">${fr(o.text)}</button>`}).join("")}</div>`;
+  } else {
+    h+=`<div class="eq"><input id="nm${i}" autocomplete="off" value="${esc(done?s.val:"")}" ${done?"disabled class='ok'":""} aria-label="Your answer"><span>${esc(q.unit||"")}</span>${done?"":`<button class="small go" id="nc${i}">Check</button>`}</div>`;
+  }
+  h+=`<div class="fb" id="sf${i}" aria-live="polite"></div>`;
+  if(done)h+=`<div class="work"><b>My work:</b> ${esc(workText(q,s))}</div>`;
+  box.innerHTML=h+padHTML(i);
+  const miss=v=>{const t=getS(i);(t.wa=t.wa||[]).push(v);saveS(i,t);return t};
+  if(q.type==="mc"||q.type==="evidence")box.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{const k=+b.dataset.k;
+    if(q.options[k].correct){const t=getS(i);t.ok=1;t.val=k;saveS(i,t);if(q.type==="evidence")markEvidence(q.options[k].text);renderProblem(i);updScore()}
+    else{miss(k);b.classList.add("wrong");b.disabled=true;const f=$(`#sf${i}`);f.className="fb no";f.textContent=q.hint||"Not yet. Try again."}});
+  else{const inp=$(`#nm${i}`),b=$(`#nc${i}`);if(b){const go=()=>{const v=inp.value.trim();if(!v)return;
+    if(numMatch(q,v)){const t=getS(i);t.ok=1;t.val=v;saveS(i,t);renderProblem(i);updScore()}
+    else{miss(v);const f=$(`#sf${i}`);f.className="fb no";f.textContent=q.hint||"Not yet. Check your work and try again."}};
+    b.onclick=go;inp.addEventListener("keydown",e=>{if(e.key==="Enter")go()});}}
+  hookPad(i,box);
+}
+const eqVal=(a,b)=>{const x=parseNum(a),y=parseNum(b);if(!isNaN(x)&&!isNaN(y))return Math.abs(x-y)<.011;return String(a).trim().toLowerCase()===String(b).trim().toLowerCase()};
+const numMatch=(q,v)=>[q.answer,...String(q.alts||"").split(",")].filter(x=>String(x).trim()).some(a=>eqVal(v,a));
+function mountPad(i){
+  const cv=$(`#cv${i}`),key=`pad${day}_${i}`,w=cv.getBoundingClientRect().width,hgt=220,dpr=window.devicePixelRatio||1;
+  cv.width=w*dpr;cv.height=hgt*dpr;const ctx=cv.getContext("2d");ctx.scale(dpr,dpr);
+  ctx.lineWidth=3;ctx.lineCap="round";ctx.lineJoin="round";ctx.strokeStyle=getComputedStyle(document.body).color;
+  const saved=store.get(key,null);if(saved){const img=new Image();img.onload=()=>ctx.drawImage(img,0,0,w,hgt);img.src=saved}
+  let drawing=false;const pt=e=>{const r=cv.getBoundingClientRect();return[e.clientX-r.left,e.clientY-r.top]};
+  cv.addEventListener("pointerdown",e=>{drawing=true;cv.setPointerCapture(e.pointerId);const[x,y]=pt(e);ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+.1,y+.1);ctx.stroke()});
+  cv.addEventListener("pointermove",e=>{if(!drawing)return;const[x,y]=pt(e);ctx.lineTo(x,y);ctx.stroke()});
+  const end=()=>{if(!drawing)return;drawing=false;store.set(key,cv.toDataURL("image/png"))};
+  cv.addEventListener("pointerup",end);cv.addEventListener("pointercancel",end);
+  $(`#q${i}`).querySelector("[data-clear]").onclick=()=>{ctx.clearRect(0,0,w,hgt);store.set(key,null)};
+}
+
+/* ---------- small group ---------- */
+const TAGS={listen:"Listen",fill:"Fill in as you listen",watch:"Watch me",wedo:"We do",jot:"Stop and jot"};
+function stepHTML(st){
+  const blanks=[],nls=[],lines=String(st.text||"").split("\n").filter(l=>l.trim());
+  const line=l=>{let t=l.replace(/\[\[(.+?)\]\]/g,(m,a)=>{blanks.push(a);return `\u0001${blanks.length-1}\u0001`}).replace(/\{\{(.+?)\}\}/g,(m,a)=>{nls.push(a);return `\u0002${nls.length-1}\u0002`});
+    t=fr(t).replace(/\u0001(\d+)\u0001/g,(m,k)=>`<input class="blank" data-a="${esc(blanks[+k])}" aria-label="blank">`)
+      .replace(/\u0002(\d+)\u0002/g,(m,k)=>{const x=parseSpec(nls[+k])[0];return x&&!x.fixed&&!x.bad?`<div class="nlmount" data-n="${x.n}" data-d="${x.d}" data-w="${x.w}"><div class="lbl">${F(x.n,x.d,x.w||"")}</div><div class="nlh"></div><div class="fb"></div></div>`:""});
+    return t};
+  let h="";
+  if(st.tag==="watch"){h+=`<p class="fred" style="font-size:1.4rem">${line(lines[0]||"")}</p>`+lines.slice(1).map(l=>`<p class="ws">${line(l)}</p>`).join("")}
+  else h+=lines.map(l=>/^\u0002|^\{\{/.test(l.trim())?line(l):`<p>${line(l)}</p>`).join("");
+  if(st.tag==="jot")h+=`<textarea aria-label="Your answer"></textarea>`;
+  if(st.reveal)h+=`<button class="reveal" data-show>Show answer</button><div class="hidden-ans">${fr(st.reveal)}</div>`;
+  return h;
+}
+let sgStep=0;
+function renderSG(el,D){
+  const steps=D.sg||[];if(!steps.length){el.innerHTML=`<section class="room sg"><h2>Small group lesson</h2><p>Your teacher will tell you what to do.</p></section>`;return}
+  if(sgStep>=steps.length)sgStep=0;const s=steps[sgStep];
+  el.innerHTML=`<section class="room sg"><h2>Small group lesson</h2>
+    <div class="cue"><span aria-hidden="true">👀</span> Eyes on your teacher. Only tap Next when your teacher says so.</div>
+    <div class="goal"><b>Learning target:</b> ${fr(D.target)}</div>
+    <div class="step"><span class="tag">${TAGS[s.tag]||"Listen"}</span><h3>${fr(s.title)}</h3>${stepHTML(s)}</div>
+    <div class="stepper"><button class="btn ghost" id="prev" ${sgStep===0?"disabled":""}>Back</button>
+      <div class="dots" aria-label="Step ${sgStep+1} of ${steps.length}">${steps.map((_,i)=>`<i class="${i<=sgStep?"on":""}"></i>`).join("")}</div>
+      <button class="btn" id="next">${sgStep===steps.length-1?"Finish lesson":"Next"}</button></div></section>`;
+  const ws=[...el.querySelectorAll(".ws")];
+  if(ws.length){let shown=1;ws.forEach((p,k)=>p.hidden=k>0);if(ws.length>1){const b=document.createElement("button");b.className="reveal";b.textContent="Show next step";ws[ws.length-1].after(b);b.onclick=()=>{ws[shown].hidden=false;shown++;if(shown>=ws.length)b.remove()}}}
+  el.querySelectorAll(".nlmount").forEach(m=>{const x=parseSpec(`${+m.dataset.w?m.dataset.w+" ":""}${m.dataset.n}/${m.dataset.d}`)[0];
+    const draw=done=>makeLine(m.querySelector(".nlh"),x,done,()=>draw(true),m.querySelector(".fb"));draw(false)});
+  const saveKey=`sg${day}s${sgStep}`,saved=store.get(saveKey,[]);
+  el.querySelectorAll(".blank,textarea").forEach((inp,i)=>{
+    if(saved[i])inp.value=saved[i];
+    inp.addEventListener("input",()=>{store.set(saveKey,[...el.querySelectorAll(".blank,textarea")].map(x=>x.value));if(inp.classList.contains("blank"))inp.classList.remove("ok","miss")});
+    if(inp.classList.contains("blank"))inp.addEventListener("blur",()=>{const v=inp.value.trim();if(!v)return;
+      const ok=inp.dataset.a.split("|").some(a=>eqVal(v,a));inp.classList.toggle("ok",ok);inp.classList.toggle("miss",!ok)});
+  });
+  el.querySelectorAll("[data-show]").forEach(b=>b.onclick=()=>{b.nextElementSibling.classList.add("show");b.remove()});
+  $("#prev").onclick=()=>{sgStep--;renderSG(el,D)};
+  $("#next").onclick=()=>{if(sgStep===steps.length-1){store.set(`sg${day}done`,true);sgStep=0;room="ixl";render()}else{sgStep++;renderSG(el,D)}};
+  renderRoute();
+}
+
+/* ---------- IXL + RACE ---------- */
+const RACE=[["R","Restate","Turn the question into a sentence."],["A","Answer","Answer the question."],["C","Cite","Show your evidence: the numbers or steps you used."],["E","Explain","Tell why your evidence proves your answer."]];
+function renderIXL(el,D){
+  const key=`ixl${day}`,got=store.get(key,[]),rk=`race${day}`,r=store.get(rk,{});
+  el.innerHTML=`<section class="room ixl"><h2>IXL room</h2>
+    <div class="goal"><b>Your goal:</b> SmartScore ${C.smart||80} on each skill, in order. Check it off when you get there.</div>
+    <div class="std">${(D.standards||[]).map(s=>`<span>${esc(s)}</span>`).join("")}</div>
+    ${(D.ixl||[]).map((k,i)=>`<label class="skill ${got[i]?"got":""}"><input type="checkbox" data-k="${i}" ${got[i]?"checked":""}>
+      <span><span class="t">${esc(k.t)}</span><br><span class="d">${fr(k.d||"")}</span></span></label>`).join("")}
+    <p style="font-size:.95rem;color:var(--soft)">Can't find a skill? Type its name in the IXL search bar.</p>
+    ${D.race?`<div class="race"><h3>RACE response</h3><div class="prompt">${fr(D.race)}</div>
+      ${RACE.map(([l,n,tip])=>`<div class="rrow"><div class="rletter" aria-hidden="true">${l}</div><div><label for="r${l}">${n}</label><small>${tip}</small><textarea id="r${l}" data-r="${l}">${esc(r[l]||"")}</textarea></div></div>`).join("")}</div>`:""}
+  </section>`;
+  el.querySelectorAll("[data-k]").forEach(c=>c.onchange=()=>{const g=store.get(key,[]);g[+c.dataset.k]=c.checked;store.set(key,g);c.closest(".skill").classList.toggle("got",c.checked);renderRoute()});
+  el.querySelectorAll("[data-r]").forEach(t=>t.oninput=()=>{const o=store.get(rk,{});o[t.dataset.r]=t.value;store.set(rk,o)});
+}
+
+
+/* ---------- passage + highlighter ---------- */
+const HL={y:"Evidence",b:"Key idea",p:"Question or new word"};
+let hlColor="y";
+const norm=t=>String(t).toLowerCase().replace(/[“”"'’‘]/g,"").replace(/\s+/g," ").trim();
+function sentences(D){if(D._sent)return D._sent;const paras=String(D.passage.text||"").split(/\n\s*\n/).map(p=>p.replace(/\s+/g," ").trim()).filter(Boolean);
+  let k=0;D._sent=paras.map(p=>(p.match(/[^.!?]+[.!?]+["”’']?(?=\s|$)|[^.!?]+$/g)||[p]).map(x=>({i:k++,t:x.trim()})).filter(x=>x.t));return D._sent}
+function passageHTML(D,open){const hl=store.get(`hl${day}`,{});
+  return `<details class="passage" ${open?"open":""}><summary>📖 ${esc(D.passage.title||"Passage")}</summary>
+    <div class="hlbar" role="toolbar" aria-label="Highlighter">${Object.entries(HL).map(([k,v])=>`<button data-hc="${k}" class="hc hc-${k}" aria-pressed="${hlColor===k}">${v}</button>`).join("")}<button data-hc="x" class="hc hc-x" aria-pressed="${hlColor==="x"}">Eraser</button></div>
+    <p class="tip">Pick a color, then tap a sentence to highlight it.</p>
+    ${sentences(D).map((p,pi)=>`<p><span class="pnum">${pi+1}</span>${p.map(x=>`<span class="sn ${hl[x.i]?"h-"+hl[x.i]:""}" data-s="${x.i}">${esc(x.t)}</span>`).join(" ")}</p>`).join("")}</details>`}
+function hookPassage(el){
+  el.querySelectorAll("[data-hc]").forEach(b=>b.onclick=()=>{hlColor=b.dataset.hc;el.querySelectorAll("[data-hc]").forEach(x=>x.setAttribute("aria-pressed",x===b))});
+  el.querySelectorAll(".sn").forEach(sp=>sp.onclick=()=>{const hl=store.get(`hl${day}`,{}),i=sp.dataset.s;
+    if(hlColor==="x"||hl[i]===hlColor)delete hl[i];else hl[i]=hlColor;store.set(`hl${day}`,hl);
+    sp.className="sn"+(hl[i]?" h-"+hl[i]:"");if(room==="race")refreshEvidence()});
+}
+function markEvidence(text){const D=C.days[day];if(!D.passage)return;const hl=store.get(`hl${day}`,{}),n=norm(text);
+  sentences(D).flat().forEach(x=>{if(n.includes(norm(x.t)))hl[x.i]="y"});store.set(`hl${day}`,hl);
+  document.querySelectorAll(".sn").forEach(sp=>{const c=hl[sp.dataset.s];sp.className="sn"+(c?" h-"+c:"")})}
+
+/* ---------- RACE room ---------- */
+const STOP=new Set("the a an and or but of to in on at for with is are was were be been this that these those it its from by as what how why does do did which who your you their there use evidence text story author".split(" "));
+function raceChecks(prompt,r){r=r||{};const w=t=>String(t||"").toLowerCase().match(/[a-z']+/g)||[];
+  const keys=[...new Set(w(prompt).filter(x=>x.length>3&&!STOP.has(x)))],R=w(r.R),E=w(r.E);
+  return{restate:R.length>=5&&keys.filter(k=>R.includes(k)).length>=Math.min(2,keys.length),answer:w(r.A).length>=4,
+    cite:/["“”]/.test(r.C||"")&&w(r.C).length>=5,explain:E.length>=12&&/(because|shows|this means|proves|so |which|since|this is why)/i.test(r.E||"")}}
+const STARTERS={R:["The question asks","In the text,"],A:["I think","The answer is","Yes, because","No, because"],C:["The text states, “","In paragraph __, the author writes, “","For example, “"],E:["This shows that","This proves","This means that","This is important because"]};
+const RACE_TIPS={R:"Turn the question into a sentence. Use words from the question.",A:"Answer the question in your own words.",C:"Quote the text. Put the author's exact words in quotation marks.",E:"Tell how your quote proves your answer. Use at least 12 words."};
+function renderRACE(el,D){
+  const rk=`race${day}`,r=store.get(rk,{});
+  el.innerHTML=`<section class="room race"><h2>RACE room</h2>
+    <div class="goal"><b>Your task:</b> ${fr(D.race||"Your teacher will give you a question.")}</div>
+    ${D.passage?passageHTML(D,false):""}
+    <div class="evbank"><h3>My evidence</h3><div id="evlist"></div></div>
+    ${RACE.map(([l,n])=>`<div class="rrow"><div class="rletter" aria-hidden="true">${l}</div><div><label for="r${l}">${n}</label><small>${RACE_TIPS[l]}</small>
+      <div class="starters">${STARTERS[l].map(t=>`<button data-st="${l}" data-t="${esc(t)}">${esc(t)}</button>`).join("")}</div>
+      <textarea id="r${l}" data-r="${l}">${esc(r[l]||"")}</textarea></div></div>`).join("")}
+    <div class="rcheck" id="rcheck" aria-live="polite"></div></section>`;
+  hookPassage(el);refreshEvidence();
+  const upd=()=>{const o=store.get(rk,{});const ck=raceChecks(D.race,o);
+    $("#rcheck").innerHTML=`<b>RACE checklist</b>`+[["restate","Restated the question using its key words"],["answer","Answered the question"],["cite","Quoted the text in quotation marks"],["explain","Explained how the quote proves the answer (12+ words)"]].map(([k,t])=>`<div class="${ck[k]?"ok":""}">${ck[k]?"✅":"⬜"} ${t}</div>`).join("");renderRoute()};
+  el.querySelectorAll("[data-r]").forEach(t=>t.oninput=()=>{const o=store.get(rk,{});o[t.dataset.r]=t.value;store.set(rk,o);upd()});
+  el.querySelectorAll("[data-st]").forEach(b=>b.onclick=()=>{const ta=$("#r"+b.dataset.st);ta.value=(ta.value?ta.value.replace(/\s*$/," "):"")+b.dataset.t+(b.dataset.t.endsWith("“")?"":" ");ta.dispatchEvent(new Event("input"));ta.focus()});
+  upd();
+}
+function refreshEvidence(){const D=C.days[day],box=$("#evlist");if(!box)return;const hl=store.get(`hl${day}`,{});
+  const ev=D.passage?sentences(D).flat().filter(x=>hl[x.i]==="y"):[];
+  box.innerHTML=ev.length?ev.map(x=>`<div class="evi"><span>“${esc(x.t)}”</span><button class="small" data-ev="${x.i}">Use in Cite</button></div>`).join(""):`<p class="tip">${D.passage?"Highlight sentences in yellow (Evidence) and they'll show up here.":"Write your evidence in the Cite box."}</p>`;
+  box.querySelectorAll("[data-ev]").forEach(b=>b.onclick=()=>{const x=sentences(D).flat().find(z=>z.i==b.dataset.ev),ta=$("#rC");
+    ta.value=(ta.value?ta.value.replace(/\s*$/," "):"The text states, ")+`“${x.t.replace(/^[“"]|[”"]$/g,"")}”`;ta.dispatchEvent(new Event("input"))})}
+
+/* ---------- math tools ---------- */
+let toolTab=null;
+function renderToolsBtn(){let b=$("#toolsBtn");const on=!ELA&&Object.values(C.tools).some(Boolean);
+  if(!on){if(b)b.remove();return}
+  if(!b){b=document.createElement("button");b.id="toolsBtn";b.className="toolsbtn";b.textContent="🧰 Math tools";document.body.appendChild(b);b.onclick=()=>openTools()}}
+function openTools(tab){const T=C.tools,tabs=[["calc","Calculator"],["mult","Times table"],["fracbars","Fraction bars"],["numline","Number line"],["formulas","Formulas"]].filter(([k])=>T[k]);
+  toolTab=tab||toolTab||tabs[0][0];let sh=$("#toolSheet");if(!sh){sh=document.createElement("div");sh.id="toolSheet";sh.className="sheet";document.body.appendChild(sh)}
+  sh.innerHTML=`<div class="sheet-bar"><div class="tabs">${tabs.map(([k,v])=>`<button data-tt="${k}" aria-pressed="${k===toolTab}">${v}</button>`).join("")}</div><button class="small" id="toolClose">Close</button></div><div class="sheet-body" id="toolBody"></div>`;
+  sh.hidden=false;sh.querySelectorAll("[data-tt]").forEach(b=>b.onclick=()=>openTools(b.dataset.tt));$("#toolClose").onclick=()=>{sh.hidden=true};
+  ({calc:toolCalc,mult:toolMult,fracbars:toolFrac,numline:toolLine,formulas:toolForm})[toolTab]($("#toolBody"))}
+function evalExpr(s){const t=s.replace(/×/g,"*").replace(/÷/g,"/").replace(/−/g,"-").match(/\d*\.?\d+|[-+*/()]/g)||[];let i=0;
+  const num=()=>{let x=t[i++];if(x==="-")return -num();if(x==="(") {const v=add();i++;return v}return parseFloat(x)};
+  const mul=()=>{let v=num();while(t[i]==="*"||t[i]==="/"){const o=t[i++],r=num();v=o==="*"?v*r:v/r}return v};
+  const add=()=>{let v=mul();while(t[i]==="+"||t[i]==="-"){const o=t[i++],r=mul();v=o==="+"?v+r:v-r}return v};
+  const v=add();return isFinite(v)?+v.toFixed(8):NaN}
+function toolCalc(b){let cur="";b.innerHTML=`<div class="calc"><input id="cdisp" readonly aria-label="Calculator display"><div class="keys">${["C","(",")","÷","7","8","9","×","4","5","6","−","1","2","3","+","0",".","⌫","="].map(k=>`<button data-ck="${k}">${k}</button>`).join("")}</div></div>`;
+  b.querySelectorAll("[data-ck]").forEach(k=>k.onclick=()=>{const v=k.dataset.ck;if(v==="C")cur="";else if(v==="⌫")cur=cur.slice(0,-1);else if(v==="="){const r=evalExpr(cur);cur=isNaN(r)?"":String(r);$("#cdisp").value=isNaN(r)?"Error":cur;return}else cur+=v;$("#cdisp").value=cur})}
+function toolMult(b){b.innerHTML=`<div class="scroll"><table class="mult"><tr><th>×</th>${[...Array(12)].map((_,j)=>`<th>${j+1}</th>`).join("")}</tr>${[...Array(12)].map((_,i)=>`<tr><th>${i+1}</th>${[...Array(12)].map((_,j)=>`<td data-r="${i}" data-c="${j}">${(i+1)*(j+1)}</td>`).join("")}</tr>`).join("")}</table></div><p class="tip">Tap a product to see its row and column.</p>`;
+  b.querySelectorAll("td").forEach(td=>td.onclick=()=>{b.querySelectorAll("td").forEach(x=>x.className=(x.dataset.r===td.dataset.r||x.dataset.c===td.dataset.c)?"line":"");td.className="hit"})}
+let fracDen=[2,3,4];
+function toolFrac(b){b.innerHTML=`<div class="chips">${[1,2,3,4,5,6,8,10,12].map(d=>`<button data-fd="${d}" aria-pressed="${fracDen.includes(d)}">${d===1?"1 whole":"1/"+d}</button>`).join("")}</div>
+  <div class="fbars">${fracDen.sort((x,y)=>x-y).map(d=>`<div class="fbar">${[...Array(d)].map(()=>`<span>${d===1?"1":"1/"+d}</span>`).join("")}</div>`).join("")}</div><p class="tip">Tap pieces to shade them. Compare the lengths.</p>`;
+  b.querySelectorAll("[data-fd]").forEach(x=>x.onclick=()=>{const d=+x.dataset.fd;fracDen=fracDen.includes(d)?fracDen.filter(z=>z!==d):[...fracDen,d];toolFrac(b)});
+  b.querySelectorAll(".fbar span").forEach(sp=>sp.onclick=()=>sp.classList.toggle("on"))}
+let nl={a:-10,b:10,s:1,pts:[]};
+function toolLine(b){const {a,b:e,s}=nl,n=Math.round((e-a)/s);const X=v=>20+(v-a)/(e-a)*560;
+  b.innerHTML=`<div class="nlset"><label>From <input type="number" id="nla" value="${a}"></label><label>To <input type="number" id="nlb" value="${e}"></label><label>Step <input type="number" id="nls" value="${s}" step="any"></label><button class="small" id="nlclr">Clear points</button></div>
+  <svg class="nltool" viewBox="0 0 600 90" role="img" aria-label="Number line"><line x1="10" y1="45" x2="590" y2="45" stroke="currentColor" stroke-width="2"/>
+  ${n>0&&n<=40?[...Array(n+1)].map((_,k)=>{const v=+(a+k*s).toFixed(4);return `<line x1="${X(v)}" y1="37" x2="${X(v)}" y2="53" stroke="currentColor"/><text x="${X(v)}" y="72" text-anchor="middle" font-size="12" fill="currentColor">${fmt(v)}</text>`}).join(""):""}
+  ${nl.pts.map(v=>`<circle cx="${X(v)}" cy="45" r="7" fill="var(--sg)"/><text x="${X(v)}" y="25" text-anchor="middle" font-size="13" font-weight="700" fill="var(--sg)">${fmt(v)}</text>`).join("")}</svg><p class="tip">Tap the line to place a point. Up to 40 steps.</p>`;
+  const set=()=>{const A=+$("#nla").value,B=+$("#nlb").value,S=+$("#nls").value;if(B>A&&S>0){nl={a:A,b:B,s:S,pts:[]};toolLine(b)}};
+  ["#nla","#nlb","#nls"].forEach(id=>$(id).onchange=set);$("#nlclr").onclick=()=>{nl.pts=[];toolLine(b)};
+  b.querySelector("svg").onclick=ev=>{const r=ev.currentTarget.getBoundingClientRect(),x=(ev.clientX-r.left)/r.width*600;let v=a+(x-20)/560*(e-a);v=Math.round(v/s)*s;if(v>=a&&v<=e){nl.pts.push(+v.toFixed(4));toolLine(b)}}}
+function toolForm(b){b.innerHTML=`<dl class="forms">${[["Rectangle area","A = l × w"],["Triangle area","A = b × h ÷ 2"],["Parallelogram area","A = b × h"],["Trapezoid area","A = (b₁ + b₂) × h ÷ 2"],["Rectangular prism volume","V = l × w × h, or V = B × h"],["Triangle angles","add to 180°"],["Quadrilateral angles","add to 360°"],["Mean","add the values, divide by how many"],["Median","the middle value after ordering"],["Range","greatest − least"],["IQR","Q3 − Q1"],["Percent","part ÷ whole × 100"],["Unit rate","total ÷ number of units"]].map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>`}
+
+/* ---------- turn in + data code ---------- */
+const CONF=[["😵","I'm lost"],["🤔","I need more help"],["🙂","I almost got it"],["😎","I can teach it"]];
+const HELPED=ELA?["Highlighter","Hints","Small group","Sentence starters","RACE checklist"]:["Number lines","Hints","Small group","Scratch pad","Math tools","IXL"];
+const MIS={blow:"Picked a benchmark that's too low",bhigh:"Picked a benchmark that's too high",trunc:"Dropped the fraction instead of rounding up",up:"Rounded up with a fraction under ½",
+  wop:"Used the wrong operation",exact:"Computed exactly instead of estimating",slip:"Small computation slip after rounding",reas:"Misjudged whether an answer is reasonable"};
+function estMis(q,str){const v=parseNum(str);if(isNaN(v))return "";const r=q._nums.map(rv),a=q._nums.map(x=>x.fixed?x.v:x.v);
+  const fold=(arr,o)=>arr.slice(1).reduce((x,y)=>calc(x,o,y),arr[0]);
+  if(["+","−","×","÷"].some(o=>o!==q.op&&Math.abs(fold(r,o)-v)<.011))return MIS.wop;
+  if(Math.abs(fold(a,q.op)-v)<.2&&Math.abs(q._ans-v)>.011)return MIS.exact;
+  if(Math.abs(v-q._ans)<=1.01)return MIS.slip;return ""}
+function buildPayload(d){
+  const D=C.days[d],w=store.get(`w${d}`,{}),tn=store.get(`turn${d}`,{}),items=[],skills={};
+  const addSk=sk=>{skills[sk.n]=sk.std;return sk.n};
+  D.ind.forEach((q,i)=>{const s=w[i]||{};
+    if(q.type==="est"){
+      q._nums.forEach((x,j)=>{if(x.fixed)return;const wr=(s.wr||[]).filter(z=>z[0]===j);const ok=!!(s.r&&s.r[j]);
+        items.push({q:i,k:"round",sk:[addSk(x.w?BI.m:BI.b)],att:ok||wr.length?1:0,ft:ok&&!wr.length?1:0,
+          wrong:wr.map(([_,m])=>({v:`${plain(x)} → ${fmt(m)}`,m:x.w?(m<x.r?MIS.trunc:MIS.up):(m<x.r?MIS.blow:MIS.bhigh)}))})});
+      if(q._ans!=null){const we=s.we||[];items.push({q:i,k:"est",sk:[addSk(skillOf(q.skill))],att:s.e||we.length?1:0,ft:s.e&&!we.length?1:0,
+        wrong:we.map(v=>({v:`= ${v||"blank"}`,m:estMis(q,v)}))})}
+      if(q._reason){const wx=s.wx||[];items.push({q:i,k:"reas",sk:[addSk(BI.reas)],att:s.rs||wx.length?1:0,ft:s.rs&&!wx.length?1:0,wrong:wx.map(v=>({v,m:MIS.reas}))})}
+    } else {const wa=s.wa||[];
+      items.push({q:i,k:q.type,sk:[addSk(skillOf(q.skill))],att:s.ok||wa.length?1:0,ft:s.ok&&!wa.length?1:0,
+        wrong:wa.map(v=>q.type!=="num"?{v:q.options[v]?.text||"",m:q.options[v]?.mis||""}:{v:String(v),m:((q.wrongs||[]).find(z=>eqVal(v,z.ans))||{}).mis||""})})}
+  });
+  let br=0,bt=0;(D.sg||[]).forEach((st,k)=>{const ans=[...String(st.text||"").matchAll(/\[\[(.+?)\]\]/g)].map(m=>m[1].split("|"));const sv=store.get(`sg${d}s${k}`,[]);
+    ans.forEach((a,j)=>{bt++;if(a.some(x=>eqVal(sv[j]||"",x)&&String(sv[j]||"").trim()))br++})});
+  const jk=(D.sg||[]).map((st,k)=>st.tag==="jot"?k:-1).filter(k=>k>=0);
+  const jot=jk.map(k=>{const sv=store.get(`sg${d}s${k}`,[]);return sv[sv.length-1]||""}).filter(Boolean).join(" | ");
+  const probs=D.ind.map((q,i)=>{const s=w[i]||{};const ex=q.type==="est"?" "+q._nums.map(plain).join(` ${q.op||""} `):"";
+    return{p:(String(q.prompt||"").slice(0,90)+ex).trim(),d:s.done?1:0,w:s.done?workText(q,s):""}});
+  return{v:3,set:C.id,setTitle:C.title||"",name:nameEl.value.trim(),day:d+1,dayTitle:D.title||"",t:Date.now(),
+    skills:Object.entries(skills).map(([n,std])=>({n,std})),items,probs,
+    sg:{done:store.get(`sg${d}done`,false)?1:0,br,bt,jot},ixl:(D.ixl||[]).map((_,i)=>!!store.get(`ixl${d}`,[])[i]),
+    race:store.get(`race${d}`,{}),rc:raceChecks(D.race,store.get(`race${d}`,{})),hl:Object.keys(store.get(`hl${d}`,{})).length,subject:C.subject,conf:tn.conf||0,help:tn.help||[],tricky:tn.tricky||""};
+}
+const enc=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o))));
+function renderTurn(el,D){
+  const k=`turn${day}`,tn=store.get(k,{conf:0,help:[],tricky:""});
+  const fin=Object.values(store.get(`w${day}`,{})).filter(x=>x&&x.done).length;
+  const need=C.third==="race"?0:Math.min(2,(D.ixl||[]).length),ixlN=store.get(`ixl${day}`,[]).filter(Boolean).length,race=store.get(`race${day}`,{}),raceN=["R","A","C","E"].filter(x=>(race[x]||"").trim()).length;
+  el.innerHTML=`<section class="room turn"><h2>Turn in Day ${day+1}</h2>
+    <ul class="checklist">
+      <li>${fin===D.ind.length?"✅":"⬜"} Independent practice: ${fin} of ${D.ind.length} finished</li>
+      <li>${store.get(`sg${day}done`,false)?"✅":"⬜"} Small group lesson</li>
+      ${need?`<li>${ixlN>=need?"✅":"⬜"} IXL skills: ${ixlN} of ${need}</li>`:""}
+      ${D.race?`<li>${raceN===4?"✅":"⬜"} RACE response: ${raceN} of 4 parts</li>`:""}
+      ${D.passage?`<li>🖍️ Highlights in the passage: ${Object.keys(store.get(`hl${day}`,{})).length}</li>`:""}
+    </ul>
+    <h3>How do you feel about today's target?</h3><p class="tip">${fr(D.target)}</p>
+    <div class="conf">${CONF.map(([e,t],i)=>`<button data-c="${i+1}" aria-pressed="${tn.conf===i+1}"><span aria-hidden="true">${e}</span>${t}</button>`).join("")}</div>
+    <h3>What helped you most today?</h3>
+    <div class="chips">${HELPED.map(h=>`<button data-h="${h}" aria-pressed="${tn.help.includes(h)}">${h}</button>`).join("")}</div>
+    <h3>What was tricky today?</h3><textarea id="tricky" aria-label="What was tricky today">${esc(tn.tricky||"")}</textarea>
+    <p class="fb no" id="tmsg" aria-live="polite"></p>
+    <button class="btn" id="turnCopy" style="background:var(--ink);color:var(--bg)">Copy my turn-in</button><span class="copied" id="tcmsg" aria-live="polite"></span>
+    <p class="tip" style="margin-top:.75rem">${esc(C.turnInNote||"Then open today's WIN assignment in Canvas, paste, and submit.")}</p></section>`;
+  const save=()=>store.set(k,tn);
+  el.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{tn.conf=+b.dataset.c;save();el.querySelectorAll("[data-c]").forEach(x=>x.setAttribute("aria-pressed",x===b))});
+  el.querySelectorAll("[data-h]").forEach(b=>b.onclick=()=>{const h=b.dataset.h;tn.help=tn.help.includes(h)?tn.help.filter(x=>x!==h):[...tn.help,h];save();b.setAttribute("aria-pressed",tn.help.includes(h))});
+  $("#tricky").oninput=e=>{tn.tricky=e.target.value;save()};
+  $("#turnCopy").onclick=async()=>{const m=$("#tmsg");
+    if(!nameEl.value.trim()){m.textContent="Type your name at the top first.";nameEl.focus();return}
+    if(!tn.conf){m.textContent="Tap how you feel about today's target first.";return}
+    m.textContent="";
+    const txt=`${nameEl.value.trim()}, WIN Day ${day+1}: ${fin} of ${D.ind.length} problems, confidence ${tn.conf} of 4.\nWIN205:${enc(buildPayload(day))}`;
+    try{await navigator.clipboard.writeText(txt);$("#tcmsg").textContent="Copied. Now paste it in Canvas."}
+    catch(e){$("#tcmsg").textContent="Copy didn't work. Raise your hand."}};
+}
+render();
+
+</script>
+</body>
+</html>

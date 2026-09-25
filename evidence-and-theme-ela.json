@@ -1,0 +1,644 @@
+{
+ "id": "ela-win-evidence-and-theme-vps93",
+ "title": "ELA WIN: Evidence and theme",
+ "room": "",
+ "smart": 80,
+ "subject": "ela",
+ "third": "race",
+ "tools": {
+  "calc": false,
+  "mult": true,
+  "fracbars": true,
+  "numline": true,
+  "formulas": true
+ },
+ "turnInNote": "Then open today's WIN assignment in Canvas, paste, and submit.",
+ "skills": [
+  {
+   "id": "s6RC1",
+   "name": "Analyze what a text says explicitly and draw inferences, citing textual evidence",
+   "std": "IN 6.RC.1"
+  },
+  {
+   "id": "s6RC2",
+   "name": "Theme in literature and objective summary",
+   "std": "IN 6.RC.2"
+  },
+  {
+   "id": "s6RC8",
+   "name": "Trace and evaluate claims; supported vs. unsupported",
+   "std": "IN 6.RC.8"
+  },
+  {
+   "id": "s6RC13",
+   "name": "Greek and Latin affixes and roots",
+   "std": "IN 6.RC.13"
+  },
+  {
+   "id": "s6W7",
+   "name": "Punctuation: nonrestrictive elements, semicolons, colons",
+   "std": "IN 6.W.7"
+  },
+  {
+   "id": "s6RC3",
+   "name": "How a sentence, scene, or paragraph fits the structure of literature",
+   "std": "IN 6.RC.3"
+  },
+  {
+   "id": "s6RC10",
+   "name": "Use context to determine word meaning",
+   "std": "IN 6.RC.10"
+  },
+  {
+   "id": "s6RC7",
+   "name": "Author's perspective or purpose and how it is conveyed",
+   "std": "IN 6.RC.7"
+  }
+ ],
+ "days": [
+  {
+   "title": "Day 1: Inferences and evidence and Theme",
+   "target": "I can make inferences and support them with evidence from the text, and I can determine a theme and explain how details develop it.",
+   "ind": [
+    {
+     "type": "mc",
+     "prompt": "What can the reader infer about Maya at the beginning of the story?",
+     "skill": "s6RC1",
+     "hint": "Reread paragraphs 1 and 2. What does Maya say about herself?",
+     "options": [
+      {
+       "text": "She doubts that she can be a runner.",
+       "correct": true
+      },
+      {
+       "text": "She wants to stop drawing.",
+       "correct": false,
+       "mis": "Made an inference the text doesn't support"
+      },
+      {
+       "text": "She has run on a team before.",
+       "correct": false,
+       "mis": "Made an inference the text doesn't support"
+      },
+      {
+       "text": "She dislikes Coach Rivera.",
+       "correct": false,
+       "mis": "Made an inference the text doesn't support"
+      }
+     ]
+    },
+    {
+     "type": "evidence",
+     "prompt": "Which sentence best supports the inference that Maya doubts herself at first?",
+     "skill": "s6RC1",
+     "hint": "Look at the very beginning of the story.",
+     "options": [
+      {
+       "text": "She kept going anyway.",
+       "correct": false,
+       "mis": "Chose evidence from the wrong part of the story"
+      },
+      {
+       "text": "For three weeks, Maya added one mailbox at a time.",
+       "correct": false,
+       "mis": "Chose evidence from the wrong part of the story"
+      },
+      {
+       "text": "Maya had never run a full mile without stopping.",
+       "correct": true
+      },
+      {
+       "text": "Coach Rivera wrote something on her clipboard and smiled.",
+       "correct": false,
+       "mis": "Chose a detail that doesn't support the point"
+      }
+     ]
+    },
+    {
+     "type": "mc",
+     "prompt": "Which theme is best developed in the story?",
+     "skill": "s6RC2",
+     "hint": "A theme is a lesson about life. What does Maya learn by the end?",
+     "options": [
+      {
+       "text": "Steady effort, even in small steps, leads to growth.",
+       "correct": true
+      },
+      {
+       "text": "Coaches always know what is best.",
+       "correct": false,
+       "mis": "Chose an idea that is too narrow to be the theme"
+      },
+      {
+       "text": "Art is more important than sports.",
+       "correct": false,
+       "mis": "Chose a theme the text doesn't support"
+      },
+      {
+       "text": "Winning is the only thing that matters.",
+       "correct": false,
+       "mis": "Chose a theme the text doesn't support"
+      }
+     ]
+    },
+    {
+     "type": "evidence",
+     "prompt": "Which sentence best supports the theme that steady effort leads to growth?",
+     "skill": "s6RC2",
+     "hint": "Look for a sentence that shows effort over time.",
+     "options": [
+      {
+       "text": "Maya laughed and shook her head.",
+       "correct": false,
+       "mis": "Chose a detail that doesn't support the point"
+      },
+      {
+       "text": "On tryout day, Maya finished last.",
+       "correct": false,
+       "mis": "Chose evidence that seems related but doesn't prove the point"
+      },
+      {
+       "text": "For three weeks, Maya added one mailbox at a time.",
+       "correct": true
+      },
+      {
+       "text": "Every afternoon, she watched the cross-country team loop around the track while she sat on the bleachers with her sketchbook.",
+       "correct": false,
+       "mis": "Chose a detail that doesn't support the point"
+      }
+     ]
+    },
+    {
+     "type": "mc",
+     "prompt": "How does paragraph 4 contribute to the plot?",
+     "skill": "s6RC3",
+     "hint": "What happens to Maya in paragraph 4? Where does it lead?",
+     "options": [
+      {
+       "text": "It introduces the main conflict.",
+       "correct": false,
+       "mis": "Misidentified the part of the plot"
+      },
+      {
+       "text": "It describes where the story takes place.",
+       "correct": false,
+       "mis": "Confused plot with setting"
+      },
+      {
+       "text": "It shows Maya's slow progress as the story builds toward tryout day.",
+       "correct": true
+      },
+      {
+       "text": "It resolves the conflict.",
+       "correct": false,
+       "mis": "Misidentified the part of the plot"
+      }
+     ]
+    },
+    {
+     "type": "mc",
+     "prompt": "In paragraph 4, \"her legs felt like concrete\" most likely means her legs felt—",
+     "skill": "s6RC10",
+     "hint": "How would legs feel after running in the rain every night?",
+     "options": [
+      {
+       "text": "heavy and tired",
+       "correct": true
+      },
+      {
+       "text": "strong and powerful",
+       "correct": false,
+       "mis": "Missed the context clues"
+      },
+      {
+       "text": "cold and wet",
+       "correct": false,
+       "mis": "Missed the context clues"
+      },
+      {
+       "text": "gray and hard",
+       "correct": false,
+       "mis": "Read a figurative phrase literally"
+      }
+     ]
+    }
+   ],
+   "sg": [
+    {
+     "tag": "listen",
+     "title": "Today's big idea",
+     "text": "Good readers find what the text says AND what it suggests, then prove it with evidence."
+    },
+    {
+     "tag": "fill",
+     "title": "Notes",
+     "text": "An inference is a smart guess based on [[evidence|clues]] and what you already know.\nYou prove it by [[citing|quoting]] the text."
+    },
+    {
+     "tag": "watch",
+     "title": "Watch me",
+     "text": "The story says: \"Her lungs burned before she reached the corner.\"\nStep 1: What does the text say? Her lungs burned quickly.\nStep 2: What do I know? Burning lungs mean you're out of breath.\nStep 3: Inference: **Maya is not used to running yet.**"
+    },
+    {
+     "tag": "wedo",
+     "title": "Try it with me",
+     "text": "\"He stared at it, his stomach twisting.\" Theo feels [[worried|guilty|nervous|upset]]."
+    },
+    {
+     "tag": "jot",
+     "title": "Stop and jot",
+     "text": "What is the difference between what a text says and what it suggests?"
+    }
+   ],
+   "standards": [
+    "IN 6.RC.1: Analyze what a text says explicitly and draw inferences, citing textual evidence",
+    "IN 6.RC.2: Theme in literature and objective summary"
+   ],
+   "ixl": [],
+   "race": "What does Coach Rivera mean when she says, \"Last isn't the same as done\"? Use evidence from the story.",
+   "passage": {
+    "title": "The Last Lap",
+    "text": "Maya had never run a full mile without stopping. Every afternoon, she watched the cross-country team loop around the track while she sat on the bleachers with her sketchbook.\n\n\"You could try out,\" Coach Rivera said one day, pausing beside her. Maya laughed and shook her head. \"I'm not a runner,\" she said.\n\nBut that night, she laced up her old sneakers and jogged to the end of her street. Her lungs burned before she reached the corner. She walked home slowly, embarrassed, but the next night she went a little farther.\n\nFor three weeks, Maya added one mailbox at a time. Some nights it rained, and some nights her legs felt like concrete. She kept going anyway.\n\nOn tryout day, Maya finished last. Her face was red and her shirt was soaked, but she had run the entire mile. Coach Rivera wrote something on her clipboard and smiled. \"Last isn't the same as done,\" she said. \"See you Monday.\""
+   }
+  },
+  {
+   "title": "Day 2: Evaluating claims and Roots and affixes",
+   "target": "I can tell supported claims from unsupported claims, and I can use Greek and Latin roots and affixes to figure out word meanings.",
+   "ind": [
+    {
+     "type": "mc",
+     "prompt": "The root \"dict\" means \"say.\" What does \"predict\" most likely mean?",
+     "skill": "s6RC13",
+     "hint": "Find \"dict\" in the word. It means \"say.\"",
+     "options": [
+      {
+       "text": "in time order",
+       "correct": false,
+       "mis": "Used the wrong root meaning"
+      },
+      {
+       "text": "to say what will happen before it happens",
+       "correct": true
+      },
+      {
+       "text": "a machine that pulls",
+       "correct": false,
+       "mis": "Used the wrong root meaning"
+      },
+      {
+       "text": "a person's own written name",
+       "correct": false,
+       "mis": "Used the wrong root meaning"
+      }
+     ]
+    },
+    {
+     "type": "mc",
+     "prompt": "The prefix \"sub-\" means \"under.\" What does \"submarine\" mean?",
+     "skill": "s6RC13",
+     "hint": "\"sub-\" means \"under.\"",
+     "options": [
+      {
+       "text": "between nations",
+       "correct": false,
+       "mis": "Used the wrong prefix meaning"
+      },
+      {
+       "text": "to write again",
+       "correct": false,
+       "mis": "Used the wrong prefix meaning"
+      },
+      {
+       "text": "not fair",
+       "correct": false,
+       "mis": "Used the wrong prefix meaning"
+      },
+      {
+       "text": "a ship that goes under the sea",
+       "correct": true
+      }
+     ]
+    },
+    {
+     "type": "mc",
+     "prompt": "The prefix \"pre-\" means \"before.\" What does \"preview\" mean?",
+     "skill": "s6RC13",
+     "hint": "\"pre-\" means \"before.\"",
+     "options": [
+      {
+       "text": "not fair",
+       "correct": false,
+       "mis": "Used the wrong prefix meaning"
+      },
+      {
+       "text": "a ship that goes under the sea",
+       "correct": false,
+       "mis": "Used the wrong prefix meaning"
+      },
+      {
+       "text": "to see before",
+       "correct": true
+      },
+      {
+       "text": "to read wrongly",
+       "correct": false,
+       "mis": "Used the wrong prefix meaning"
+      }
+     ]
+    },
+    {
+     "type": "evidence",
+     "prompt": "Which claim is NOT supported by evidence?",
+     "skill": "s6RC8",
+     "hint": "Which sentence gives no source, fact, or example?",
+     "options": [
+      {
+       "text": "Doctors say that preteens need about 9 to 12 hours of sleep each night, but many get far less.",
+       "correct": false,
+       "mis": "Chose a claim that is supported by evidence"
+      },
+      {
+       "text": "Besides, everyone knows that students are happier in the morning when they can sleep in.",
+       "correct": true
+      },
+      {
+       "text": "Some schools that moved their start times later reported better attendance.",
+       "correct": false,
+       "mis": "Chose a claim that is supported by evidence"
+      },
+      {
+       "text": "The American Academy of Pediatrics recommends that middle and high schools start at 8:30 or later.",
+       "correct": false,
+       "mis": "Chose a claim that is supported by evidence"
+      }
+     ]
+    },
+    {
+     "type": "mc",
+     "prompt": "How does the author respond to the counterclaim in paragraph 4?",
+     "skill": "s6RC8",
+     "hint": "Find the word \"However.\" What comes after it?",
+     "options": [
+      {
+       "text": "by agreeing that sports should end",
+       "correct": false,
+       "mis": "Misread how the author answers the counterclaim"
+      },
+      {
+       "text": "by suggesting schools adjust practice schedules",
+       "correct": true
+      },
+      {
+       "text": "by citing a study about athletes",
+       "correct": false,
+       "mis": "Added evidence that isn't in the text"
+      },
+      {
+       "text": "by ignoring it",
+       "correct": false,
+       "mis": "Missed the counterclaim"
+      }
+     ]
+    },
+    {
+     "type": "mc",
+     "prompt": "What is the author's perspective?",
+     "skill": "s6RC7",
+     "hint": "Look for \"I believe.\"",
+     "options": [
+      {
+       "text": "Start times don't matter.",
+       "correct": false,
+       "mis": "Missed the author's perspective"
+      },
+      {
+       "text": "Schools should start earlier.",
+       "correct": false,
+       "mis": "Reversed the author's perspective"
+      },
+      {
+       "text": "Schools should start later so students can sleep more.",
+       "correct": true
+      },
+      {
+       "text": "Sports are more important than sleep.",
+       "correct": false,
+       "mis": "Confused the counterclaim with the author's view"
+      }
+     ]
+    }
+   ],
+   "sg": [
+    {
+     "tag": "listen",
+     "title": "Today's big idea",
+     "text": "Strong claims are backed by reasons and evidence. Weak claims are not."
+    },
+    {
+     "tag": "fill",
+     "title": "Notes",
+     "text": "A supported claim has [[evidence|facts|a source]].\n\"Everyone knows\" usually signals an [[unsupported|opinion]] claim."
+    },
+    {
+     "tag": "watch",
+     "title": "Watch me",
+     "text": "Is \"Some schools reported better attendance\" supported?\nStep 1: Is there a fact or source? Yes, schools reported it.\nStep 2: Could we check it? Yes.\nStep 3: **Supported.**"
+    },
+    {
+     "tag": "wedo",
+     "title": "Try it with me",
+     "text": "\"Starting later is simply the right thing to do.\" This claim is [[unsupported|not supported]]."
+    },
+    {
+     "tag": "jot",
+     "title": "Stop and jot",
+     "text": "What makes evidence convincing?"
+    }
+   ],
+   "standards": [
+    "IN 6.RC.8: Trace and evaluate claims; supported vs. unsupported",
+    "IN 6.RC.13: Greek and Latin affixes and roots"
+   ],
+   "ixl": [],
+   "race": "Is the author's argument convincing? Evaluate one claim that is supported by evidence and one that is not.",
+   "passage": {
+    "title": "Later Start Times Would Help Students",
+    "text": "Many middle schools start before eight in the morning. I believe schools should start later so students can get the sleep they need.\n\nThe American Academy of Pediatrics recommends that middle and high schools start at 8:30 or later. Doctors say that preteens need about 9 to 12 hours of sleep each night, but many get far less.\n\nWhen students are tired, they have a harder time paying attention and remembering what they learn. Some schools that moved their start times later reported better attendance.\n\nSome people argue that later start times would make after-school sports end too late. However, schools could adjust practice schedules, and a rested athlete is a better athlete.\n\nBesides, everyone knows that students are happier in the morning when they can sleep in. Starting later is simply the right thing to do."
+   }
+  },
+  {
+   "title": "Day 3: Punctuation",
+   "target": "I can use commas, dashes, parentheses, semicolons, and colons correctly.",
+   "ind": [
+    {
+     "type": "mc",
+     "prompt": "Which sentence uses a semicolon correctly?",
+     "skill": "s6W7",
+     "hint": "Semicolons join two complete sentences. Extra information needs punctuation on both sides.",
+     "options": [
+      {
+       "text": "The rain stopped; we went outside.",
+       "correct": true
+      },
+      {
+       "text": "The rain stopped; and outside.",
+       "correct": false,
+       "mis": "Used a semicolon without two complete sentences"
+      },
+      {
+       "text": "The rain; stopped and we went outside.",
+       "correct": false,
+       "mis": "Used a semicolon without two complete sentences"
+      }
+     ]
+    },
+    {
+     "type": "mc",
+     "prompt": "Which sentence uses a colon correctly?",
+     "skill": "s6W7",
+     "hint": "Semicolons join two complete sentences. Extra information needs punctuation on both sides.",
+     "options": [
+      {
+       "text": "Bring these items: a pencil, a notebook, and a ruler.",
+       "correct": true
+      },
+      {
+       "text": "Bring these items, a pencil: a notebook, and a ruler.",
+       "correct": false,
+       "mis": "Put the colon in the wrong place"
+      },
+      {
+       "text": "Bring: a pencil, a notebook, and a ruler.",
+       "correct": false,
+       "mis": "Used a colon after an incomplete introduction"
+      }
+     ]
+    },
+    {
+     "type": "mc",
+     "prompt": "Which sentence correctly uses dashes to set off extra information?",
+     "skill": "s6W7",
+     "hint": "Semicolons join two complete sentences. Extra information needs punctuation on both sides.",
+     "options": [
+      {
+       "text": "My cousin—the one who lives in Ohio is visiting.",
+       "correct": false,
+       "mis": "Set off only one side of the extra information"
+      },
+      {
+       "text": "My cousin—the one who lives in Ohio—is visiting.",
+       "correct": true
+      },
+      {
+       "text": "My—cousin the one who lives in Ohio—is visiting.",
+       "correct": false,
+       "mis": "Put the dashes around the wrong words"
+      }
+     ]
+    },
+    {
+     "type": "mc",
+     "prompt": "Which sentence uses parentheses correctly?",
+     "skill": "s6W7",
+     "hint": "Semicolons join two complete sentences. Extra information needs punctuation on both sides.",
+     "options": [
+      {
+       "text": "The museum (which opened in 1990) is free on Sundays.",
+       "correct": true
+      },
+      {
+       "text": "The museum (which opened) in 1990 is free on Sundays.",
+       "correct": false,
+       "mis": "Put the parentheses around the wrong words"
+      },
+      {
+       "text": "The (museum which opened in 1990) is free on Sundays.",
+       "correct": false,
+       "mis": "Put the parentheses around the wrong words"
+      }
+     ]
+    },
+    {
+     "type": "mc",
+     "prompt": "Which sentence correctly sets off extra information?",
+     "skill": "s6W7",
+     "hint": "Semicolons join two complete sentences. Extra information needs punctuation on both sides.",
+     "options": [
+      {
+       "text": "Ms. Lee, our principal spoke at the assembly.",
+       "correct": false,
+       "mis": "Set off only one side of the extra information"
+      },
+      {
+       "text": "Ms. Lee, our principal, spoke at the assembly.",
+       "correct": true
+      },
+      {
+       "text": "Ms. Lee our principal, spoke at the assembly.",
+       "correct": false,
+       "mis": "Set off only one side of the extra information"
+      }
+     ]
+    },
+    {
+     "type": "mc",
+     "prompt": "Which sentence correctly sets off extra information?",
+     "skill": "s6W7",
+     "hint": "Semicolons join two complete sentences. Extra information needs punctuation on both sides.",
+     "options": [
+      {
+       "text": "Ms. Lee, our principal spoke at the assembly.",
+       "correct": false,
+       "mis": "Set off only one side of the extra information"
+      },
+      {
+       "text": "Ms. Lee, our principal, spoke at the assembly.",
+       "correct": true
+      },
+      {
+       "text": "Ms. Lee our principal, spoke at the assembly.",
+       "correct": false,
+       "mis": "Set off only one side of the extra information"
+      }
+     ]
+    }
+   ],
+   "sg": [
+    {
+     "tag": "listen",
+     "title": "Today's big idea",
+     "text": "Punctuation helps readers understand how ideas connect."
+    },
+    {
+     "tag": "fill",
+     "title": "Notes",
+     "text": "A semicolon joins two complete [[sentences]].\nA colon can introduce a [[list]]."
+    },
+    {
+     "tag": "watch",
+     "title": "Watch me",
+     "text": "The rain stopped ___ we went outside.\nStep 1: \"The rain stopped\" is complete.\nStep 2: \"we went outside\" is complete.\nStep 3: **Use a semicolon: The rain stopped; we went outside.**"
+    },
+    {
+     "tag": "wedo",
+     "title": "Try it with me",
+     "text": "Extra information needs commas on [[both]] sides."
+    },
+    {
+     "tag": "jot",
+     "title": "Stop and jot",
+     "text": "When would you use a semicolon instead of a period?"
+    }
+   ],
+   "standards": [
+    "IN 6.W.7: Punctuation: nonrestrictive elements, semicolons, colons"
+   ],
+   "ixl": [],
+   "race": "How does the waggle dance help a hive survive? Use evidence from the text.",
+   "passage": {
+    "title": "Why Honeybees Dance",
+    "text": "A honeybee that finds a good patch of flowers has a problem: how can it tell the rest of the hive where to go? Bees cannot draw maps or speak. Instead, they dance.\n\nScientists call it the waggle dance. The bee walks in a straight line while shaking its body, then circles back and repeats the move. The direction of the straight line shows the direction of the flowers compared to the sun.\n\nThe length of the waggle tells the distance. A longer waggle means the flowers are farther away. Other bees crowd around the dancer, feel its movements in the dark hive, and then fly off to find the food.\n\nKarl von Frisch, an Austrian scientist, spent years studying this behavior. In 1973, he shared the Nobel Prize for his work. Before his research, many people did not believe insects could share such detailed information.\n\nToday, scientists still study the waggle dance. Understanding how bees find food may help farmers protect these insects, which pollinate many of the crops people eat."
+   }
+  }
+ ]
+}

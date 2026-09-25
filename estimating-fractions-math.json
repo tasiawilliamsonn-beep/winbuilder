@@ -1,0 +1,352 @@
+{
+ "id": "estimating-fractions",
+ "title": "Estimating with fractions",
+ "room": "Room 205",
+ "smart": 80,
+ "turnInNote": "Then open today's WIN assignment in Canvas, paste, and submit.",
+ "skills": [
+  {
+   "id": "k1",
+   "name": "Estimate sums and differences",
+   "std": "IN 6.NS.4"
+  },
+  {
+   "id": "k2",
+   "name": "Estimate products and quotients",
+   "std": "IN 6.NS.4"
+  },
+  {
+   "id": "k3",
+   "name": "Estimate in word problems",
+   "std": "IN 6.NS.4"
+  }
+ ],
+ "days": [
+  {
+   "title": "Day 1: Benchmark fractions",
+   "target": "I can estimate fractions using the benchmarks 0, ½, and 1.",
+   "ind": [
+    {
+     "type": "est",
+     "prompt": "Which benchmark is this fraction closest to?",
+     "nums": "1/9"
+    },
+    {
+     "type": "est",
+     "prompt": "Which benchmark is this fraction closest to?",
+     "nums": "5/9"
+    },
+    {
+     "type": "est",
+     "prompt": "Which benchmark is this fraction closest to?",
+     "nums": "7/8"
+    },
+    {
+     "type": "est",
+     "prompt": "Which benchmark is this fraction closest to?",
+     "nums": "2/5"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the sum.",
+     "nums": "7/8, 4/9",
+     "op": "+",
+     "skill": "k1"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the sum.",
+     "nums": "1/10, 5/12",
+     "op": "+",
+     "skill": "k1"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the difference.",
+     "nums": "11/12, 1/8",
+     "op": "−",
+     "skill": "k1"
+    },
+    {
+     "type": "est",
+     "prompt": "Maya ran 9/10 mile on Monday and 6/11 mile on Tuesday. About how far did she run in all?",
+     "nums": "9/10, 6/11",
+     "op": "+",
+     "unit": "miles",
+     "skill": "k3"
+    }
+   ],
+   "sg": [
+    {
+     "tag": "listen",
+     "title": "Why estimate?",
+     "text": "Estimating gives you a **close** answer fast. It helps you check if your real answer makes sense.\nToday we use three **benchmarks**: 0, ½, and 1."
+    },
+    {
+     "tag": "fill",
+     "title": "Notes: the three benchmarks",
+     "text": "If the numerator is very small compared to the denominator, the fraction is close to [[0|zero]].\nIf the numerator is about half of the denominator, the fraction is close to [[1/2|½|half|one half]].\nIf the numerator is almost the same as the denominator, the fraction is close to [[1|one]]."
+    },
+    {
+     "tag": "watch",
+     "title": "Teacher example",
+     "text": "3/7 → ?\nStep 1: Find half of the denominator. Half of 7 is **3½**.\nStep 2: Compare the numerator. 3 is very close to 3½.\nStep 3: So 3/7 is about **½**."
+    },
+    {
+     "tag": "wedo",
+     "title": "Try it with me",
+     "text": "8/9 + 1/6 ≈ ?\nTap the benchmark each fraction is closest to.\n{{8/9}}\n{{1/6}}\nEstimate: [[1|one]]",
+     "reveal": "8/9 ≈ 1 and 1/6 ≈ 0, so the sum is about **1**."
+    },
+    {
+     "tag": "jot",
+     "title": "In your own words",
+     "text": "How do you know if a fraction is close to ½?"
+    }
+   ],
+   "standards": [
+    "IN 6.NS.4: Solve real-world problems with positive fractions and decimals",
+    "Grade 5 foundation: estimate with benchmark fractions"
+   ],
+   "ixl": [
+    {
+     "t": "Estimate sums and differences of fractions using benchmarks",
+     "d": "Round each fraction to 0, ½, or 1 before you add."
+    },
+    {
+     "t": "Compare fractions to ½",
+     "d": "Warm-up if you missed problems 1 to 4."
+    },
+    {
+     "t": "IXL Math Arena",
+     "d": "Only after you reach your SmartScore goal."
+    }
+   ],
+   "race": "Is 7/8 + 4/9 more or less than 2? Use benchmarks to prove it."
+  },
+  {
+   "title": "Day 2: Rounding mixed numbers",
+   "target": "I can estimate sums and differences of mixed numbers by rounding to the nearest whole number.",
+   "ind": [
+    {
+     "type": "est",
+     "prompt": "Round to the nearest whole number.",
+     "nums": "3 4/5"
+    },
+    {
+     "type": "est",
+     "prompt": "Round to the nearest whole number.",
+     "nums": "6 1/8"
+    },
+    {
+     "type": "est",
+     "prompt": "Round to the nearest whole number.",
+     "nums": "5 3/7"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the sum.",
+     "nums": "4 7/8, 2 1/6",
+     "op": "+",
+     "skill": "k1"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the difference.",
+     "nums": "9 1/5, 3 5/6",
+     "op": "−",
+     "skill": "k1"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the sum.",
+     "nums": "7 2/3, 1 9/10",
+     "op": "+",
+     "skill": "k1"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the difference.",
+     "nums": "12 1/9, 5 7/8",
+     "op": "−",
+     "skill": "k1"
+    },
+    {
+     "type": "est",
+     "prompt": "A board is 8 5/6 feet long. Leo cuts off 2 1/10 feet. About how much is left?",
+     "nums": "8 5/6, 2 1/10",
+     "op": "−",
+     "unit": "feet",
+     "skill": "k3"
+    }
+   ],
+   "sg": [
+    {
+     "tag": "listen",
+     "title": "From fractions to mixed numbers",
+     "text": "Yesterday we rounded fractions to 0, ½, or 1. Today we round **mixed numbers** to the nearest whole number.\nThe fraction part tells you which way to round."
+    },
+    {
+     "tag": "fill",
+     "title": "Notes: the rounding rule",
+     "text": "If the fraction part is less than ½, the whole number stays the [[same]].\nIf the fraction part is ½ or more, round [[up]] to the next whole number."
+    },
+    {
+     "tag": "watch",
+     "title": "Teacher example",
+     "text": "6 4/5 + 3 2/9 ≈ ?\nStep 1: 4/5 is more than ½, so 6 4/5 rounds to **7**.\nStep 2: 2/9 is less than ½, so 3 2/9 rounds to **3**.\nStep 3: 7 + 3 = **10**."
+    },
+    {
+     "tag": "wedo",
+     "title": "Try it with me",
+     "text": "8 7/10 − 2 1/4 ≈ ?\nTap the whole number each one is closest to.\n{{8 7/10}}\n{{2 1/4}}\nEstimate: [[7|seven]]",
+     "reveal": "9 − 2 = **7**."
+    },
+    {
+     "tag": "jot",
+     "title": "In your own words",
+     "text": "Why does 4 3/8 round to 4 and not 5?"
+    }
+   ],
+   "standards": [
+    "IN 6.NS.4: Solve real-world problems with positive fractions and decimals",
+    "Grade 5 foundation: estimate sums and differences of mixed numbers"
+   ],
+   "ixl": [
+    {
+     "t": "Estimate sums and differences of mixed numbers",
+     "d": "Round each mixed number to the nearest whole first."
+    },
+    {
+     "t": "Add and subtract mixed numbers",
+     "d": "Estimate first, then solve. Does your answer match your estimate?"
+    },
+    {
+     "t": "IXL Math Arena",
+     "d": "Only after you reach your SmartScore goal."
+    }
+   ],
+   "race": "Jada estimated 9 1/5 − 3 5/6 as 6. Is her estimate reasonable?"
+  },
+  {
+   "title": "Day 3: Estimating products",
+   "target": "I can estimate products of fractions and mixed numbers and check if an answer is reasonable.",
+   "ind": [
+    {
+     "type": "est",
+     "prompt": "Estimate the product.",
+     "nums": "5/9, 20",
+     "op": "×",
+     "skill": "k2"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the product.",
+     "nums": "7/8, 16",
+     "op": "×",
+     "skill": "k2"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the product.",
+     "nums": "3 7/8, 5",
+     "op": "×",
+     "skill": "k2"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the product.",
+     "nums": "2 1/9, 6",
+     "op": "×",
+     "skill": "k2"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the product.",
+     "nums": "5 5/6, 3 1/8",
+     "op": "×",
+     "skill": "k2"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the quotient.",
+     "nums": "11 7/8, 2 9/10",
+     "op": "÷",
+     "skill": "k2"
+    },
+    {
+     "type": "est",
+     "prompt": "A recipe uses 2 7/8 cups of flour. Sam makes 4 batches. About how much flour does he need?",
+     "nums": "2 7/8, 4",
+     "op": "×",
+     "unit": "cups",
+     "skill": "k3"
+    },
+    {
+     "type": "est",
+     "prompt": "Jay solved this problem.",
+     "nums": "4 1/9, 2 5/6",
+     "op": "×",
+     "skill": "k2",
+     "claim": "25"
+    }
+   ],
+   "sg": [
+    {
+     "tag": "listen",
+     "title": "Estimating when we multiply",
+     "text": "We can use the same rounding tricks to estimate **products** and **quotients**.\nA good estimate helps you catch a wrong answer before you turn it in."
+    },
+    {
+     "tag": "fill",
+     "title": "Notes: multiplying by a fraction",
+     "text": "When you multiply a number by a fraction less than 1, the answer gets [[smaller|less]].\nTo estimate with mixed numbers, round each one to the nearest [[whole|whole number]] number first."
+    },
+    {
+     "tag": "watch",
+     "title": "Teacher example",
+     "text": "4 6/7 × 5 1/5 ≈ ?\nStep 1: 4 6/7 rounds to **5**.\nStep 2: 5 1/5 rounds to **5**.\nStep 3: 5 × 5 = **25**. The real answer should be close to 25."
+    },
+    {
+     "tag": "wedo",
+     "title": "Try it with me",
+     "text": "2 9/10 × 7 ≈ ?\nTap the whole number 2 9/10 is closest to.\n{{2 9/10}}\nEstimate: [[21|twenty-one]]",
+     "reveal": "2 9/10 ≈ 3, and 3 × 7 = **21**."
+    },
+    {
+     "tag": "jot",
+     "title": "In your own words",
+     "text": "How can an estimate help you catch a mistake?"
+    }
+   ],
+   "standards": [
+    "IN 6.NS.4: Solve real-world problems with positive fractions and decimals",
+    "Grade 5 foundation: multiplying as scaling"
+   ],
+   "ixl": [
+    {
+     "t": "Estimate products of fractions and mixed numbers",
+     "d": "Round, then multiply."
+    },
+    {
+     "t": "Multiply fractions and whole numbers",
+     "d": "Estimate first, then check your real answer."
+    },
+    {
+     "t": "IXL Math Arena",
+     "d": "Only after you reach your SmartScore goal."
+    }
+   ],
+   "race": "Luis says 7/8 × 24 is about 30. Is his estimate reasonable?"
+  }
+ ],
+ "subject": "math",
+ "third": "ixl",
+ "tools": {
+  "calc": false,
+  "mult": true,
+  "fracbars": true,
+  "numline": true,
+  "formulas": true
+ }
+}

@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WIN Data Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+:root{
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#F3F7FB;--ink:#1B2B40;--soft:#51637A;--card:#FFFFFF;--line:#D5DFEA;
+  --ind:#2A9D8F;--ind-bg:#E3F4F1;--sg:#5B5BD6;--sg-bg:#ECECFB;--ixl:#E0A31B;--ixl-bg:#FDF3DC;
+  --good:#1F8A4C;--good-bg:#D8F1E1;--mid:#B7791F;--mid-bg:#FCEFCF;--bad:#C23B4E;--bad-bg:#F9DDE2;--none:#E8EDF3;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#121A26;--ink:#EEF3F9;--soft:#A9B7C8;--card:#1B2636;--line:#2E3D52;--ind-bg:#16332F;--sg-bg:#23244A;--ixl-bg:#3A2F14;--good-bg:#17402A;--mid-bg:#40330F;--bad-bg:#45202A;--none:#243246}}
+:root[data-theme="dark"]{--bg:#121A26;--ink:#EEF3F9;--soft:#A9B7C8;--card:#1B2636;--line:#2E3D52;--ind-bg:#16332F;--sg-bg:#23244A;--ixl-bg:#3A2F14;--good-bg:#17402A;--mid-bg:#40330F;--bad-bg:#45202A;--none:#243246}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",Verdana,system-ui,sans-serif;font-size:1rem;line-height:1.5}
+h1,h2,h3{font-family:"Fredoka","Trebuchet MS",system-ui,sans-serif;line-height:1.15}
+.wrap{max-width:1100px;margin:0 auto;padding:1.25rem 1rem 3rem}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--sg);outline-offset:2px}
+header h1{font-size:clamp(1.8rem,4.5vw,2.4rem);margin:0}
+header p{margin:.2rem 0 1.25rem;color:var(--soft)}
+.panel{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:1rem 1.1rem;margin-bottom:1.25rem}
+.panel h2{margin:0 0 .5rem;font-size:1.35rem}
+.panel .sub{color:var(--soft);margin:-.3rem 0 .75rem;font-size:.95rem}
+textarea{width:100%;min-height:6rem;border:2px solid var(--line);border-radius:10px;padding:.6rem;background:var(--bg)}
+.row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin-top:.6rem}
+.btn{border:0;border-radius:10px;padding:.55rem 1rem;background:var(--ink);color:var(--bg);font-family:"Fredoka",sans-serif;font-weight:600}
+.btn.ghost{background:var(--card);color:var(--ink);border:2px solid var(--line)}
+label.file{border:2px dashed var(--line);border-radius:10px;padding:.5rem 1rem;cursor:pointer}
+label.file input{display:none}
+.msg{font-weight:700;color:var(--good)}
+.days{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem}
+.days button{border:2px solid var(--line);background:var(--card);border-radius:999px;padding:.45rem 1rem;font-family:"Fredoka",sans-serif;font-weight:600}
+.days button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.75rem;margin-bottom:1.25rem}
+.stat{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:.8rem 1rem}
+.stat b{display:block;font-family:"Fredoka",sans-serif;font-size:1.9rem;line-height:1.1}
+.stat span{color:var(--soft);font-size:.95rem}
+.focus{background:var(--ixl-bg);border-radius:12px;padding:.7rem 1rem;margin-bottom:1rem}
+.groups{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem}
+.grp{border-radius:14px;padding:.8rem 1rem;border-top:8px solid var(--c);background:var(--bg)}
+.grp h3{margin:0 0 .2rem;font-size:1.15rem}
+.grp p{margin:0 0 .5rem;font-size:.9rem;color:var(--soft)}
+.grp ul{margin:0;padding-left:1.1rem}
+.g-sg{--c:var(--sg)}.g-ind{--c:var(--ind)}.g-ixl{--c:var(--ixl)}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:760px}
+th,td{padding:.45rem .5rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-family:"Fredoka",sans-serif;font-weight:600;font-size:.95rem;position:sticky;top:0;background:var(--card)}
+td.c{text-align:center;padding:.3rem}
+.cell{display:inline-grid;place-items:center;width:34px;height:30px;border-radius:8px;font-weight:700;font-size:.9rem}
+.c0{background:var(--good-bg);color:var(--good)}.c1{background:var(--mid-bg);color:var(--mid)}.c2{background:var(--bad-bg);color:var(--bad)}.cn{background:var(--none);color:var(--soft)}
+.pill{display:inline-block;border-radius:999px;padding:.05rem .6rem;font-size:.85rem;font-weight:700}
+.p-sg{background:var(--sg-bg)}.p-ind{background:var(--ind-bg)}.p-ixl{background:var(--ixl-bg)}
+.legend{display:flex;flex-wrap:wrap;gap:1rem;font-size:.9rem;color:var(--soft);margin-top:.6rem}
+.legend span{display:inline-flex;align-items:center;gap:.35rem}
+.bars{display:grid;gap:.4rem}
+.bars div{display:grid;grid-template-columns:150px 1fr 40px;gap:.6rem;align-items:center;font-size:.95rem}
+.bars i{display:block;height:14px;border-radius:8px;background:var(--sg)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+details{border-bottom:1px solid var(--line);padding:.5rem 0}
+summary{cursor:pointer;font-weight:700}
+details dl{display:grid;grid-template-columns:120px 1fr;gap:.25rem .75rem;margin:.5rem 0 0}
+details dt{color:var(--soft)}
+details dd{margin:0}
+.empty{text-align:center;color:var(--soft);padding:2rem 1rem;border:2px dashed var(--line);border-radius:16px}
+.note{font-size:.9rem;color:var(--soft)}
+@media (max-width:760px){.groups,.two{grid-template-columns:1fr}.bars div{grid-template-columns:110px 1fr 34px}}
+@media print{.noprint{display:none}body{background:#fff}.panel,.stat{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>WIN data dashboard</h1>
+    <p>Paste student turn-ins from Canvas to see who needs what tomorrow. Everything stays on this device.</p>
+  </header>
+
+  <section class="panel noprint">
+    <h2>Add turn-ins</h2>
+    <p class="sub">Paste from SpeedGrader or a Forms export, or upload the zip from Canvas "Download Submissions." Duplicates are skipped.</p>
+    <textarea id="paste" placeholder="Paste turn-ins here. Anything with a WIN205: code gets read."></textarea>
+    <div class="row">
+      <button class="btn" id="add">Add pasted turn-ins</button>
+      <label class="file">📁 Upload files or zip<input type="file" id="files" multiple accept=".zip,.html,.htm,.txt,.csv"></label>
+      <button class="btn ghost" id="sample">Load sample class</button>
+      <button class="btn ghost" id="exportCsv">Export CSV</button>
+      <button class="btn ghost" id="print">Print</button>
+      <button class="btn ghost" id="clear">Clear all</button>
+      <span class="msg" id="msg" aria-live="polite"></span>
+    </div>
+  </section>
+
+  <nav class="days noprint" id="days" aria-label="Choose a day"></nav>
+  <main id="out"></main>
+</div>
+
+<script>
+const CONF=["","I'm lost","I need more help","I almost got it","I can teach it"];
+const HELPED=["Number lines","Hints","Small group","Scratch pad","IXL"];
+const FIX={
+  "Dropped the fraction instead of rounding up":"Show where the mixed number sits past halfway on the number line.",
+  "Rounded up with a fraction under ½":"Compare the numerator to half the denominator before rounding.",
+  "Picked a benchmark that's too low":"Find half the denominator, then ask: is the numerator near 0, half, or the whole?",
+  "Picked a benchmark that's too high":"Find half the denominator, then ask: is the numerator near 0, half, or the whole?",
+  "Used the wrong operation":"Circle the operation sign before solving. In word problems, name the action first.",
+  "Computed exactly instead of estimating":"Round every number first. The estimate uses only the rounded numbers.",
+  "Small computation slip after rounding":"Quick fact practice. Have students say the rounded equation out loud.",
+  "Misjudged whether an answer is reasonable":"Estimate first, then compare the given answer to the estimate."
+};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const store={get(k,d){try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const pct=(a,b)=>b?Math.round(a/b*100):null;
+
+let subs=store.get("win205dash",[]).filter(s=>s.v===3);
+let set=null,day=0;
+
+function decode(b){try{return JSON.parse(decodeURIComponent(escape(atob(b))))}catch(e){return null}}
+function ingest(text){
+  const found=[...String(text).matchAll(/WIN205:([A-Za-z0-9+/=]+)/g)].map(m=>decode(m[1])).filter(o=>o&&o.v===3&&o.name);
+  let added=0;
+  found.forEach(o=>{const key=`${o.set}|${o.name.toLowerCase()}|${o.day}`;const i=subs.findIndex(s=>`${s.set}|${s.name.toLowerCase()}|${s.day}`===key);
+    if(i<0){subs.push(o);added++}else if((o.t||0)>(subs[i].t||0)){subs[i]=o;added++}});
+  store.set("win205dash",subs);return[added,found.length];
+}
+function say(t){$("#msg").textContent=t}
+
+function profile(s){
+  const it=s.items,sk={};
+  [...new Set(it.flatMap(x=>x.sk))].forEach(k=>{const r=it.filter(x=>x.att&&x.sk.includes(k));sk[k]=r.length?{ft:r.filter(x=>x.ft).length,n:r.length}:null});
+  const att=it.filter(x=>x.att),ft=att.filter(x=>x.ft).length,acc=pct(ft,att.length);
+  const fin=s.probs.filter(p=>p.d).length,tot=s.probs.length;
+  const weak=Object.keys(sk).filter(k=>sk[k]&&pct(sk[k].ft,sk[k].n)<80).sort((a,b)=>pct(sk[a].ft,sk[a].n)-pct(sk[b].ft,sk[b].n));
+  const mis=it.flatMap(x=>x.wrong.map(w=>({...w,q:x.q})));
+  let g="ind";
+  if(acc===null||acc<60||fin<tot*.75||(s.conf&&s.conf<=2))g="sg";
+  else if(acc>=85&&fin===tot&&s.conf>=3)g="ixl";
+  return{sk,acc,fin,tot,weak,g,mis};
+}
+const level=v=>v===null?["–","cn"]:v>=80?["Mastered","c0"]:v>=60?["Developing","c1"]:["Needs reteach","c2"];
+const GROUP={sg:["Small group reteach","Under 60% first-try accuracy, under 75% finished, or confidence 1 to 2"],ind:["Independent practice","60 to 84% first-try accuracy"],ixl:["IXL + enrich","85%+ first-try accuracy, all finished, confidence 3 to 4"]};
+const cellPct=v=>{const[t,c]=level(v);return `<span class="cell ${c}" style="width:auto;min-width:48px;padding:0 .4rem" title="${t}">${v===null?"–":v+"%"}</span>`};
+
+function pick(){
+  const sets=[...new Set(subs.map(s=>s.set))];
+  if(!sets.includes(set))set=sets[sets.length-1]||null;
+  const ds=[...new Set(subs.filter(s=>s.set===set).map(s=>s.day))].sort((a,b)=>a-b);
+  if(!ds.includes(day))day=ds[ds.length-1]||0;
+}
+function render(){
+  pick();
+  const sets=[...new Set(subs.map(s=>s.set))];
+  const inSet=subs.filter(s=>s.set===set);
+  const ds=[...new Set(inSet.map(s=>s.day))].sort((a,b)=>a-b);
+  $("#days").innerHTML=(sets.length>1?`<select id="setSel" aria-label="Unit" style="border:2px solid var(--line);border-radius:999px;padding:.45rem .8rem;background:var(--card)">${sets.map(x=>`<option value="${esc(x)}" ${x===set?"selected":""}>${esc(subs.find(s=>s.set===x).setTitle||x)}</option>`).join("")}</select>`:"")+
+    ds.map(d=>`<button data-d="${d}" aria-pressed="${d===day}">Day ${d}</button>`).join("");
+  $("#days").querySelectorAll("button").forEach(b=>b.onclick=()=>{day=+b.dataset.d;render()});
+  if($("#setSel"))$("#setSel").onchange=e=>{set=e.target.value;day=0;render()};
+  const list=inSet.filter(s=>s.day===day).sort((a,b)=>a.name.localeCompare(b.name));
+  const out=$("#out");
+  if(!list.length){out.innerHTML=`<div class="empty"><h2 style="margin:0 0 .4rem">No turn-ins yet</h2><p style="margin:0">Paste turn-ins above, or tap "Load sample class" to see how it works.</p></div>`;return}
+  const S=list.map(s=>({s,...profile(s)}));
+  const n=list.length,base=list[0],P=base.probs.length;
+  const stdOf={};list.forEach(s=>(s.skills||[]).forEach(k=>stdOf[k.n]=k.std));
+  const skillNames=[...new Set(list.flatMap(s=>s.items.flatMap(x=>x.sk)))];
+  const allIt=list.flatMap(s=>s.items.filter(x=>x.att));
+  const classAcc=pct(allIt.filter(x=>x.ft).length,allIt.length);
+  const mastered=S.filter(x=>x.acc>=80).length;
+  const avgFin=(S.reduce((a,x)=>a+x.fin,0)/n).toFixed(1);
+  const classSk=skillNames.map(k=>{const r=allIt.filter(x=>x.sk.includes(k));return[k,pct(r.filter(x=>x.ft).length,r.length)]});
+  const misAll=S.flatMap(x=>x.mis.map(m=>({...m,name:x.s.name})));
+  const tagged=misAll.filter(m=>m.m),untagged=misAll.length-tagged.length;
+  const misCodes=[...new Set(tagged.map(m=>m.m))].map(c=>{const m=tagged.filter(x=>x.m===c);return{c,count:m.length,students:[...new Set(m.map(x=>x.name))],ex:m[0]}}).sort((a,b)=>b.students.length-a.students.length||b.count-a.count);
+  const itemRows=base.probs.map((p,q)=>{
+    const att=list.filter(s=>s.items.some(x=>x.q===q&&x.att));
+    const ft=att.filter(s=>s.items.filter(x=>x.q===q&&x.att).every(x=>x.ft)).length;
+    const wrongs={};list.forEach(s=>s.items.filter(x=>x.q===q).forEach(x=>x.wrong.forEach(w=>{wrongs[w.v]=(wrongs[w.v]||0)+1})));
+    const top=Object.entries(wrongs).sort((a,b)=>b[1]-a[1])[0];
+    const sk=[...new Set(list.flatMap(s=>s.items.filter(x=>x.q===q).flatMap(x=>x.sk)))];
+    return{q,p:p.p,sk,ftp:pct(ft,att.length),fin:pct(list.filter(s=>s.probs[q]&&s.probs[q].d).length,n),top};
+  });
+  const hardest=itemRows.filter(r=>r.ftp!==null).sort((a,b)=>a.ftp-b.ftp)[0];
+  const names=[...new Set(inSet.map(s=>s.name))].sort();
+  const accOf=(nm,d)=>{const s=inSet.find(x=>x.name===nm&&x.day===d);return s?profile(s).acc:null};
+  const classDay=ds.map(d=>{const it=inSet.filter(s=>s.day===d).flatMap(s=>s.items.filter(x=>x.att));return pct(it.filter(x=>x.ft).length,it.length)});
+  const probCell=(s,q)=>{const p=s.probs[q];if(!p||!p.d)return `<span class="cell cn" title="Not finished">–</span>`;const m=s.items.filter(x=>x.q===q).reduce((a,x)=>a+x.wrong.length,0),c=m===0?"c0":m<=2?"c1":"c2";return `<span class="cell ${c}" title="${esc(p.w)}${m?` (${m} wrong attempt${m===1?"":"s"})`:""}">${m===0?"✓":m}</span>`};
+  const HEL=[...new Set([...list.flatMap(s=>s.help||[])])];const helpCounts=HEL.map(h=>[h,list.filter(s=>(s.help||[]).includes(h)).length]),maxHelp=Math.max(1,...helpCounts.map(x=>x[1]));
+  const confCounts=[1,2,3,4].map(c=>[c,list.filter(s=>s.conf===c).length]),maxConf=Math.max(1,...confCounts.map(x=>x[1]));
+
+  out.innerHTML=`
+  <h2 style="margin:0 0 .2rem">${esc(base.dayTitle||"Day "+day)}</h2><p class="note" style="margin:0 0 .75rem">${esc(base.setTitle||"")}</p>
+  <div class="stats">
+    <div class="stat"><b>${classAcc??"–"}%</b><span>first-try accuracy, class</span></div>
+    <div class="stat"><b>${mastered} of ${n}</b><span>students at 80%+ (mastery)</span></div>
+    <div class="stat"><b>${avgFin} / ${P}</b><span>problems finished, average</span></div>
+    <div class="stat"><b>${misCodes[0]?misCodes[0].students.length:0}</b><span>students with the top misconception</span></div>
+  </div>
+
+  <section class="panel">
+    <h2>Skill mastery</h2>
+    <p class="sub">First-try accuracy on each step. A student gets credit only if the first tap or first typed answer was right.</p>
+    <div class="bars" style="margin-bottom:1rem">${classSk.map(([k,v])=>`<div style="grid-template-columns:minmax(140px,260px) 1fr 52px"><span>${esc(k)} <span class="note">${esc(stdOf[k]||"")}</span></span><i style="width:${v||0}%;background:${v>=80?"var(--good)":v>=60?"var(--mid)":"var(--bad)"}"></i><span>${v??"–"}%</span></div>`).join("")}</div>
+    <div class="scroll"><table>
+      <thead><tr><th>Student</th><th>Overall</th>${skillNames.map(k=>`<th>${esc(k)}</th>`).join("")}<th>Weakest skill</th></tr></thead>
+      <tbody>${S.map(x=>`<tr><td>${esc(x.s.name)}</td><td>${cellPct(x.acc)}</td>${skillNames.map(k=>`<td>${cellPct(x.sk[k]?pct(x.sk[k].ft,x.sk[k].n):null)}</td>`).join("")}<td>${x.weak[0]?esc(x.weak[0]):"<span class='note'>None below 80%</span>"}</td></tr>`).join("")}</tbody>
+    </table></div>
+    <div class="legend"><span><i class="cell c0">✓</i> Mastered, 80%+</span><span><i class="cell c1">~</i> Developing, 60 to 79%</span><span><i class="cell c2">!</i> Needs reteach, under 60%</span></div>
+  </section>
+
+  <section class="panel">
+    <h2>Misconceptions</h2>
+    <p class="sub">Built from the wrong answers students tapped or typed. Most widespread first.</p>
+    ${misCodes.length?misCodes.map(m=>`<details><summary>${esc(m.c)}: ${m.students.length} student${m.students.length===1?"":"s"}, ${m.count} time${m.count===1?"":"s"}</summary><dl>
+      <dt>Example</dt><dd>Problem ${m.ex.q+1}: ${esc(m.ex.v)}</dd><dt>Students</dt><dd>${m.students.map(esc).join(", ")}</dd>${FIX[m.c]?`<dt>Reteach move</dt><dd>${FIX[m.c]}</dd>`:""}</dl></details>`).join(""):"<p class='note'>No tagged misconceptions yet.</p>"}
+    ${untagged?`<p class="note" style="margin-top:.6rem">${untagged} wrong answer${untagged===1?" has":"s have"} no misconception tag. Add tags to those answer choices in the builder to sort them here. They still count in the item analysis.</p>`:""}
+  </section>
+
+  <section class="panel">
+    <h2>Groups for next WIN</h2>
+    ${hardest?`<div class="focus"><b>Reteach focus:</b> Problem ${hardest.q+1} had the lowest first-try accuracy at ${hardest.ftp}%.${misCodes[0]?` Most common misconception: ${esc(misCodes[0].c.toLowerCase())}.`:""}</div>`:""}
+    <div class="groups">${["sg","ind","ixl"].map(g=>{const m=S.filter(x=>x.g===g);return `<div class="grp g-${g}"><h3>${GROUP[g][0]} (${m.length})</h3><p>${GROUP[g][1]}</p><ul>${m.map(x=>`<li>${esc(x.s.name)} <span class="note">${x.acc===null?"–":x.acc+"%"}${g!=="ixl"&&x.weak[0]?", "+esc(x.weak[0].toLowerCase()):""}</span></li>`).join("")||"<li class='note'>No one</li>"}</ul></div>`}).join("")}</div>
+    <p class="note" style="margin:.75rem 0 0">Suggestions only. Use your judgment.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Item analysis</h2>
+    <div class="scroll"><table>
+      <thead><tr><th>#</th><th>Problem</th><th>Skill</th><th>First try</th><th>Finished</th><th>Most common wrong answer</th></tr></thead>
+      <tbody>${itemRows.map(r=>`<tr><td>${r.q+1}</td><td>${esc(r.p)}</td><td class="note">${r.sk.map(esc).join(", ")}</td><td>${cellPct(r.ftp)}</td><td>${r.fin}%</td><td>${r.top?`${esc(r.top[0])} <span class="note">(${r.top[1]})</span>`:"<span class='note'>None</span>"}</td></tr>`).join("")}</tbody>
+    </table></div>
+  </section>
+
+  <section class="panel">
+    <h2>Problem-by-problem work</h2>
+    <p class="sub">Hover or tap a cell to see the student's work.</p>
+    <div class="scroll"><table>
+      <thead><tr><th>Student</th>${base.probs.map((_,i)=>`<th style="text-align:center">P${i+1}</th>`).join("")}<th>Group</th></tr></thead>
+      <tbody>${S.map(x=>`<tr><td>${esc(x.s.name)}</td>${base.probs.map((_,q)=>`<td class="c">${probCell(x.s,q)}</td>`).join("")}<td><span class="pill p-${x.g}">${GROUP[x.g][0]}</span></td></tr>`).join("")}</tbody>
+    </table></div>
+    <div class="legend"><span><i class="cell c0">✓</i> First try</span><span><i class="cell c1">2</i> 1 to 2 wrong attempts</span><span><i class="cell c2">4</i> 3 or more</span><span><i class="cell cn">–</i> Not finished</span></div>
+  </section>
+
+  ${ds.length>1?`<section class="panel">
+    <h2>Growth across days</h2>
+    <p class="sub">First-try accuracy each day in this unit. If later days are harder, holding steady is progress.</p>
+    <div class="scroll"><table>
+      <thead><tr><th>Student</th>${ds.map(d=>`<th>Day ${d}</th>`).join("")}<th>Change</th></tr></thead>
+      <tbody>${names.map(nm=>{const v=ds.map(d=>accOf(nm,d));const got=v.filter(x=>x!==null);const ch=got.length>1?got[got.length-1]-got[0]:null;
+        return `<tr><td>${esc(nm)}</td>${v.map(x=>`<td>${cellPct(x)}</td>`).join("")}<td>${ch===null?"–":`<b style="color:${ch>=0?"var(--good)":"var(--bad)"}">${ch>0?"+":""}${ch}</b>`}</td></tr>`}).join("")}
+      <tr><td><b>Class</b></td>${classDay.map(v=>`<td>${cellPct(v)}</td>`).join("")}<td></td></tr></tbody>
+    </table></div>
+  </section>`:""}
+
+  ${list.some(s=>s.rc)?(()=>{const K=[["restate","Restated the question"],["answer","Answered it"],["cite","Quoted the text"],["explain","Explained the evidence"]];const R=list.filter(s=>s.rc);
+    return `<section class="panel"><h2>RACE writing</h2><p class="sub">Checked automatically when students write. Read the responses below to judge quality.</p>
+    <div class="bars" style="margin-bottom:1rem">${K.map(([k,t])=>{const v=pct(R.filter(s=>s.rc[k]).length,R.length);return `<div style="grid-template-columns:minmax(140px,220px) 1fr 52px"><span>${t}</span><i style="width:${v}%;background:${v>=80?"var(--good)":v>=60?"var(--mid)":"var(--bad)"}"></i><span>${v}%</span></div>`}).join("")}</div>
+    <div class="scroll"><table><thead><tr><th>Student</th>${K.map(([k,t])=>`<th>${t}</th>`).join("")}<th>Highlights</th></tr></thead>
+    <tbody>${R.map(s=>`<tr><td>${esc(s.name)}</td>${K.map(([k])=>`<td class="c">${s.rc[k]?'<span class="cell c0">✓</span>':'<span class="cell c2">✗</span>'}</td>`).join("")}<td>${s.hl??"–"}</td></tr>`).join("")}</tbody></table></div>
+    ${(()=>{const miss=K.map(([k,t])=>[t,R.filter(s=>!s.rc[k]).length]).sort((a,b)=>b[1]-a[1])[0];return miss[1]?`<div class="focus" style="margin-top:1rem"><b>Writing focus:</b> ${miss[1]} student${miss[1]===1?"":"s"} missed "${miss[0].toLowerCase()}." Model that part in small group.</div>`:""})()}
+    </section>`})():""}
+
+  <section class="panel">
+    <h2>Student feedback</h2>
+    <div class="two">
+      <div><h3 style="margin:.2rem 0 .5rem">Confidence</h3><div class="bars">${confCounts.map(([c,v])=>`<div><span>${c} · ${CONF[c]}</span><i style="width:${v/maxConf*100}%"></i><span>${v}</span></div>`).join("")}</div>
+        <p class="note">Confidence vs. accuracy: ${(()=>{const over=S.filter(x=>x.s.conf>=3&&x.acc!==null&&x.acc<60).map(x=>x.s.name);return over.length?`${over.map(esc).join(", ")} rated themselves 3 or 4 but scored under 60%.`:"No students overrated themselves."})()}</p></div>
+      <div><h3 style="margin:.2rem 0 .5rem">What helped most</h3><div class="bars">${helpCounts.map(([h,v])=>`<div><span>${h}</span><i style="width:${v/maxHelp*100}%;background:var(--ind)"></i><span>${v}</span></div>`).join("")}</div></div>
+    </div>
+    <h3 style="margin:1.25rem 0 .3rem">What was tricky</h3>
+    <ul>${list.filter(s=>(s.tricky||"").trim()).map(s=>`<li><b>${esc(s.name)}:</b> ${esc(s.tricky)}</li>`).join("")||"<li class='note'>No comments yet</li>"}</ul>
+  </section>
+
+  <section class="panel">
+    <h2>Written responses</h2>
+    ${list.map(s=>`<details><summary>${esc(s.name)}</summary><dl>
+      <dt>Stop and jot</dt><dd>${esc(s.sg.jot)||"<span class='note'>Blank</span>"}</dd>
+      <dt>Restate</dt><dd>${esc(s.race.R)||"–"}</dd><dt>Answer</dt><dd>${esc(s.race.A)||"–"}</dd>
+      <dt>Cite</dt><dd>${esc(s.race.C)||"–"}</dd><dt>Explain</dt><dd>${esc(s.race.E)||"–"}</dd>
+      <dt>Small group notes</dt><dd>${s.sg.br} of ${s.sg.bt} correct</dd>
+      ${s.ixl.length?`<dt>IXL skills</dt><dd>${s.ixl.filter(Boolean).length} of ${s.ixl.length} checked off</dd>`:""}${s.hl!=null?`<dt>Highlights</dt><dd>${s.hl}</dd>`:""}
+    </dl></details>`).join("")}
+  </section>`;
+}
+
+/* ---------- controls ---------- */
+$("#add").onclick=()=>{const[a,f]=ingest($("#paste").value);say(f?`Added ${a} turn-in${a===1?"":"s"}.`:"No WIN205 codes found. Make sure students used a portal from the WIN Builder.");$("#paste").value="";render()};
+$("#files").onchange=async e=>{
+  let texts=[];
+  for(const f of e.target.files){
+    if(/\.zip$/i.test(f.name)){if(!window.JSZip){say("Zip reading needs internet. Unzip it and upload the files inside.");continue}
+      const z=await JSZip.loadAsync(f);for(const nm of Object.keys(z.files)){if(!z.files[nm].dir)texts.push(await z.files[nm].async("string"))}}
+    else texts.push(await f.text());
+  }
+  let a=0,fd=0;texts.forEach(t=>{const r=ingest(t);a+=r[0];fd+=r[1]});
+  say(fd?`Added ${a} turn-in${a===1?"":"s"} from ${texts.length} file${texts.length===1?"":"s"}.`:"No WIN205 codes found in those files.");
+  e.target.value="";render();
+};
+$("#clear").onclick=()=>{if(confirm("Remove all turn-ins from this dashboard?")){subs=[];store.set("win205dash",subs);say("Cleared.");render()}};
+$("#print").onclick=()=>window.print();
+async function saveFile(name,data){
+  let dl=null;try{if(window.claude&&window.claude.use)dl=await window.claude.use("downloads")}catch(e){}
+  if(dl){try{await dl.save({filename:name,data});return "saved"}catch(e){return e&&e.code==="declined"?"declined":"failed"}}
+  try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([data],{type:"text/csv"}));a.download=name;document.body.appendChild(a);a.click();a.remove();return "saved"}catch(e){return "failed"}
+}
+$("#exportCsv").onclick=async()=>{
+  if(!subs.length){say("Nothing to export yet.");return}
+  const q=v=>`"${String(v??"").replace(/"/g,'""')}"`;
+  const skillNames=[...new Set(subs.flatMap(s=>s.items.flatMap(x=>x.sk)))];
+  const rows=[["Unit","Student","Day","First-try accuracy %","Problems finished",...skillNames.map(k=>k+" %"),"Weakest skill","Misconceptions","Confidence","Suggested group","What helped","What was tricky","Stop and jot","Restate","Answer","Cite","Explain"]];
+  subs.slice().sort((a,b)=>String(a.set).localeCompare(b.set)||a.day-b.day||a.name.localeCompare(b.name)).forEach(s=>{const x=profile(s);
+    const mc=Object.entries(x.mis.filter(m=>m.m).reduce((a,m)=>(a[m.m]=(a[m.m]||0)+1,a),{})).map(([c,v])=>`${c} (${v})`).join("; ");
+    rows.push([s.setTitle||s.set,s.name,s.day,x.acc,x.fin,...skillNames.map(k=>x.sk[k]?pct(x.sk[k].ft,x.sk[k].n):""),x.weak[0]||"",mc,s.conf,GROUP[x.g][0],(s.help||[]).join("; "),s.tricky,s.sg.jot,s.race.R,s.race.A,s.race.C,s.race.E])});
+  const r=await saveFile("win-math-data.csv",rows.map(r=>r.map(q).join(",")).join("\n"));
+  say(r==="saved"?"CSV downloaded.":r==="declined"?"Download canceled.":"Download didn't work here. Open the dashboard from the downloaded file instead.");
+};
+
+/* ---------- sample class: simulated students on the example unit ---------- */
+const EXAMPLE={
+ "id": "estimating-fractions",
+ "title": "Estimating with fractions",
+ "room": "Room 205",
+ "smart": 80,
+ "turnInNote": "Then open today's WIN assignment in Canvas, paste, and submit.",
+ "skills": [
+  {
+   "id": "k1",
+   "name": "Estimate sums and differences",
+   "std": "IN 6.NS.4"
+  },
+  {
+   "id": "k2",
+   "name": "Estimate products and quotients",
+   "std": "IN 6.NS.4"
+  },
+  {
+   "id": "k3",
+   "name": "Estimate in word problems",
+   "std": "IN 6.NS.4"
+  }
+ ],
+ "days": [
+  {
+   "title": "Day 1: Benchmark fractions",
+   "target": "I can estimate fractions using the benchmarks 0, ½, and 1.",
+   "ind": [
+    {
+     "type": "est",
+     "prompt": "Which benchmark is this fraction closest to?",
+     "nums": "1/9"
+    },
+    {
+     "type": "est",
+     "prompt": "Which benchmark is this fraction closest to?",
+     "nums": "5/9"
+    },
+    {
+     "type": "est",
+     "prompt": "Which benchmark is this fraction closest to?",
+     "nums": "7/8"
+    },
+    {
+     "type": "est",
+     "prompt": "Which benchmark is this fraction closest to?",
+     "nums": "2/5"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the sum.",
+     "nums": "7/8, 4/9",
+     "op": "+",
+     "skill": "k1"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the sum.",
+     "nums": "1/10, 5/12",
+     "op": "+",
+     "skill": "k1"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the difference.",
+     "nums": "11/12, 1/8",
+     "op": "−",
+     "skill": "k1"
+    },
+    {
+     "type": "est",
+     "prompt": "Maya ran 9/10 mile on Monday and 6/11 mile on Tuesday. About how far did she run in all?",
+     "nums": "9/10, 6/11",
+     "op": "+",
+     "unit": "miles",
+     "skill": "k3"
+    }
+   ],
+   "sg": [
+    {
+     "tag": "listen",
+     "title": "Why estimate?",
+     "text": "Estimating gives you a **close** answer fast. It helps you check if your real answer makes sense.\nToday we use three **benchmarks**: 0, ½, and 1."
+    },
+    {
+     "tag": "fill",
+     "title": "Notes: the three benchmarks",
+     "text": "If the numerator is very small compared to the denominator, the fraction is close to [[0|zero]].\nIf the numerator is about half of the denominator, the fraction is close to [[1/2|½|half|one half]].\nIf the numerator is almost the same as the denominator, the fraction is close to [[1|one]]."
+    },
+    {
+     "tag": "watch",
+     "title": "Teacher example",
+     "text": "3/7 → ?\nStep 1: Find half of the denominator. Half of 7 is **3½**.\nStep 2: Compare the numerator. 3 is very close to 3½.\nStep 3: So 3/7 is about **½**."
+    },
+    {
+     "tag": "wedo",
+     "title": "Try it with me",
+     "text": "8/9 + 1/6 ≈ ?\nTap the benchmark each fraction is closest to.\n{{8/9}}\n{{1/6}}\nEstimate: [[1|one]]",
+     "reveal": "8/9 ≈ 1 and 1/6 ≈ 0, so the sum is about **1**."
+    },
+    {
+     "tag": "jot",
+     "title": "In your own words",
+     "text": "How do you know if a fraction is close to ½?"
+    }
+   ],
+   "standards": [
+    "IN 6.NS.4: Solve real-world problems with positive fractions and decimals",
+    "Grade 5 foundation: estimate with benchmark fractions"
+   ],
+   "ixl": [
+    {
+     "t": "Estimate sums and differences of fractions using benchmarks",
+     "d": "Round each fraction to 0, ½, or 1 before you add."
+    },
+    {
+     "t": "Compare fractions to ½",
+     "d": "Warm-up if you missed problems 1 to 4."
+    },
+    {
+     "t": "IXL Math Arena",
+     "d": "Only after you reach your SmartScore goal."
+    }
+   ],
+   "race": "Is 7/8 + 4/9 more or less than 2? Use benchmarks to prove it."
+  },
+  {
+   "title": "Day 2: Rounding mixed numbers",
+   "target": "I can estimate sums and differences of mixed numbers by rounding to the nearest whole number.",
+   "ind": [
+    {
+     "type": "est",
+     "prompt": "Round to the nearest whole number.",
+     "nums": "3 4/5"
+    },
+    {
+     "type": "est",
+     "prompt": "Round to the nearest whole number.",
+     "nums": "6 1/8"
+    },
+    {
+     "type": "est",
+     "prompt": "Round to the nearest whole number.",
+     "nums": "5 3/7"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the sum.",
+     "nums": "4 7/8, 2 1/6",
+     "op": "+",
+     "skill": "k1"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the difference.",
+     "nums": "9 1/5, 3 5/6",
+     "op": "−",
+     "skill": "k1"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the sum.",
+     "nums": "7 2/3, 1 9/10",
+     "op": "+",
+     "skill": "k1"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the difference.",
+     "nums": "12 1/9, 5 7/8",
+     "op": "−",
+     "skill": "k1"
+    },
+    {
+     "type": "est",
+     "prompt": "A board is 8 5/6 feet long. Leo cuts off 2 1/10 feet. About how much is left?",
+     "nums": "8 5/6, 2 1/10",
+     "op": "−",
+     "unit": "feet",
+     "skill": "k3"
+    }
+   ],
+   "sg": [
+    {
+     "tag": "listen",
+     "title": "From fractions to mixed numbers",
+     "text": "Yesterday we rounded fractions to 0, ½, or 1. Today we round **mixed numbers** to the nearest whole number.\nThe fraction part tells you which way to round."
+    },
+    {
+     "tag": "fill",
+     "title": "Notes: the rounding rule",
+     "text": "If the fraction part is less than ½, the whole number stays the [[same]].\nIf the fraction part is ½ or more, round [[up]] to the next whole number."
+    },
+    {
+     "tag": "watch",
+     "title": "Teacher example",
+     "text": "6 4/5 + 3 2/9 ≈ ?\nStep 1: 4/5 is more than ½, so 6 4/5 rounds to **7**.\nStep 2: 2/9 is less than ½, so 3 2/9 rounds to **3**.\nStep 3: 7 + 3 = **10**."
+    },
+    {
+     "tag": "wedo",
+     "title": "Try it with me",
+     "text": "8 7/10 − 2 1/4 ≈ ?\nTap the whole number each one is closest to.\n{{8 7/10}}\n{{2 1/4}}\nEstimate: [[7|seven]]",
+     "reveal": "9 − 2 = **7**."
+    },
+    {
+     "tag": "jot",
+     "title": "In your own words",
+     "text": "Why does 4 3/8 round to 4 and not 5?"
+    }
+   ],
+   "standards": [
+    "IN 6.NS.4: Solve real-world problems with positive fractions and decimals",
+    "Grade 5 foundation: estimate sums and differences of mixed numbers"
+   ],
+   "ixl": [
+    {
+     "t": "Estimate sums and differences of mixed numbers",
+     "d": "Round each mixed number to the nearest whole first."
+    },
+    {
+     "t": "Add and subtract mixed numbers",
+     "d": "Estimate first, then solve. Does your answer match your estimate?"
+    },
+    {
+     "t": "IXL Math Arena",
+     "d": "Only after you reach your SmartScore goal."
+    }
+   ],
+   "race": "Jada estimated 9 1/5 − 3 5/6 as 6. Is her estimate reasonable?"
+  },
+  {
+   "title": "Day 3: Estimating products",
+   "target": "I can estimate products of fractions and mixed numbers and check if an answer is reasonable.",
+   "ind": [
+    {
+     "type": "est",
+     "prompt": "Estimate the product.",
+     "nums": "5/9, 20",
+     "op": "×",
+     "skill": "k2"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the product.",
+     "nums": "7/8, 16",
+     "op": "×",
+     "skill": "k2"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the product.",
+     "nums": "3 7/8, 5",
+     "op": "×",
+     "skill": "k2"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the product.",
+     "nums": "2 1/9, 6",
+     "op": "×",
+     "skill": "k2"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the product.",
+     "nums": "5 5/6, 3 1/8",
+     "op": "×",
+     "skill": "k2"
+    },
+    {
+     "type": "est",
+     "prompt": "Estimate the quotient.",
+     "nums": "11 7/8, 2 9/10",
+     "op": "÷",
+     "skill": "k2"
+    },
+    {
+     "type": "est",
+     "prompt": "A recipe uses 2 7/8 cups of flour. Sam makes 4 batches. About how much flour does he need?",
+     "nums": "2 7/8, 4",
+     "op": "×",
+     "unit": "cups",
+     "skill": "k3"
+    },
+    {
+     "type": "est",
+     "prompt": "Jay solved this problem.",
+     "nums": "4 1/9, 2 5/6",
+     "op": "×",
+     "skill": "k2",
+     "claim": "25"
+    }
+   ],
+   "sg": [
+    {
+     "tag": "listen",
+     "title": "Estimating when we multiply",
+     "text": "We can use the same rounding tricks to estimate **products** and **quotients**.\nA good estimate helps you catch a wrong answer before you turn it in."
+    },
+    {
+     "tag": "fill",
+     "title": "Notes: multiplying by a fraction",
+     "text": "When you multiply a number by a fraction less than 1, the answer gets [[smaller|less]].\nTo estimate with mixed numbers, round each one to the nearest [[whole|whole number]] number first."
+    },
+    {
+     "tag": "watch",
+     "title": "Teacher example",
+     "text": "4 6/7 × 5 1/5 ≈ ?\nStep 1: 4 6/7 rounds to **5**.\nStep 2: 5 1/5 rounds to **5**.\nStep 3: 5 × 5 = **25**. The real answer should be close to 25."
+    },
+    {
+     "tag": "wedo",
+     "title": "Try it with me",
+     "text": "2 9/10 × 7 ≈ ?\nTap the whole number 2 9/10 is closest to.\n{{2 9/10}}\nEstimate: [[21|twenty-one]]",
+     "reveal": "2 9/10 ≈ 3, and 3 × 7 = **21**."
+    },
+    {
+     "tag": "jot",
+     "title": "In your own words",
+     "text": "How can an estimate help you catch a mistake?"
+    }
+   ],
+   "standards": [
+    "IN 6.NS.4: Solve real-world problems with positive fractions and decimals",
+    "Grade 5 foundation: multiplying as scaling"
+   ],
+   "ixl": [
+    {
+     "t": "Estimate products of fractions and mixed numbers",
+     "d": "Round, then multiply."
+    },
+    {
+     "t": "Multiply fractions and whole numbers",
+     "d": "Estimate first, then check your real answer."
+    },
+    {
+     "t": "IXL Math Arena",
+     "d": "Only after you reach your SmartScore goal."
+    }
+   ],
+   "race": "Luis says 7/8 × 24 is about 30. Is his estimate reasonable?"
+  }
+ ],
+ "subject": "math",
+ "third": "ixl",
+ "tools": {
+  "calc": false,
+  "mult": true,
+  "fracbars": true,
+  "numline": true,
+  "formulas": true
+ }
+};
+function parseSpec(str){return String(str||"").split(",").map(t=>t.trim()).filter(Boolean).map(t=>{let m,w=0,n,d;
+  if(m=t.match(/^(\d+)\s+(\d+)\/(\d+)$/)){w=+m[1];n=+m[2];d=+m[3]}else if(m=t.match(/^(\d+)\/(\d+)$/)){n=+m[1];d=+m[2];if(n>=d){w=Math.floor(n/d);n=n%d}}else return{fixed:true,v:+t};
+  if(n===0)return{fixed:true,v:w};const f=n/d;return{n,d,w,v:w+f,r:!w?(f<.25?0:f<.75?.5:1):(f>=.5?w+1:w)}})}
+const plain=x=>x.fixed?String(x.v):(x.w?x.w+" ":"")+x.n+"/"+x.d,rv=x=>x.fixed?x.v:x.r;
+const calc=(a,o,b)=>o==="+"?a+b:o==="−"?a-b:o==="×"?a*b:o==="÷"?a/b:NaN;
+function fmt(v){const w=Math.floor(v+1e-9),f=v-w;if(f<1e-6)return String(w);if(Math.abs(f-.5)<1e-6)return (w?w:"")+"½";return String(+v.toFixed(2))}
+$("#sample").onclick=()=>{
+  const names=["Aiden R.","Brianna T.","Carlos M.","Destiny H.","Elijah W.","Faith L.","Gabriel S.","Hailey P.","Isaiah J.","Jada K.","Kevin N.","Layla D.","Marcus B.","Nevaeh C.","Omar F.","Paige G.","Quinn A.","Riley V.","Sofia E.","Tyler O."];
+  const tricky=["Knowing if 5/9 is close to half","Subtracting after rounding","The word problem","Nothing, it was easy","Remembering which way to round","When the fraction was right in the middle","",""];
+  const jots=["If the top is about half the bottom its close to 1/2","Find half the denominator and compare","its close to half when the numbers are in the middle",""];
+  const BI={b:"Round fractions to 0, ½, 1",m:"Round mixed numbers",reas:"Judge if an answer is reasonable"};
+  let seed=11;const rnd=()=>{seed=(seed*9301+49297)%233280;return seed/233280};
+  const enc=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o))));
+  const codes=[];
+  names.forEach((nm,k)=>{const base=.4+(k%7)*.08,trunc=k%4===0,opmix=k%5===1;
+    EXAMPLE.days.forEach((D,di)=>{const ab=Math.min(.97,base+di*.04),items=[],probs=[],skills={};
+      D.ind.forEach((q,i)=>{const nums=parseSpec(q.nums);let ok=true;const keep=rnd()<ab+.25,parts=[];
+        nums.forEach((x,j)=>{if(x.fixed)return;const hard=!!x.w&&x.r>Math.floor(x.v),wrong=[];
+          if(rnd()>(trunc&&hard?.25:ab)){const m=x.w?(x.r>Math.floor(x.v)?x.r-1:x.r+1):[0,.5,1].filter(v=>v!==x.r)[Math.floor(rnd()*2)];
+            wrong.push({v:`${plain(x)} → ${fmt(m)}`,m:x.w?(m<x.r?"Dropped the fraction instead of rounding up":"Rounded up with a fraction under ½"):(m<x.r?"Picked a benchmark that's too low":"Picked a benchmark that's too high")})}
+          if(!keep)ok=false;const sk=x.w?BI.m:BI.b;skills[sk]="5.NF.A.2";items.push({q:i,k:"round",sk:[sk],att:1,ft:keep&&!wrong.length?1:0,wrong});parts.push(`${plain(x)} ≈ ${fmt(x.r)}`)});
+        if(q.op&&ok){const r=nums.map(rv),ans=r.slice(1).reduce((a,y)=>calc(a,q.op,y),r[0]),wrong=[];
+          if(rnd()>(opmix?.45:ab+.05)){const wo=opmix?["+","×","−"].find(o=>o!==q.op):null;const v=wo?r.slice(1).reduce((a,y)=>calc(a,wo,y),r[0]):ans+(rnd()<.5?1:-1);
+            wrong.push({v:`= ${fmt(Math.max(0,v))}`,m:wo?"Used the wrong operation":"Small computation slip after rounding"})}
+          const s=EXAMPLE.skills.find(z=>z.id===q.skill);skills[s.name]=s.std;items.push({q:i,k:"est",sk:[s.name],att:1,ft:wrong.length?0:1,wrong});parts.push(`${r.join(` ${q.op} `)} = ${fmt(ans)}`);
+          if(q.claim){const w2=rnd()>ab?[{v:"Yes, it's close",m:"Misjudged whether an answer is reasonable"}]:[];skills[BI.reas]="";items.push({q:i,k:"reas",sk:[BI.reas],att:1,ft:w2.length?0:1,wrong:w2})}}
+        probs.push({p:`${q.prompt.slice(0,90)} ${nums.map(plain).join(` ${q.op||""} `)}`.trim(),d:ok?1:0,w:ok?parts.join("; "):""})});
+      codes.push("WIN205:"+enc({v:3,set:EXAMPLE.id,setTitle:EXAMPLE.title,name:nm,day:di+1,dayTitle:D.title,t:Date.now(),skills:Object.entries(skills).map(([n,std])=>({n,std})),items,probs,
+        sg:{done:1,br:rnd()<ab?3:2,bt:3,jot:jots[Math.floor(rnd()*jots.length)]},ixl:[rnd()<ab,rnd()<ab-.2,false],
+        race:{R:"The question asks if the estimate is reasonable.",A:ab>.6?"No, it is not reasonable.":"Yes",C:ab>.6?"I rounded to whole numbers first.":"",E:ab>.7?"My estimate was far from their answer so it doesn't make sense.":""},
+        conf:Math.max(1,Math.min(4,Math.round(ab*4+rnd()-.4))),help:HELPED.filter(()=>rnd()<.35),tricky:tricky[Math.floor(rnd()*tricky.length)]}));
+    });
+  });
+  const[a]=ingest(codes.join("\n"));set=EXAMPLE.id;
+  say(`Loaded ${a} sample turn-ins (20 students × 3 days). Tap "Clear all" before adding real students.`);render();
+};
+render();
+</script>
+</body>
+</html>
