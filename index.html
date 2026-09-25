@@ -3,78 +3,111 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>WIN Portal: Tools for Teachers</title>
+<title>WIN Portal</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧭</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
-  --bg:#F3F7FB;--ink:#1B2B40;--soft:#51637A;--card:#FFFFFF;--line:#D5DFEA;--ind:#2A9D8F;--sg:#5B5BD6;--ixl:#E0A31B;--race:#D1495B}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#121A26;--ink:#EEF3F9;--soft:#A9B7C8;--card:#1B2636;--line:#2E3D52}}
-:root[data-theme="dark"]{--bg:#121A26;--ink:#EEF3F9;--soft:#A9B7C8;--card:#1B2636;--line:#2E3D52}
+  --bg:#F3F7FB;--ink:#1B2B40;--soft:#51637A;--card:#FFFFFF;--line:#D5DFEA;--ind:#2A9D8F;--ind-bg:#E3F4F1;--sg:#5B5BD6;--sg-bg:#ECECFB;--ixl:#E0A31B;--ixl-bg:#FDF3DC;--race:#D1495B}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#121A26;--ink:#EEF3F9;--soft:#A9B7C8;--card:#1B2636;--line:#2E3D52;--ind-bg:#16332F;--sg-bg:#23244A;--ixl-bg:#3A2F14}}
+:root[data-theme="dark"]{--bg:#121A26;--ink:#EEF3F9;--soft:#A9B7C8;--card:#1B2636;--line:#2E3D52;--ind-bg:#16332F;--sg-bg:#23244A;--ixl-bg:#3A2F14}
 *,*::before,*::after{box-sizing:inherit}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",Verdana,system-ui,sans-serif;font-size:1.05rem;line-height:1.55}
 h1,h2,h3{font-family:"Fredoka","Trebuchet MS",system-ui,sans-serif;line-height:1.15}
-.wrap{max-width:980px;margin:0 auto;padding:2rem 1rem 4rem}
+.wrap{max-width:1080px;margin:0 auto;padding:0 1rem 4rem}
 a{color:inherit}
 :focus-visible{outline:3px solid var(--sg);outline-offset:3px}
-header h1{font-size:clamp(2.2rem,6vw,3.2rem);margin:0}
-header p{color:var(--soft);max-width:60ch;margin:.5rem 0 0}
-.route{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:2.5rem 0 2rem}
-.route::before{content:"";position:absolute;top:44px;left:16%;right:16%;height:8px;border-radius:8px;background:repeating-linear-gradient(90deg,var(--line) 0 18px,transparent 18px 28px)}
-.stop{position:relative;text-align:center;display:flex;flex-direction:column;align-items:center;gap:.4rem;text-decoration:none}
-.dot{width:88px;height:88px;border-radius:50%;display:grid;place-items:center;font-size:2.2rem;border:6px solid var(--c);background:var(--card);transition:transform .15s}
-.stop:hover .dot{transform:scale(1.06)}
-.stop b{font-family:"Fredoka",sans-serif;font-size:1.25rem}
-.stop span{color:var(--soft);font-size:.95rem;max-width:22ch}
+/* ---- shared site header (same on every teacher page) ---- */
+.site{background:var(--card);border-bottom:2px solid var(--line)}
+.site-in{max-width:1080px;margin:0 auto;padding:.55rem 1rem;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap}
+.brand{font-family:"Fredoka","Trebuchet MS",system-ui,sans-serif;font-weight:700;font-size:1.2rem;text-decoration:none;color:var(--ink);display:inline-flex;gap:.4rem;align-items:center}
+.site nav{display:flex;gap:.25rem;margin-left:auto;flex-wrap:wrap}
+.site nav a{color:var(--soft);text-decoration:none;font-weight:700;padding:.4rem .85rem;border-radius:999px}
+.site nav a:hover{background:var(--bg);color:var(--ink)}
+.site nav a[aria-current="page"]{background:var(--ink);color:var(--bg)}
+.pagehead{margin:1.25rem 0 1rem}
+.pagehead h1{font-size:clamp(1.7rem,4.5vw,2.3rem);margin:0}
+.pagehead p{margin:.25rem 0 0;color:var(--soft);max-width:65ch}
+@media print{.site{display:none}}
+.pagehead h1{font-size:clamp(2rem,6vw,3rem)}
+.route{display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem;margin:1.5rem 0}
+.stop{display:flex;flex-direction:column;gap:.35rem;text-decoration:none;background:var(--card);border:2px solid var(--line);border-top:8px solid var(--c);border-radius:16px;padding:1rem 1.1rem;transition:transform .15s}
+.stop:hover{transform:translateY(-2px);border-color:var(--c)}
+.stop .n{font-family:"Fredoka",sans-serif;font-weight:700;color:var(--c);font-size:.95rem;text-transform:uppercase;letter-spacing:.04em}
+.stop b{font-family:"Fredoka",sans-serif;font-size:1.35rem}
+.stop span{color:var(--soft);font-size:.97rem}
+.stop em{font-style:normal;font-weight:700;margin-top:auto;padding-top:.4rem}
 .s1{--c:var(--sg)}.s2{--c:var(--ind)}.s3{--c:var(--ixl)}
 .panel{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:1.1rem 1.25rem;margin-bottom:1.25rem}
-.panel h2{margin:0 0 .5rem;font-size:1.4rem}
+.panel h2{margin:0 0 .35rem;font-size:1.4rem}
+.panel>p.sub{margin:0 0 .9rem;color:var(--soft)}
+.quick{display:grid;grid-template-columns:repeat(2,1fr);gap:.9rem}
+.grade{border:2px solid var(--line);border-radius:14px;padding:.8rem 1rem}
+.grade h3{margin:0 0 .6rem;font-size:1.25rem}
+.grade .btns{display:flex;flex-wrap:wrap;gap:.5rem}
+.go{display:inline-flex;align-items:center;gap:.4rem;text-decoration:none;border-radius:10px;padding:.55rem 1rem;font-family:"Fredoka",sans-serif;font-weight:600;color:#fff}
+.go.m{background:var(--ind)}.go.e{background:var(--race)}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:.75rem}
 .card{display:block;text-decoration:none;border:2px solid var(--line);border-radius:14px;padding:.8rem 1rem;border-left:8px solid var(--c)}
 .card:hover{border-color:var(--c)}
 .card b{font-family:"Fredoka",sans-serif;font-size:1.1rem}
 .card p{margin:.25rem 0 0;color:var(--soft);font-size:.95rem}
-ol{padding-left:1.3rem}li{margin:.3rem 0}
+.week{display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem}
+.week div{background:var(--bg);border-radius:12px;padding:.7rem .9rem}
+.week h3{margin:0 0 .3rem;font-size:1.1rem}
+.week ul{margin:0;padding-left:1.1rem}.week li{margin:.2rem 0}
 .note{color:var(--soft);font-size:.95rem}
-@media (max-width:640px){.route{grid-template-columns:1fr}.route::before{top:0;bottom:0;left:43px;right:auto;width:8px;height:auto;background:repeating-linear-gradient(180deg,var(--line) 0 18px,transparent 18px 28px)}
-  .stop{flex-direction:row;text-align:left}.dot{flex:none;width:78px;height:78px}.stop>div{display:flex;flex-direction:column}}
+@media (max-width:760px){.route,.quick,.week{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
+<header class="site"><div class="site-in">
+  <a class="brand" href="index.html"><span aria-hidden="true">🧭</span> WIN Portal</a>
+  <nav aria-label="Main"><a href="index.html" aria-current="page">Home</a><a href="builder.html">Build</a><a href="dashboard.html">Dashboard</a></nav>
+</div></header>
 <div class="wrap">
-  <header>
+  <div class="pagehead">
     <h1>WIN Portal</h1>
-    <p>Build standards-based WIN rotations for grade 6 math and ELA, share them with students in Canvas, and see who needs what the next day.</p>
-  </header>
+    <p>Standards-based WIN rotations for grade 5 and grade 6 math and ELA, built on the Indiana Academic Standards. Build a unit, share it in Canvas, and see who needs what the next day.</p>
+  </div>
 
-  <nav class="route" aria-label="Teacher tools">
-    <a class="stop s1" href="builder.html"><span class="dot" aria-hidden="true">🛠️</span><div><b>1. Build</b><span>Pick standards or write your own questions, then download a student portal.</span></div></a>
-    <a class="stop s2" href="portals/estimating-fractions-math.html"><span class="dot" aria-hidden="true">🧭</span><div><b>2. Share</b><span>Students work through Independent, Small group, and IXL or RACE rooms.</span></div></a>
-    <a class="stop s3" href="dashboard.html"><span class="dot" aria-hidden="true">📊</span><div><b>3. Analyze</b><span>Paste turn-ins to see skill mastery, misconceptions, and next-day groups.</span></div></a>
+  <nav class="route" aria-label="How it works">
+    <a class="stop s1" href="builder.html"><span class="n">Step 1</span><b>🛠️ Build</b><span>Pick the standards students need. The builder writes practice, a small group lesson, and RACE prompts.</span><em>Open the builder →</em></a>
+    <a class="stop s2" href="portals/estimating-fractions-math.html"><span class="n">Step 2</span><b>🧭 Share</b><span>Students work through Independent, Small group, and IXL or RACE rooms, then paste their turn-in into Canvas.</span><em>See a student portal →</em></a>
+    <a class="stop s3" href="dashboard.html"><span class="n">Step 3</span><b>📊 See the data</b><span>Drop the Canvas download on the dashboard. Get tomorrow's groups, mastery by standard, and who's missing.</span><em>Open the dashboard →</em></a>
   </nav>
+
+  <section class="panel">
+    <h2>Start a unit</h2>
+    <p class="sub">Choose your grade and subject. The builder opens with those standards ready to check.</p>
+    <div class="quick">
+      <div class="grade"><h3>Grade 5</h3><div class="btns"><a class="go m" href="builder.html?grade=5&amp;subject=math">➗ Math standards</a><a class="go e" href="builder.html?grade=5&amp;subject=ela">📖 ELA standards</a></div></div>
+      <div class="grade"><h3>Grade 6</h3><div class="btns"><a class="go m" href="builder.html?grade=6&amp;subject=math">➗ Math standards</a><a class="go e" href="builder.html?grade=6&amp;subject=ela">📖 ELA standards</a></div></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>A WIN week</h2>
+    <div class="week">
+      <div><h3>Before</h3><ul><li>Check the dashboard's <b>Next steps</b> tab for groups.</li><li>Build or reopen a unit.</li><li>Post the portal and one Canvas assignment per day.</li></ul></div>
+      <div><h3>During</h3><ul><li>Pull your small group.</li><li>Others work in Independent or IXL/RACE.</li><li>Students tap <b>Turn in my work</b> and paste into Canvas.</li></ul></div>
+      <div><h3>After</h3><ul><li>Skim scores in SpeedGrader, or</li><li>choose <b>Download Submissions</b> and drop the zip on the dashboard.</li><li>Tap <b>Copy groups</b> for tomorrow.</li></ul></div>
+    </div>
+  </section>
 
   <section class="panel">
     <h2>Example student portals</h2>
     <div class="cards">
-      <a class="card" style="--c:var(--ind)" href="portals/estimating-fractions-math.html"><b>Math: Estimating with fractions</b><p>3 days, number lines, math tools, IXL room.</p></a>
-      <a class="card" style="--c:var(--race)" href="portals/evidence-and-theme-ela.html"><b>ELA: Evidence and theme</b><p>3 days, passages with a highlighter, evidence questions, RACE room.</p></a>
+      <a class="card" style="--c:var(--ind)" href="portals/estimating-fractions-math.html"><b>Grade 6 math: Estimating with fractions</b><p>3 days, number lines, math tools, IXL room.</p></a>
+      <a class="card" style="--c:var(--race)" href="portals/evidence-and-theme-ela.html"><b>Grade 6 ELA: Evidence and theme</b><p>3 days, passages with a highlighter, evidence questions, RACE room.</p></a>
     </div>
-    <p class="note">To edit an example, download its unit file (<a href="units/estimating-fractions-math.json" download>math</a>, <a href="units/evidence-and-theme-ela.json" download>ELA</a>), then open the builder and tap "Open unit file."</p>
+    <p class="note">To edit an example, download its unit file (<a href="units/estimating-fractions-math.json" download>math</a>, <a href="units/evidence-and-theme-ela.json" download>ELA</a>), then in the builder choose "Open a unit file."</p>
   </section>
 
-  <section class="panel">
-    <h2>How it works</h2>
-    <ol>
-      <li>In the <a href="builder.html">builder</a>, check the standards students need, generate a unit, and preview it.</li>
-      <li>Tap "Download student portal" and upload that file to your Canvas course.</li>
-      <li>Make a text-entry Canvas assignment for each WIN day. Students tap "Turn in my work," copy, and paste.</li>
-      <li>After class, download the submissions and upload them to the <a href="dashboard.html">dashboard</a>.</li>
-    </ol>
-    <p class="note">No student data is sent to this website. Student work stays on the student's device until they paste it into Canvas, and the dashboard runs only in the teacher's browser.</p>
-  </section>
+  <p class="note">🔒 No student data is sent to this website. Student work stays on the student's device until they paste it into Canvas, and the dashboard runs only in the teacher's browser.</p>
 </div>
 </body>
 </html>
