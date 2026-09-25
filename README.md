@@ -14,6 +14,7 @@ Teachers build a unit, share a student portal through Canvas, and read student t
 | `dashboard.html` | Teacher data dashboard: next-day groups, who's missing, skill mastery, misconceptions, mastery by standard, RACE writing |
 | `portals/*.html` | Example student portals (grade 6 math and ELA, 3 days each) |
 | `units/*.json` | Unit files for the examples. Open them in the builder to edit. |
+| `lib/html2pdf.bundle.min.js` | Makes the paper packet's PDF in the browser ([html2pdf.js](https://github.com/eKoopmans/html2pdf.js), MIT license). Keep the `lib` folder next to `builder.html`. |
 | `.nojekyll` | Tells GitHub Pages to serve the files as-is. Keep it. |
 
 ## Getting data to the teacher
@@ -37,7 +38,7 @@ The grade 6 list came with the original builder. The grade 5 list was added from
 2. Click **+** in the top-right corner, then **New repository**.
 3. Name it (for example, `win-portal`), choose **Public**, and click **Create repository**.
 4. On the new repository page, click **uploading an existing file**.
-5. Drag in **everything in this folder**, including the `portals` and `units` folders and the `.nojekyll` file. (On a Mac, press Command + Shift + . in Finder to show hidden files like `.nojekyll`.)
+5. Drag in **everything in this folder**, including the `portals`, `units`, and `lib` folders and the `.nojekyll` file. (On a Mac, press Command + Shift + . in Finder to show hidden files like `.nojekyll`.)
 6. Click **Commit changes**.
 7. Go to **Settings**, then **Pages** in the left menu.
 8. Under **Build and deployment**, set **Source** to **Deploy from a branch**, **Branch** to **main**, and the folder to **/ (root)**. Click **Save**.
@@ -67,8 +68,8 @@ In **Preview and share**, the **No Canvas? Print a paper packet** section turns 
 | IXL and RACE page | Students | An IXL checklist with a SmartScore goal and a RACE response organizer |
 
 1. Check the pages you want, choose one day or all days, and choose the page order: by day, or with all copies of each worksheet together.
-2. Tap **Preview and print packet**, then **Print or save as PDF**. In the print window, set the destination to **Save as PDF** to get a PDF.
-3. Or tap **Download packet** to save it as a web page. Open it in any browser later and print it from there.
+2. Tap **Download PDF**. The builder makes the PDF in your browser (a few seconds per page) and downloads it. Nothing is uploaded.
+3. Or tap **Print** to open the packet in a new tab with the print window, or **Preview** to look it over first.
 
 Every page starts on a new sheet and says at the top whether it's a teacher page or a student page, so you can print or pull out just the pages you need.
 
@@ -80,7 +81,7 @@ Open the file in the repository, click the pencil icon or **Add file → Upload 
 
 - Student work stays on the student's device until they paste it into Canvas.
 - The dashboard runs only in the teacher's browser and saves to that browser, along with any class rosters you add. Export a CSV regularly, because clearing browser data clears the dashboard.
-- The pages load fonts from Google Fonts, and the dashboard loads a zip reader from cdnjs. Neither receives student data. If your district blocks those, the pages still work with default fonts; unzip Canvas downloads before uploading them.
+- The pages load fonts from Google Fonts, and the dashboard loads a zip reader from cdnjs. The builder makes packet PDFs with the copy in the `lib` folder, and falls back to cdnjs only if that file is missing. Neither receives student data. If your district blocks those, the pages still work with default fonts; unzip Canvas downloads before uploading them.
 
 Check with your district's technology office before sharing the site with students.
 

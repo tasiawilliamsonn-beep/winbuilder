@@ -142,7 +142,7 @@ details.panel[open]>summary::after{content:"Hide"}
 </div>
 <div class="modal" id="modal" hidden>
   <div class="modal-in">
-    <div class="modal-bar"><b id="mTitle">Student preview</b><span class="note" id="mNote">Answers you type here are practice only.</span><button class="btn go" data-act="printPacket" id="mPrint" hidden>Print or save as PDF</button><button class="btn ghost" data-act="closePreview">Close</button></div>
+    <div class="modal-bar"><b id="mTitle">Student preview</b><span class="note" id="mNote">Answers you type here are practice only.</span><button class="btn go" data-act="packetPdf" id="mPrint" hidden>Download PDF</button><button class="btn ghost" data-act="packetPrint" id="mPrint2" hidden>Print</button><button class="btn ghost" data-act="closePreview">Close</button></div>
     <iframe id="pv" title="Student portal preview"></iframe>
   </div>
 </div>
@@ -2037,10 +2037,16 @@ document.addEventListener("click",async e=>{
   if(a==="elaExample"){if(confirm("Replace what's here with an ELA example unit?")){U=generateUnit({grade:"6",subject:"ela",codes:["6.RC.1","6.RC.2","6.RC.8","6.RC.13","6.W.7"],days:3,perDay:6,level:1,seed:42,title:"ELA WIN: Evidence and theme"});cur=0;step=2;save();render();showIssues([]);say("ELA example loaded.")}return}
   if(a==="g5Example"){if(confirm("Replace what's here with a grade 5 math example unit?")){U=generateUnit({grade:"5",subject:"math",codes:["5.CA.3","5.CA.4","5.NS.1"],days:3,perDay:6,level:1,seed:5,title:"Grade 5 WIN: Fraction operations"});cur=0;step=2;save();render();showIssues([]);say("Grade 5 math example loaded.")}return}
   if(a==="preview"){openModal("Student preview","Answers you type here are practice only.",buildPortal(),false);return}
-  if(a==="packet"){const iss=issues();if(iss.length)say(`${iss.length} thing${iss.length===1?"":"s"} to fix in the unit. The packet shows the unit as it is now.`,true);
-    openModal("Printable packet","Pages print on letter paper. Choose \"Save as PDF\" to make a PDF.",buildPacket(),true);return}
-  if(a==="printPacket"){const w=$("#pv").contentWindow;w.focus();w.print();return}
-  if(a==="packetDl"){const r=await saveFile(`${slug(U.title)}-packet.html`,buildPacket());say(r==="saved"?"Packet downloaded. Open it in a browser and tap \"Print or save as PDF.\"":r==="declined"?"Download canceled.":"Download didn't work here.",r!=="saved"&&r!=="declined");return}
+  if(a==="packet"){openModal("Paper packet","Letter-size pages. Download the PDF, or print.",buildPacket(),true);return}
+  if(a==="packetPrint"){const w=window.open("","_blank");
+    if(!w){const f=$("#pv");if(!f.srcdoc)f.srcdoc=buildPacket();say("Your browser blocked the new tab, so the print window opens here instead.",true);setTimeout(()=>{f.contentWindow.focus();f.contentWindow.print()},600);return}
+    w.document.open();w.document.write(buildPacket(true));w.document.close();say("The packet opened in a new tab with the print window.");return}
+  if(a==="packetPdf"){if(pdfBusy)return;pdfBusy=true;const btns=document.querySelectorAll('[data-act="packetPdf"]');btns.forEach(x=>{x.disabled=true;x.dataset.t=x.textContent;x.textContent="Making PDF..."});
+    say("Making the PDF. This takes a few seconds per page.");
+    try{const blob=await makePacketPdf();const r=await saveFile(`${slug(U.title)}-packet.pdf`,blob);
+      say(r==="saved"?"PDF downloaded. Open it to print, or pull out the pages you need.":r==="declined"?"Download canceled.":"The download didn't work in this browser. Try Print, then Save as PDF.",r!=="saved"&&r!=="declined")}
+    catch(err){say("Couldn't make the PDF here ("+(err&&err.message||err)+"). Use Print, then choose Save as PDF.",true)}
+    finally{pdfBusy=false;btns.forEach(x=>{x.disabled=false;x.textContent=x.dataset.t})}return}
   if(a==="closePreview"){$("#modal").hidden=true;$("#pv").srcdoc="";return}
   if(a==="download"){const iss=issues();showIssues(iss);if(iss.length&&!confirm(`${iss.length} thing${iss.length===1?"":"s"} to fix (listed above). Download anyway?`))return;
     const r=await saveFile(`win-${slug(U.title)}.html`,buildPortal());say(r==="saved"?"Student portal downloaded. Upload it to Canvas.":r==="declined"?"Download canceled.":"Download didn't work here. Open this builder from the downloaded file and try again.",r!=="saved"&&r!=="declined");return}
@@ -2123,12 +2129,12 @@ function issues(){
 }
 function showIssues(list){if(step===3)list=[];let el=$("#issues");if(!el){el=document.createElement("div");el.id="issues";$("#app").before(el)}
   el.className=list.length?"issues":"";el.innerHTML=list.length?`<b>Fix before sharing:</b><ul>${list.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}
-function openModal(title,note,html,printable){$("#mTitle").textContent=title;$("#mNote").textContent=note;$("#mPrint").hidden=!printable;$("#pv").title=title;$("#pv").srcdoc=html;$("#modal").hidden=false}
+function openModal(title,note,html,printable){$("#mTitle").textContent=title;$("#mNote").textContent=note;$("#mPrint").hidden=$("#mPrint2").hidden=!printable;$("#pv").title=title;$("#pv").srcdoc=html;$("#modal").hidden=false}
 function buildPortal(){return TPL.replace("/*__CONFIG__*/null",JSON.stringify(U).replace(/</g,"\\u003c"))}
 async function saveFile(name,data){
   let dl=null;try{if(window.claude&&window.claude.use)dl=await window.claude.use("downloads")}catch(e){}
-  if(dl){try{await dl.save({filename:name,data});return "saved"}catch(e){return e&&e.code==="declined"?"declined":"failed"}}
-  try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([data],{type:name.endsWith(".json")?"application/json":"text/html"}));a.download=name;document.body.appendChild(a);a.click();a.remove();return "saved"}catch(e){return "failed"}
+  if(dl&&!(data instanceof Blob)){try{await dl.save({filename:name,data});return "saved"}catch(e){return e&&e.code==="declined"?"declined":"failed"}}
+  try{const a=document.createElement("a");const url=URL.createObjectURL(data instanceof Blob?data:new Blob([data],{type:name.endsWith(".json")?"application/json":"text/html"}));a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);return "saved"}catch(e){return "failed"}
 }
 /* ---- paper packet: lesson plans, worksheets, keys, and a score sheet for classes that don't use Canvas ---- */
 const PK=Object.assign({lesson:true,key:true,sheet:true,notes:true,practice:true,third:true,day:"all",order:"day",roster:""},store.get("winbuilder:packet",{}));
@@ -2143,9 +2149,9 @@ const pfr=t=>esc(t).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/(\d+) (\d+)\/
 const skillOf=id=>U.skills.find(s=>s.id===id)||{name:"",std:""};
 const codeOf=id=>{const s=skillOf(id);return String(s.std||"").replace(/^IN\s*/,"")||s.name||"Warm-up"};
 function numLine(spec,key){const x=parseSpec(spec)[0];if(!x||x.bad||x.fixed)return pfr(spec);
-  const X=v=>30+v*540,ticks=[...Array(x.d+1)].map((_,i)=>`<line x1="${X(i/x.d)}" x2="${X(i/x.d)}" y1="${i%x.d?27:20}" y2="${i%x.d?43:50}"/>`).join("");
-  const lab=(v,t)=>`<text x="${X(v)}" y="68">${esc(t)}</text>`;
-  return `<div class="nl"><p>Mark <b>${pfr(spec)}</b> on the number line.</p><svg viewBox="0 0 600 76" role="img" aria-label="Number line from ${x.w} to ${x.w+1}"><line x1="30" x2="570" y1="35" y2="35"/>${ticks}${lab(0,x.w)}${x.d%2?"":lab(.5,fmt(x.w+.5))}${lab(1,x.w+1)}${key?`<circle cx="${X(x.n/x.d)}" cy="35" r="8"/>`:""}</svg></div>`}
+  const X=v=>30+v*540,ticks=[...Array(x.d+1)].map((_,i)=>`<line x1="${X(i/x.d)}" x2="${X(i/x.d)}" y1="${i%x.d?27:20}" y2="${i%x.d?43:50}" stroke="#1B2B40" stroke-width="2"/>`).join("");
+  const lab=(v,t)=>`<text x="${X(v)}" y="68" fill="#1B2B40" font-size="13" font-family="Verdana,sans-serif" text-anchor="middle">${esc(t)}</text>`;
+  return `<div class="nl"><p>Mark <b>${pfr(spec)}</b> on the number line.</p><svg viewBox="0 0 600 76" width="440" height="56" role="img" aria-label="Number line from ${x.w} to ${x.w+1}"><line x1="30" x2="570" y1="35" y2="35" stroke="#1B2B40" stroke-width="2"/>${ticks}${lab(0,x.w)}${x.d%2?"":lab(.5,fmt(x.w+.5))}${lab(1,x.w+1)}${key?`<circle cx="${X(x.n/x.d)}" cy="35" r="8" fill="#5B5BD6"/>`:""}</svg></div>`}
 function pLine(l,key){const bl=[],nl=[];
   const t=l.replace(/\bTap\b/g,"Mark").replace(/\btap\b/g,"mark").replace(/\[\[(.+?)\]\]/g,(m,a)=>{bl.push(a.split("|")[0]);return `\u0001${bl.length-1}\u0001`}).replace(/\{\{(.+?)\}\}/g,(m,a)=>{nl.push(a);return `\u0002${nl.length-1}\u0002`});
   return pfr(t).replace(/\u0001(\d+)\u0001/g,(m,k)=>key?`<b class="ans">${pfr(bl[+k])}</b>`:`<span class="blank"></span>`).replace(/\u0002(\d+)\u0002/g,(m,k)=>numLine(nl[+k],key))}
@@ -2220,7 +2226,15 @@ function pSheet(D,d){const by={};D.ind.forEach((q,i)=>(by[q.skill]=by[q.skill]||
     <tbody>${[...Array(rows)].map((_,r)=>`<tr><td>${esc(names[r]||"")}</td>${cols.map(([,ps])=>`<td class="c soft">/${ps.length}</td>`).join("")}<td class="c soft">/${N}</td><td></td><td class="c soft">R  P  X</td></tr>`).join("")}</tbody></table>
     <p class="legend"><b>R</b> Small group reteach: under ${lo} correct (60%), or confidence 1 to 2. <b>P</b> Independent practice: ${lo} to ${Math.max(lo,hi-1)} correct. <b>X</b> IXL and enrichment: ${hi} or more correct (85%) and confidence 3 to 4.</p>`}
 const BUILD={lesson:pLesson,key:pKey,sheet:pSheet,notes:pNotes,practice:pPractice,third:pThird};
-function buildPacket(){
+const PDF_LIBS=()=>[new URL("lib/html2pdf.bundle.min.js",location.href).href,"https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"];
+let pdfBusy=false;
+/* render the packet in a hidden frame and let it build its own PDF, so its styles stay intact */
+function makePacketPdf(){return new Promise((ok,no)=>{const f=document.createElement("iframe");
+  f.setAttribute("aria-hidden","true");f.tabIndex=-1;f.style.cssText="position:fixed;left:-10000px;top:0;width:816px;height:1056px;border:0;visibility:hidden";
+  const done=(e,b)=>{f.remove();e?no(e):ok(b)};
+  f.onload=()=>{const w=f.contentWindow;if(!w.makePDF)return done(new Error("packet didn't load"));w.makePDF().then(b=>done(null,b),e=>done(e))};
+  f.srcdoc=buildPacket();document.body.appendChild(f)})}
+function buildPacket(autoprint){
   const all=U.days.map((D,d)=>d),days=PK.day==="all"||!U.days[+PK.day]?all:[+PK.day],want=PARTS.filter(([k])=>PK[k]);
   const pages=[];const add=(k,who,d)=>{const body=BUILD[k](U.days[d],d);if(body)pages.push({k,who,d,body})};
   if(PK.order==="type")want.forEach(([k,,who])=>days.forEach(d=>add(k,who,d)));else days.forEach(d=>want.forEach(([k,,who])=>add(k,who,d)));
@@ -2276,7 +2290,7 @@ table.grid{width:100%;border-collapse:collapse;margin:.06in 0;font-size:11pt}
 .blank.wide{min-width:2in}.blank.fill{min-width:0;flex:1}
 .wl{display:flex;gap:8px;align-items:flex-end;min-height:.34in}
 .lines i{display:block;border-bottom:1px solid var(--line);height:.3in}
-.nl svg{width:100%;max-width:4.6in;height:auto;display:block}
+.nl svg{display:block;max-width:100%}
 .nl line{stroke:var(--ink);stroke-width:2}.nl text{font:13px "Atkinson Hyperlegible",sans-serif;text-anchor:middle;fill:var(--ink)}.nl circle{fill:var(--sg)}
 .mis li{margin:.03in 0}
 .dir{font-size:10.5pt;color:var(--soft);margin:.06in 0 .08in}
@@ -2308,11 +2322,30 @@ table.grid{width:100%;border-collapse:collapse;margin:.06in 0;font-size:11pt}
 @page{size:letter;margin:.5in}
 @media print{body{background:#fff}.bar{display:none}.page{width:auto;min-height:0;margin:0;padding:0;box-shadow:none;break-after:page}.page:last-child{break-after:auto}}
 @media (max-width:8.6in){.page{width:auto;margin:8px;padding:16px}}
+body.pdf{background:#fff}body.pdf .bar{display:none}body.pdf .page{width:7.5in;min-height:0;margin:0;padding:0;box-shadow:none}
 </style></head><body>
-<div class="bar"><button type="button" onclick="print()">Print or save as PDF</button><span>To make a PDF, choose "Save as PDF" as the printer.</span></div>
+<div class="bar"><button type="button" id="pdfBtn">Download PDF</button><button type="button" onclick="print()">Print</button><span id="pdfMsg"></span></div>
 <section class="page cover"><div class="run"><span>${esc(title)}</span><span>Printable packet</span></div>${cover}</section>
 ${pages.map(page).join("\n")}
-<script>if(window.top!==window.self)document.querySelector(".bar").remove()<`+`/script>
+<script>
+var LIBS=${JSON.stringify(PDF_LIBS())},FILE=${JSON.stringify(slug(U.title)+"-packet.pdf")};
+function loadLib(i){return new Promise(function(ok,no){if(window.html2pdf)return ok();if(i>=LIBS.length)return no(new Error("the PDF maker couldn't load"));
+  var s=document.createElement("script");s.src=LIBS[i];s.onload=function(){ok()};s.onerror=function(){s.remove();loadLib(i+1).then(ok,no)};document.head.appendChild(s)})}
+async function makePDF(){await loadLib(0);try{await document.fonts.ready}catch(e){}
+  document.body.classList.add("pdf");
+  try{var opt={margin:.5,image:{type:"jpeg",quality:.85},html2canvas:{scale:2,backgroundColor:"#ffffff",logging:false},jsPDF:{unit:"in",format:"letter",orientation:"portrait"},
+      pagebreak:{mode:["css"],avoid:[".q",".sh",".nl",".prob",".wl",".rrow",".prompt",".target",".conf",".check","tr",".passage p",".lines",".mis li"]}};
+    var pages=[].slice.call(document.querySelectorAll(".page")),w=html2pdf().set(opt).from(pages[0]).toPdf();
+    pages.slice(1).forEach(function(p){w=w.get("pdf").then(function(pdf){pdf.addPage()}).from(p).toContainer().toCanvas().toPdf()});
+    return await w.outputPdf("blob")}
+  finally{document.body.classList.remove("pdf")}}
+if(window.top!==window.self){var b=document.querySelector(".bar");if(b)b.remove()}
+else{var btn=document.getElementById("pdfBtn"),msg=document.getElementById("pdfMsg");
+  btn.onclick=function(){btn.disabled=true;msg.textContent="Making the PDF. This takes a few seconds per page.";
+    makePDF().then(function(blob){var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=FILE;document.body.appendChild(a);a.click();a.remove();msg.textContent="PDF downloaded."},
+      function(e){msg.textContent="Couldn't make the PDF here. Use Print, then choose Save as PDF."}).then(function(){btn.disabled=false})};
+  ${autoprint?'addEventListener("load",function(){setTimeout(function(){print()},400)});':""}}
+<`+`/script>
 </body></html>`;
 }
 function packetPanel(){const rs=Object.keys(rosters()),n=PARTS.filter(([k])=>PK[k]).length;
@@ -2328,8 +2361,8 @@ function packetPanel(){const rs=Object.keys(rosters()),n=PARTS.filter(([k])=>PK[
       <label class="f">Page order<select data-pk="order"><option value="day" ${PK.order!=="type"?"selected":""}>By day: all of Day 1, then Day 2</option><option value="type" ${PK.order==="type"?"selected":""}>By page: all worksheets together</option></select></label>
       ${rs.length?`<label class="f">Names on the score sheet<small> rosters from the dashboard</small><select data-pk="roster"><option value="">Blank rows</option>${rs.map(r=>`<option value="${esc(r)}" ${PK.roster===r?"selected":""}>${esc(r)}</option>`).join("")}</select></label>`:""}
     </div>
-    <div class="acts"><button class="btn go big" data-act="packet" ${n?"":"disabled"}>Preview and print packet</button><button class="btn ghost" data-act="packetDl" ${n?"":"disabled"}>Download packet</button></div>
-    <p class="note">In the print window, set the destination to <b>Save as PDF</b>. Every page starts on a new sheet, so you can print just the pages you need.${rs.length?"":" To print student names on the score sheet, add a class roster in the dashboard first."}</p>
+    <div class="acts"><button class="btn go big" data-act="packetPdf" ${n?"":"disabled"}>Download PDF</button><button class="btn ghost" data-act="packet" ${n?"":"disabled"}>Preview</button><button class="btn ghost" data-act="packetPrint" ${n?"":"disabled"}>Print</button></div>
+    <p class="note">Every page starts on a new sheet and says whether it's for you or for students, so you can print just the pages you need.${rs.length?"":" To print student names on the score sheet, add a class roster in the dashboard first."}</p>
   </section>`}
 render();
 
