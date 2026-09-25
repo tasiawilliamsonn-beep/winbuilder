@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>WIN Builder</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛠️</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
@@ -15,7 +16,7 @@ html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*::before,*::after{box-sizing:inherit}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",Verdana,system-ui,sans-serif;font-size:1rem;line-height:1.5}
 h1,h2,h3,h4{font-family:"Fredoka","Trebuchet MS",system-ui,sans-serif;line-height:1.15}
-.wrap{max-width:980px;margin:0 auto;padding:1.25rem 1rem 4rem}
+.wrap{max-width:1080px;margin:0 auto;padding:0 1rem 4rem}
 button,input,textarea,select{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:3px solid var(--sg);outline-offset:2px}
@@ -73,23 +74,70 @@ label.std input{margin-top:.25rem;width:18px;height:18px;flex:none}
 label.chk{display:inline-flex;gap:.35rem;align-items:center;border:2px solid var(--line);border-radius:999px;padding:.25rem .7rem}
 input,select,textarea{box-sizing:border-box;max-width:100%}
 .grid>*,label.f{min-width:0}
+/* ---- shared site header (same on every teacher page) ---- */
+.site{background:var(--card);border-bottom:2px solid var(--line)}
+.site-in{max-width:1080px;margin:0 auto;padding:.55rem 1rem;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap}
+.brand{font-family:"Fredoka","Trebuchet MS",system-ui,sans-serif;font-weight:700;font-size:1.2rem;text-decoration:none;color:var(--ink);display:inline-flex;gap:.4rem;align-items:center}
+.site nav{display:flex;gap:.25rem;margin-left:auto;flex-wrap:wrap}
+.site nav a{color:var(--soft);text-decoration:none;font-weight:700;padding:.4rem .85rem;border-radius:999px}
+.site nav a:hover{background:var(--bg);color:var(--ink)}
+.site nav a[aria-current="page"]{background:var(--ink);color:var(--bg)}
+.pagehead{margin:1.25rem 0 1rem}
+.pagehead h1{font-size:clamp(1.7rem,4.5vw,2.3rem);margin:0}
+.pagehead p{margin:.25rem 0 0;color:var(--soft);max-width:65ch}
+@media print{.site{display:none}}
+/* ---- builder steps ---- */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin:0 0 1rem;counter-reset:st}
+.steps button{display:flex;gap:.6rem;align-items:center;text-align:left;border:2px solid var(--line);background:var(--card);border-radius:14px;padding:.6rem .8rem;font-family:"Fredoka",sans-serif;font-weight:600;font-size:1.02rem}
+.steps button b{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--bg);border:2px solid var(--line);font-size:.95rem}
+.steps button small{display:block;font-family:"Atkinson Hyperlegible",sans-serif;font-weight:400;color:var(--soft);font-size:.82rem}
+.steps button[aria-current="step"]{border-color:var(--sg);background:var(--sg-bg)}
+.steps button[aria-current="step"] b{background:var(--sg);border-color:var(--sg);color:#fff}
+.unitbar{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;background:var(--card);border:2px solid var(--line);border-radius:14px;padding:.5rem .8rem;margin-bottom:.5rem}
+.unitbar .t{margin-right:auto;min-width:0}
+.unitbar .t b{font-family:"Fredoka",sans-serif;font-size:1.05rem}
+.chip{display:inline-block;border-radius:999px;padding:.05rem .6rem;font-size:.8rem;font-weight:700;background:var(--bg);border:1px solid var(--line);margin-left:.25rem}
+.seg{display:inline-flex;border:2px solid var(--line);border-radius:12px;overflow:hidden;background:var(--bg)}
+.seg button{border:0;background:transparent;padding:.5rem 1.1rem;font-family:"Fredoka",sans-serif;font-weight:600;font-size:1.02rem}
+.seg button+button{border-left:2px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.pickrow{display:flex;flex-wrap:wrap;gap:1rem 1.5rem;align-items:flex-end;margin:.25rem 0 1rem}
+.pickrow>div>span{display:block;font-weight:700;font-size:.92rem;margin-bottom:.25rem}
+.dom{border:2px solid var(--line);border-radius:12px;padding:.4rem .6rem .5rem;margin:0 0 .6rem}
+.dom legend{font-family:"Fredoka",sans-serif;font-weight:600;padding:0 .35rem}
+.dom legend button{margin-left:.4rem;font-size:.8rem;border:0;background:none;color:var(--sg);font-weight:700;text-decoration:underline;padding:0}
+.domlist{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:.1rem .5rem}
+.stdwrap{max-height:none}
+.count{font-weight:700;color:var(--sg)}
+.big{font-size:1.1rem;padding:.7rem 1.4rem}
+.nextbar{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:space-between;align-items:center;margin-top:1rem}
+.review{background:var(--ixl-bg);border-radius:10px;padding:.5rem .75rem;font-size:.9rem;margin:0 0 .75rem}
+.ok{background:var(--good-bg);border-radius:12px;padding:.6rem 1rem;font-weight:700}
+.steplist{counter-reset:s;list-style:none;padding:0;margin:.5rem 0 0}
+.steplist li{counter-increment:s;position:relative;padding:.1rem 0 .6rem 2.4rem}
+.steplist li::before{content:counter(s);position:absolute;left:0;top:0;width:1.8rem;height:1.8rem;border-radius:50%;background:var(--ind);color:#fff;display:grid;place-items:center;font-weight:700;font-family:"Fredoka",sans-serif}
+.acts{display:flex;flex-wrap:wrap;gap:.5rem;margin:.5rem 0}
+details.panel>summary{cursor:pointer;list-style:none}
+details.panel>summary::-webkit-details-marker{display:none}
+details.panel>summary h2{display:inline}
+details.panel>summary::after{content:"Show";float:right;font-weight:700;color:var(--sg);font-size:.9rem}
+details.panel[open]>summary::after{content:"Hide"}
+.hide{display:none!important}
+@media (max-width:640px){.steps{grid-template-columns:1fr}.steps button small{display:none}}
 </style>
 </head>
 <body>
+<header class="site"><div class="site-in">
+  <a class="brand" href="index.html"><span aria-hidden="true">🧭</span> WIN Portal</a>
+  <nav aria-label="Main"><a href="index.html">Home</a><a href="builder.html" aria-current="page">Build</a><a href="dashboard.html">Dashboard</a></nav>
+</div></header>
 <div class="wrap">
-  <header class="top">
-    <div><h1>WIN Builder</h1><p>Write your own questions. Download a student portal that works with the WIN data dashboard.</p></div>
-  </header>
-  <div class="toolbar">
-    <button class="btn" data-act="preview">Preview as a student</button>
-    <button class="btn go" data-act="download">Download student portal</button>
-    <button class="btn ghost" data-act="saveUnit">Save unit file</button>
-    <label class="btn ghost file">Open unit file<input type="file" id="openUnit" accept=".json"></label>
-    <button class="btn ghost" data-act="example">Load example unit</button>
-    <button class="btn ghost" data-act="newUnit">New unit</button>
-  </div>
+  <div class="pagehead"><h1>WIN Builder</h1><p>Pick the Indiana standards students need, check the unit, then share it with students in Canvas.</p></div>
+  <nav class="steps" id="steps" aria-label="Builder steps"></nav>
+  <div id="unitbar"></div>
   <p class="msg" id="msg" aria-live="polite"></p>
   <div id="app"></div>
+  <input type="file" id="openUnit" accept=".json" hidden>
 </div>
 <div class="modal" id="modal" hidden>
   <div class="modal-in">
@@ -337,6 +385,7 @@ dl.forms{display:grid;grid-template-columns:max-content 1fr;gap:.35rem 1rem;marg
 dl.forms dt{font-weight:700}dl.forms dd{margin:0}
 .opts.long{grid-template-columns:1fr}
 .opts.long button{text-align:left;padding:.7rem .9rem}
+.tsteps{margin:.25rem 0 .75rem;padding-left:1.4rem}.tsteps li{margin:.2rem 0}
 </style>
 </head>
 <body>
@@ -394,7 +443,7 @@ function parseSpec(str){
 }
 const plain=x=>x.fixed?String(x.v):(x.w?x.w+" ":"")+x.n+"/"+x.d;
 const rv=x=>x.fixed?x.v:x.r;
-const BI={b:{n:"Round fractions to 0, ½, 1",std:"5.NF.A.2"},m:{n:"Round mixed numbers",std:"5.NF.A.2"},reas:{n:"Judge if an answer is reasonable",std:""}};
+const BI={b:{n:"Round fractions to 0, ½, 1",std:"IN 5.CA.3"},m:{n:"Round mixed numbers",std:"IN 5.CA.3"},reas:{n:"Judge if an answer is reasonable",std:""}};
 const skillOf=id=>{const s=(C.skills||[]).find(x=>x.id===id);return s?{n:s.name,std:s.std||""}:{n:"General",std:""}};
 const REAS_OPTS=["Yes, it's close","No, it's too big","No, it's too small"];
 
@@ -764,7 +813,7 @@ function buildPayload(d){
   const jot=jk.map(k=>{const sv=store.get(`sg${d}s${k}`,[]);return sv[sv.length-1]||""}).filter(Boolean).join(" | ");
   const probs=D.ind.map((q,i)=>{const s=w[i]||{};const ex=q.type==="est"?" "+q._nums.map(plain).join(` ${q.op||""} `):"";
     return{p:(String(q.prompt||"").slice(0,90)+ex).trim(),d:s.done?1:0,w:s.done?workText(q,s):""}});
-  return{v:3,set:C.id,setTitle:C.title||"",name:nameEl.value.trim(),day:d+1,dayTitle:D.title||"",t:Date.now(),
+  return{v:3,set:C.id,setTitle:C.title||"",grade:C.grade||"",room:C.room||"",name:nameEl.value.trim(),day:d+1,dayTitle:D.title||"",t:Date.now(),
     skills:Object.entries(skills).map(([n,std])=>({n,std})),items,probs,
     sg:{done:store.get(`sg${d}done`,false)?1:0,br,bt,jot},ixl:(D.ixl||[]).map((_,i)=>!!store.get(`ixl${d}`,[])[i]),
     race:store.get(`race${d}`,{}),rc:raceChecks(D.race,store.get(`race${d}`,{})),hl:Object.keys(store.get(`hl${d}`,{})).length,subject:C.subject,conf:tn.conf||0,help:tn.help||[],tricky:tn.tricky||""};
@@ -788,8 +837,11 @@ function renderTurn(el,D){
     <div class="chips">${HELPED.map(h=>`<button data-h="${h}" aria-pressed="${tn.help.includes(h)}">${h}</button>`).join("")}</div>
     <h3>What was tricky today?</h3><textarea id="tricky" aria-label="What was tricky today">${esc(tn.tricky||"")}</textarea>
     <p class="fb no" id="tmsg" aria-live="polite"></p>
+    <h3>Send it to your teacher</h3>
+    <ol class="tsteps"><li>Tap <b>Copy my turn-in</b>.</li><li>Open <b>WIN Day ${day+1}</b> in Canvas.</li><li>Paste, then tap <b>Submit</b>.</li></ol>
     <button class="btn" id="turnCopy" style="background:var(--ink);color:var(--bg)">Copy my turn-in</button><span class="copied" id="tcmsg" aria-live="polite"></span>
-    <p class="tip" style="margin-top:.75rem">${esc(C.turnInNote||"Then open today's WIN assignment in Canvas, paste, and submit.")}</p></section>`;
+    ${C.turnInNote&&C.turnInNote!=="Then open today's WIN assignment in Canvas, paste, and submit."?`<p class="tip" style="margin-top:.75rem">${esc(C.turnInNote)}</p>`:""}
+    <details class="tip" style="margin-top:.5rem"><summary>Copy button not working?</summary><p>Select all the text in this box, copy it, and paste it in Canvas.</p><textarea id="turnTxt" readonly aria-label="Turn-in text" style="width:100%;min-height:5rem"></textarea></details></section>`;
   const save=()=>store.set(k,tn);
   el.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{tn.conf=+b.dataset.c;save();el.querySelectorAll("[data-c]").forEach(x=>x.setAttribute("aria-pressed",x===b))});
   el.querySelectorAll("[data-h]").forEach(b=>b.onclick=()=>{const h=b.dataset.h;tn.help=tn.help.includes(h)?tn.help.filter(x=>x!==h):[...tn.help,h];save();b.setAttribute("aria-pressed",tn.help.includes(h))});
@@ -798,9 +850,13 @@ function renderTurn(el,D){
     if(!nameEl.value.trim()){m.textContent="Type your name at the top first.";nameEl.focus();return}
     if(!tn.conf){m.textContent="Tap how you feel about today's target first.";return}
     m.textContent="";
-    const txt=`${nameEl.value.trim()}, WIN Day ${day+1}: ${fin} of ${D.ind.length} problems, confidence ${tn.conf} of 4.\nWIN205:${enc(buildPayload(day))}`;
+    const pl=buildPayload(day),sk={};pl.items.forEach(x=>{if(!x.att)return;x.sk.forEach(n=>{sk[n]=sk[n]||[0,0];sk[n][1]++;if(x.ft)sk[n][0]++})});
+    const std=n=>{const k=pl.skills.find(z=>z.n===n);return k&&k.std?` (${k.std})`:""};
+    const lines=Object.entries(sk).map(([n,[a,b]])=>`- ${n}${std(n)}: ${a} of ${b} right on the first try`);
+    const txt=`${nameEl.value.trim()}, WIN Day ${day+1}${C.title?` (${C.title})`:""}: ${fin} of ${D.ind.length} problems finished, confidence ${tn.conf} of 4.\n${lines.length?lines.join("\n")+"\n":""}${tn.tricky?`Tricky: ${tn.tricky}\n`:""}WIN205:${enc(pl)}`;
+    $("#turnTxt").value=txt;
     try{await navigator.clipboard.writeText(txt);$("#tcmsg").textContent="Copied. Now paste it in Canvas."}
-    catch(e){$("#tcmsg").textContent="Copy didn't work. Raise your hand."}};
+    catch(e){$("#tcmsg").textContent="Copy didn't work. Open \"Copy button not working?\" below.";$("#turnTxt").closest("details").open=true;$("#turnTxt").select()}};
 }
 render();
 
@@ -808,63 +864,22 @@ render();
 </body>
 </html>
 </script>
+<script src="standards.js"></script>
 <script>
 /* =====================================================================
-   Standards-based generator: Indiana Academic Standards (2023), grade 6.
+   Standards-based generator: Indiana Academic Standards (2023), grades 5 and 6.
+   The standards list itself lives in standards.js.
    Math items are generated from templates with random numbers.
    ELA items come from original passages and item banks written for this tool.
    ===================================================================== */
-const STD={
- math:[
-  ["6.NS.1","Use positive and negative numbers to represent quantities in real-world contexts; explain the meaning of 0",1],
-  ["6.NS.2","Opposite signs on the number line; the opposite of the opposite",0],
-  ["6.NS.3","Compare and order rational numbers",0],
-  ["6.NS.4","Solve real-world problems with positive fractions and decimals (one or two operations)",1],
-  ["6.NS.5","Order of operations and properties with nonnegative rational numbers and exponents",1],
-  ["6.NS.6","GCF (to 100), LCM (to 12), and the distributive property",0],
-  ["6.NS.7","Create and justify equivalent linear expressions",1],
-  ["6.NS.8","Evaluate positive rational numbers with whole-number exponents",0],
-  ["6.RP.1","Convert between fractions, decimals, and percents without a calculator",1],
-  ["6.RP.2","Unit rates and rate language",0],
-  ["6.RP.3","Tables of equivalent ratios",0],
-  ["6.RP.4","Solve ratio and rate problems (tables, tape diagrams, double number lines, equations)",1],
-  ["6.RP.5","Dependent and independent variables in proportional relationships",1],
-  ["6.AF.1","Write and evaluate expressions with variables",1],
-  ["6.AF.2","Use substitution to find which values make an equation or inequality true",1],
-  ["6.AF.3","Solve one-step equations (x + p = q, x − p = q, px = q, x/p = q)",1],
-  ["6.AF.4","Write inequalities for real-world constraints",0],
-  ["6.AF.5","Coordinate plane: graph points and find distances",1],
-  ["6.GM.1","Convert between customary and metric units given conversion factors",0],
-  ["6.GM.2","Interior angle sums of triangles and quadrilaterals",0],
-  ["6.GM.3","Area of composite shapes",0],
-  ["6.GM.4","Volume of right rectangular prisms with fractional edges",1],
-  ["6.DS.1","Interpret line plots, histograms, and box plots",0],
-  ["6.DS.2","Statistical questions",1],
-  ["6.DS.3","Summarize data: mean, median, range, IQR",1]
- ],
- ela:[
-  ["6.RC.1","Analyze what a text says explicitly and draw inferences, citing textual evidence",1],
-  ["6.RC.2","Theme in literature and objective summary",1],
-  ["6.RC.3","How a sentence, scene, or paragraph fits the structure of literature",1],
-  ["6.RC.4","Compare and contrast works of literature on similar themes",0],
-  ["6.RC.5","Central idea of a nonfiction text and objective summary",0],
-  ["6.RC.6","How a key individual, event, or idea is introduced and developed",0],
-  ["6.RC.7","Author's perspective or purpose and how it is conveyed",1],
-  ["6.RC.8","Trace and evaluate claims; supported vs. unsupported",0],
-  ["6.RC.9","Integrate information from different media or formats",0],
-  ["6.RC.10","Use context to determine word meaning",0],
-  ["6.RC.11","Use word relationships (cause/effect, part/whole, item/category)",0],
-  ["6.RC.12","Connotations of words with similar denotations",0],
-  ["6.RC.13","Greek and Latin affixes and roots",1],
-  ["6.W.1","Write arguments",1],
-  ["6.W.2","Write informative compositions",1],
-  ["6.W.3","Write narratives",1],
-  ["6.W.6","Grammar and usage: pronouns; sentence types, fragments, run-ons",1],
-  ["6.W.7","Punctuation: nonrestrictive elements, semicolons, colons",1],
-  ["6.CC.2","Pose and respond to questions with elaboration and detail",1],
-  ["6.CC.3","Review key ideas and paraphrase multiple perspectives",1]
- ]
-};
+const WS=window.WIN_STANDARDS||{framework:"Indiana Academic Standards (2023)",review:{},grades:{}};
+const GRADES=Object.keys(WS.grades);
+/* [code, text, essential, entry] for one grade and subject */
+const stdList=(grade,subj)=>((WS.grades[grade]||{})[subj]||[]).map(x=>[x.c,x.t,x.e,x]);
+const STD_BY={};GRADES.forEach(g=>["math","ela"].forEach(sb=>(WS.grades[g][sb]||[]).forEach(x=>{STD_BY[x.c]={...x,grade:g,subject:sb,gen:x.gen||x.c}})));
+const SHORT={},TGT={};Object.values(STD_BY).forEach(x=>{SHORT[x.c]=x.s;TGT[x.c]=x.g});
+const domainOf=c=>c.split(".").slice(0,2).join(".");
+const DOMAINS={NS:"Number sense",CA:"Computation and algebraic thinking",G:"Geometry",M:"Measurement",DA:"Data analysis",RP:"Ratios and proportional reasoning",AF:"Algebra and functions",GM:"Geometry and measurement",DS:"Data science",RC:"Reading comprehension",W:"Writing",CC:"Communication and collaboration",RF:"Reading foundations"};
 /* ---------- helpers ---------- */
 function rng(seed){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 let R=Math.random;
@@ -1132,6 +1147,9 @@ function elaBank(code){
     return MC(`Which pair shows the same relationship as "${ex[0]} : ${ex[1]}"?`,`${ans[0]} : ${ans[1]}`,Object.keys(REL).filter(x=>x!==k).map(x=>{const p=pick(REL[x]);return[`${p[0]} : ${p[1]}`,`Chose a ${RELNM[x]} relationship instead of ${RELNM[k]}`]}),s,`How are "${ex[0]}" and "${ex[1]}" related? Is one part of the other, a kind of the other, or the cause of the other?`)}
   if(s==="6.W.6"){const g=pick(GRAM);return MC(g[0],g[1],g[2],s,"Read each choice aloud. Which one sounds complete and clear?")}
   if(s==="6.W.7"){const g=pick(PUNC);return MC(g[0],g[1],g[2],s,"Semicolons join two complete sentences. Extra information needs punctuation on both sides.")}
+  if(s==="5.RC.12"){const g=pick(FIG);return MC(g[0],g[1],g[2],s,"Ask: does this really happen? If not, what picture is the writer painting?")}
+  if(s==="5.W.6"){const g=pick(GRAM5);return MC(g[0],g[1],g[2],s,"Read each choice aloud. Check the verb tense and the describing words.")}
+  if(s==="5.W.7"){const g=pick(PUNC5);return MC(g[0],g[1],g[2],s,"Commas go after opening words and between list items. Apostrophes show who owns something.")}
   return null;
 }
 const EL={
@@ -1153,41 +1171,188 @@ const ELA_GENERIC=["We will read closely, talk about the text, and write about i
 const ELA_PASS_FOR={"6.RC.1":["maya","theo","bees"],"6.RC.2":["maya","theo"],"6.RC.3":["maya","theo"],"6.RC.4":["maya"],"6.RC.5":["bees","sleep"],"6.RC.6":["bees"],"6.RC.7":["bees","sleep"],"6.RC.8":["sleep"],"6.RC.9":["bees"],"6.RC.10":["maya","theo","bees"],"6.RC.12":["maya","sleep"],"6.W.1":["sleep"],"6.W.2":["bees"],"6.W.3":["maya"],"6.CC.2":["theo"],"6.CC.3":["sleep"]};
 const RACE_FOR={"6.RC.4":"Compare how Maya in \"The Last Lap\" and Theo in \"The Bread Starter\" respond to a setback. How are their lessons similar?","6.RC.9":"The text uses both description and numbers (like 1973 and \"longer waggle, farther away\"). How do these details work together to help you understand the dance?","6.W.1":"Should your school start later? State your claim and support it with at least one piece of evidence from the text.","6.W.2":"Explain how the waggle dance works to someone who has never heard of it. Use facts from the text.","6.W.3":"Write what happens on Maya's first Monday of practice. Use details from the story so your ending fits.","6.CC.2":"Write a question you would ask Theo, then answer it the way you think he would, using evidence.","6.CC.3":"Paraphrase the author's view AND the counterclaim in your own words. Then explain which is stronger."};
 
-const SHORT={"6.NS.1": "Positive and negative numbers", "6.NS.2": "Opposites", "6.NS.3": "Comparing rational numbers", "6.NS.4": "Fraction and decimal problems", "6.NS.5": "Order of operations", "6.NS.6": "GCF and LCM", "6.NS.7": "Equivalent expressions", "6.NS.8": "Exponents", "6.RP.1": "Fractions, decimals, percents", "6.RP.2": "Unit rates", "6.RP.3": "Ratio tables", "6.RP.4": "Ratio and percent problems", "6.RP.5": "Dependent and independent variables", "6.AF.1": "Expressions with variables", "6.AF.2": "Substitution", "6.AF.3": "One-step equations", "6.AF.4": "Writing inequalities", "6.AF.5": "Coordinate plane", "6.GM.1": "Unit conversions", "6.GM.2": "Angle sums", "6.GM.3": "Area of composite shapes", "6.GM.4": "Volume", "6.DS.1": "Reading data displays", "6.DS.2": "Statistical questions", "6.DS.3": "Mean, median, range, IQR", "6.RC.1": "Inferences and evidence", "6.RC.2": "Theme", "6.RC.3": "Story structure", "6.RC.4": "Comparing texts", "6.RC.5": "Central idea", "6.RC.6": "How ideas develop", "6.RC.7": "Author's purpose", "6.RC.8": "Evaluating claims", "6.RC.9": "Information in different formats", "6.RC.10": "Context clues", "6.RC.11": "Word relationships", "6.RC.12": "Connotation", "6.RC.13": "Roots and affixes", "6.W.1": "Argument writing", "6.W.2": "Informative writing", "6.W.3": "Narrative writing", "6.W.6": "Grammar and usage", "6.W.7": "Punctuation", "6.CC.2": "Questions with evidence", "6.CC.3": "Paraphrasing perspectives"};
-const TGT={"6.NS.1": "use positive and negative numbers to describe real-world situations and explain what 0 means", "6.NS.2": "find opposites and explain where they sit on a number line", "6.NS.3": "compare and order positive and negative numbers", "6.NS.4": "solve real-world problems with fractions and decimals", "6.NS.5": "use the order of operations to evaluate expressions", "6.NS.6": "find the GCF and LCM and use the distributive property", "6.NS.7": "write and check equivalent expressions", "6.NS.8": "evaluate numbers with exponents", "6.RP.1": "convert between fractions, decimals, and percents without a calculator", "6.RP.2": "find and explain unit rates", "6.RP.3": "complete tables of equivalent ratios", "6.RP.4": "solve ratio, rate, and percent problems", "6.RP.5": "write equations using dependent and independent variables", "6.AF.1": "write and evaluate expressions with variables", "6.AF.2": "use substitution to check whether a value makes an equation or inequality true", "6.AF.3": "solve one-step equations", "6.AF.4": "write inequalities for real-world situations", "6.AF.5": "locate points and find distances on the coordinate plane", "6.GM.1": "convert between customary and metric units", "6.GM.2": "use angle sums to find missing angles in triangles and quadrilaterals", "6.GM.3": "find the area of composite shapes", "6.GM.4": "find the volume of rectangular prisms with fraction edge lengths", "6.DS.1": "read and interpret line plots, histograms, and box plots", "6.DS.2": "recognize and write statistical questions", "6.DS.3": "find the mean, median, range, and IQR of a data set", "6.RC.1": "make inferences and support them with evidence from the text", "6.RC.2": "determine a theme and explain how details develop it", "6.RC.3": "explain how one part of a story fits into the whole", "6.RC.4": "compare how two texts treat a similar theme", "6.RC.5": "determine the central idea of a nonfiction text and summarize it", "6.RC.6": "explain how an author introduces and develops an idea", "6.RC.7": "determine an author's purpose or perspective and how it is shown", "6.RC.8": "tell supported claims from unsupported claims", "6.RC.9": "combine information from different formats to understand a topic", "6.RC.10": "use context clues to figure out word meanings", "6.RC.11": "use word relationships to understand words", "6.RC.12": "explain the connotations of words with similar meanings", "6.RC.13": "use Greek and Latin roots and affixes to figure out word meanings", "6.W.1": "write an argument supported by evidence", "6.W.2": "write to inform using facts from a text", "6.W.3": "write a narrative with details that fit the story", "6.W.6": "use pronouns correctly and write complete sentences", "6.W.7": "use commas, dashes, parentheses, semicolons, and colons correctly", "6.CC.2": "ask and answer questions with detail and evidence", "6.CC.3": "paraphrase different perspectives on an idea"};
+/* ---------- grade 5 math generators (keyed by the gen name in standards.js) ---------- */
+const X5="5";/* placeholder standard; generateUnit retags every item with the real code */
+const frac=(n,d)=>fs(n,d);
+Object.assign(MG,{
+"g5-compare":L=>{const r=R();
+  if(r<.35){const a=ri(3,8),b=`0.${a-1}${ri(1,9)}`;return MC(`Which is greater: 0.${a} or ${b}?`,`0.${a}`,[[b,"Thought the decimal with more digits is greater"],["They are equal","Compared only the first digit"]],X5,`Write 0.${a} as 0.${a}0. Now compare hundredths.`)}
+  if(r<.7){const n=ri(1,3),d1=ri(n+1,6),d2=d1+ri(2,4);return MC(`Which symbol makes this true? ${n}/${d1} ☐ ${n}/${d2}`,">",[["<","Thought a bigger denominator means a bigger fraction"],["=","Thought fractions with the same numerator are equal"]],X5,"Same numerator: which pieces are bigger, "+d1+"ths or "+d2+"ths?")}
+  const V=shuf([["1/2",.5],["1/4",.25],["3/4",.75],["2/5",.4],["3/10",.3],["0.6",.6],["0.35",.35],["0.8",.8],["0.125",.125],["0.9",.9]]);const set=[];V.forEach(v=>{if(set.length<3&&!set.some(x=>x[1]===v[1]))set.push(v)});
+  const asc=[...set].sort((a,b)=>a[1]-b[1]).map(x=>x[0]),desc=[...asc].reverse(),dig=[...set].sort((a,b)=>a[0].length-b[0].length||a[0].localeCompare(b[0])).map(x=>x[0]);
+  return MC(`Order from least to greatest: ${set.map(x=>x[0]).join(", ")}`,asc.join(", "),[[desc.join(", "),"Ordered from greatest to least"],[dig.join(", "),"Compared the digits without thinking about value"],[[asc[1],asc[0],asc[2]].join(", "),"Misjudged a fraction's size compared with a decimal"]],X5,"Change each number to a decimal, or place each on a number line from 0 to 1.")},
+"g5-fracdiv":L=>{const r=R();
+  if(r<.45){const p=ri(2,L>1?8:5),z=pick([1,2,3,5,7].filter(x=>x!==p&&gcd(x,p)===1));return NUM(`${p} friends share ${z} pizza${z>1?"s":""} equally. How much pizza does each friend get?`,frac(z,p),[[frac(p,z),"Divided in the wrong order"],[p-z<=0?frac(z,p+1):p-z,"Subtracted instead of divided"]],X5,`Sharing ${z} among ${p} is ${z} ÷ ${p}, which is the fraction ${z}/${p}.`,"pizza")}
+  if(r<.75){const n=ri(1,7),d=ri(n+1,9);return MC(`Which division expression is equal to ${n}/${d}?`,`${n} ÷ ${d}`,[[`${d} ÷ ${n}`,"Divided in the wrong order"],[`${n} × ${d}`,"Thought the fraction bar means multiply"],[`${d} − ${n}`,"Subtracted instead of divided"]],X5,"The fraction bar means divide: numerator ÷ denominator.")}
+  const n=ri(6,12),k=ri(1,n-1);return NUM(`A bag has ${n} marbles. ${k} of them are red. What fraction of the marbles are red?`,frac(k,n),[[frac(n-k,n),"Found the fraction that is not red"],[frac(k,n-k),"Compared red to not red instead of red to all"]],X5,"Red marbles over all the marbles.")},
+"g5-place":L=>{const r=R();
+  if(r<.4){const d=ri(2,9),p=ri(1,3),a=d*10**p,b=d*10**(p-1);return NUM(`How many times greater is the value of the ${d} in ${a.toLocaleString("en-US")} than the value of the ${d} in ${b.toLocaleString("en-US")}?`,10,[["0.1","Reversed the relationship"],[100,"Moved two places instead of one"]],X5,"Each place to the left is worth 10 times as much.")}
+  const v=pick([3.45,6.2,0.87,12.5,4.06,0.3]),op=pick(L>1?["× 10","× 100","÷ 10","÷ 100"]:["× 10","÷ 10"]);const f={"× 10":10,"× 100":100,"÷ 10":.1,"÷ 100":.01}[op];const ans=dec(v*f),bad=dec(v/f);
+  return NUM(`What is ${v} ${op}?`,ans,[[bad,"Moved the digits the wrong direction"],[dec(op[0]==="×"?v*f*10:v*f/10),"Moved one place too many"]],X5,op[0]==="×"?"Multiplying by 10 moves each digit one place left.":"Dividing by 10 moves each digit one place right.")},
+"g5-round":L=>{const a=ri(1,L>1?99:20),d=[ri(1,9),ri(0,9),ri(1,9)];const N=a*1000+d[0]*100+d[1]*10+d[2],v=dec(N/1000);
+  const P=pick(L>1?[["whole number",0],["tenth",1],["hundredth",2]]:[["whole number",0],["tenth",1]]);const f=10**(3-P[1]);const up=dec(Math.round(N/f)*f/1000),tr=dec(Math.floor(N/f)*f/1000);
+  const w=[[tr===up?dec((Math.floor(N/f)+1)*f/1000):tr,tr===up?"Rounded up when the next digit was under 5":"Cut off the digits instead of rounding"]];
+  const f2=P[1]===0?100:P[1]===1?10:1000;w.push([dec(Math.round(N/f2)*f2/1000),"Rounded to the wrong place"]);
+  return NUM(`Round ${v} to the nearest ${P[0]}.`,up,w.filter(x=>x[0]!==up),X5,`Find the ${P[0]} place. Look at the digit to its right: 5 or more rounds up.`)},
+"g5-percent":L=>{const r=R();
+  if(r<.4){const k=ri(5,95);return NUM(`A 100-square grid has ${k} squares shaded. What percent is shaded?`,k,[[100-k,"Found the unshaded part"],[dec(k/100),"Wrote the decimal instead of the percent"]],X5,"Percent means out of 100. Count the shaded squares.","%")}
+  if(r<.75){const F=pick([[1,2],[1,4],[3,4],[1,5],[2,5],[3,5],[7,10],[3,10],[9,20],[7,25],[1,50]]);const p=F[0]*100/F[1];return NUM(`Write ${F[0]}/${F[1]} as a percent.`,p,[[`${F[0]}${F[1]}`,"Wrote the numerator and denominator side by side"],[F[0],"Used the numerator as the percent"]],X5,`Make an equivalent fraction with 100 as the denominator: multiply by ${100/F[1]}.`,"%")}
+  const k=ri(11,89);return MC(`Which fraction means ${k}%?`,`${k}/100`,[[`${k}/10`,"Put the percent over 10 instead of 100"],[`${String(k)[0]}/${String(k)[1]||1}`,"Split the digits into a fraction"],[`100/${k}`,"Flipped the fraction"]],X5,"Percent means per hundred.")},
+"g5-divide":L=>{const dv=ri(11,L>1?45:25),q=ri(L>1?21:12,L>1?250:40),r=ri(1,dv-1),N=dv*q+r;
+  if(R()<.6)return MC(`What is ${N.toLocaleString("en-US")} ÷ ${dv}?`,`${q} R ${r}`,[[`${q-1} R ${r+dv}`,"Left a remainder bigger than the divisor"],[`${q+1} R ${r}`,"Estimated the quotient too high"],[`${q} R ${dv-r}`,"Subtracted to find the remainder the wrong way"]],X5,`Estimate first: about how many ${dv}s are in ${N}? Then check the remainder is less than ${dv}.`);
+  const bs=ri(20,45),bq=ri(3,12),br=ri(1,bs-1),kids=bs*bq+br;return NUM(`${kids} students are going on a trip. Each bus holds ${bs} students. How many buses are needed?`,bq+1,[[bq,"Ignored the remainder, leaving students behind"],[br,"Gave the remainder as the answer"]],X5,"Divide, then decide what the remainder means. Can anyone be left behind?","buses")},
+"g5-decimal":L=>{const r=R();
+  if(r<.3){const a=ri(1,20)*10+ri(1,9),b=ri(1,9)*100+ri(10,99);return NUM(`Add: ${dec(a/10)} + ${dec(b/100)}`,dec(a/10+b/100),[[dec(a/100+b/100),"Lined up the last digits instead of the decimal points"]],X5,"Line up the decimal points. Write "+dec(a/10)+" as "+(a/10).toFixed(2)+".")}
+  if(r<.5){const c=ri(105,995),w=ri(10,20);return NUM(`Mia has $${w}.00. She spends $${(c/100).toFixed(2)}. How much money is left?`,dec(w-c/100),[[dec(w-c/100+1),"Forgot to regroup the ones"],[dec(c/100-w<0?w+c/100:c/100-w),"Added instead of subtracted"]],X5,"Line up the decimal points. Write the whole number as "+w+".00.","dollars")}
+  if(r<.75){const a=ri(1,9),b=ri(1,9);return L>1?NUM(`Multiply: 0.${a} × 0.${b}`,dec(a*b/100),[[dec(a*b/10),"Counted the decimal places wrong"],[a*b,"Ignored the decimal points"]],X5,"Tenths times tenths makes hundredths. Count the decimal places in both numbers.")
+    :(k=>NUM(`Multiply: ${a}.${b} × ${k}`,dec((a*10+b)*k/10),[[(a*10+b)*k,"Ignored the decimal point"],[dec((a*10+b)*k/100),"Moved the decimal point too far"]],X5,"Multiply as whole numbers, then place the decimal point. Estimate to check."))(ri(2,5))}
+  const d=ri(2,6),q=ri(11,99)/10;return NUM(`Divide: ${dec(q*d)} ÷ ${d}`,dec(q),[[dec(q*10),"Lost track of the decimal point"],[dec(q/10),"Moved the decimal point too far"]],X5,"Estimate first to decide where the decimal point goes.")},
+"g5-fracadd":L=>{const P=shuf([[2,3],[2,4],[3,4],[2,5],[3,6],[4,8],[2,6],[4,6],[3,5],[5,10],[2,10],[4,12],[3,12]])[0];let[d1,d2]=shuf(P);
+  const n1=ri(1,d1-1),n2=ri(1,d2-1),sub=R()<.4&&n1/d1>n2/d2,mixed=L>1&&R()<.5,w1=mixed?ri(1,4):0,w2=mixed?ri(0,w1-1<0?0:w1-1):0;
+  const A=w1*d1+n1,B=w2*d2+n2,D=lcm(d1,d2),N=sub?A*(D/d1)-B*(D/d2):A*(D/d1)+B*(D/d2);if(N<=0)return MG["g5-fracadd"](L);
+  const s1=mixed?`${w1} ${n1}/${d1}`:`${n1}/${d1}`,s2=mixed&&w2?`${w2} ${n2}/${d2}`:`${n2}/${d2}`;
+  return NUM(`${sub?"Subtract":"Add"}: ${s1} ${sub?"−":"+"} ${s2}`,frac(N,D),[[frac(sub?Math.abs(n1-n2):n1+n2,d1+d2)+"",sub?"Subtracted the denominators too":"Added the denominators too"],[frac(sub?Math.abs(n1-n2):n1+n2,Math.max(d1,d2)),"Didn't make equal-size pieces first"]],X5,`Rename both fractions with a common denominator, like ${D}.`)},
+"g5-fracmul":L=>{const r=R();
+  if(r<.4){const k=ri(2,L>1?9:5),n=ri(1,4),d=ri(n+1,8);return NUM(`Multiply: ${k} × ${n}/${d}`,frac(k*n,d),[[frac(k*n,k*d),"Multiplied the denominator too"],[frac(n,k*d),"Multiplied only the denominator"]],X5,`${k} groups of ${n}/${d}: multiply the numerator by ${k}.`)}
+  if(r<.75){const n1=ri(1,4),d1=ri(n1+1,6),n2=ri(1,4),d2=ri(n2+1,6);return NUM(`Multiply: ${n1}/${d1} × ${n2}/${d2}`,frac(n1*n2,d1*d2),[[frac(n1+n2,d1+d2),"Added instead of multiplied"],[frac(n1*d2,d1*n2),"Divided instead of multiplied"]],X5,"Multiply numerators, then multiply denominators.")}
+  const k=ri(3,12),F=pick([[1,2],[2,3],[3,4],[3,2],[5,4],[1,3]]);const less=F[0]<F[1];
+  return MC(`Without multiplying, is ${k} × ${F[0]}/${F[1]} more than, less than, or equal to ${k}?`,less?`less than ${k}`:`more than ${k}`,[[less?`more than ${k}`:`less than ${k}`,"Thought multiplying always makes a number bigger"],[`equal to ${k}`,"Didn't compare the fraction to 1"]],X5,"Is the fraction less than 1 or more than 1?")},
+"g5-fracdivide":L=>{const r=R(),u=ri(2,L>1?8:5),w=ri(2,L>1?9:6);
+  if(r<.4)return NUM(`Divide: 1/${u} ÷ ${w}`,frac(1,u*w),[[frac(w,u),"Multiplied instead of divided"],[frac(1,u+w),"Added the whole number to the denominator"]],X5,`Split 1/${u} into ${w} equal parts. How big is each part?`);
+  if(r<.75)return NUM(`Divide: ${w} ÷ 1/${u}`,w*u,[[frac(w,u),"Divided by the denominator instead of finding how many parts fit"],[frac(1,w*u),"Divided in the wrong order"]],X5,`How many 1/${u}s fit in 1 whole? Then in ${w} wholes?`);
+  return NUM(`${nm()} has ${w} cups of rice. Each serving is 1/${u} cup. How many servings is that?`,w*u,[[frac(w,u),"Divided by the denominator instead of finding how many parts fit"],[w+u,"Added instead of divided"]],X5,`There are ${u} servings in each cup.`,"servings")},
+"g5-multiply":L=>{const a=L>1?ri(123,987):ri(12,99),b=ri(12,L>1?89:49),t=Math.floor(b/10),o=b%10;
+  return NUM(`Multiply: ${a} × ${b}`,a*b,[[a*t+a*o,"Forgot the zero when multiplying by the tens digit"],[a*o,"Multiplied by only the ones digit"]],X5,`Break ${b} into ${t*10} + ${o}. Multiply ${a} by each part, then add.`)},
+"g5-expr":L=>{const a=ri(2,12),b=ri(2,9),c=ri(2,6),r=R();
+  if(r<.4)return NUM(`Evaluate: (${a} + ${b}) × ${c}`,(a+b)*c,[[a+b*c,"Ignored the parentheses"]],X5,"Do what's in the parentheses first.");
+  if(r<.75)return MC(`Which expression means "add ${a} and ${b}, then multiply by ${c}"?`,`(${a} + ${b}) × ${c}`,[[`${a} + ${b} × ${c}`,"Left out the parentheses"],[`${c} × ${a} + ${b}`,"Multiplied only one number"],[`(${a} × ${b}) + ${c}`,"Switched the operations"]],X5,"The step that happens first goes in parentheses.");
+  const s=ri(100,900),k=ri(3,9);return NUM(`How many times as large is ${k} × (${s} + ${b}) as ${s} + ${b}?`,k,[[s+b,"Calculated instead of comparing"],[k*(s+b),"Evaluated the whole expression"]],X5,`${k} × (something) is ${k} times as large as that something.`)},
+"g5-shapes":L=>{const Q=pick([
+  ["Which statement is always true?","All squares are rectangles.",[["All rectangles are squares.","Classified backward: a general shape isn't always the specific one"],["All parallelograms are rectangles.","Classified backward: a general shape isn't always the specific one"],["All trapezoids are parallelograms.","Mixed up the properties of trapezoids"]],"A square has every property a rectangle needs. Does every rectangle have 4 equal sides?"],
+  ["A shape has 4 equal sides and 4 right angles. What is the most specific name?","square",[["rectangle","Chose a correct but less specific name"],["rhombus","Chose a correct but less specific name"],["trapezoid","Chose a shape without these properties"]],"Which name includes both equal sides AND right angles?"],
+  ["A quadrilateral has 2 pairs of parallel sides and 4 equal sides but no right angles. What is it?","rhombus",[["square","Didn't check for right angles"],["rectangle","Didn't check side lengths"],["trapezoid","Miscounted pairs of parallel sides"]],"Check sides, then angles."],
+  ["A triangle has angles of 90°, 50°, and 40°. What kind of triangle is it?","right triangle",[["acute triangle","Didn't notice the 90° angle"],["obtuse triangle","Thought 90° is obtuse"],["equilateral triangle","Classified by sides instead of angles"]],"A right angle is exactly 90°."],
+  ["A triangle has sides of 5 cm, 5 cm, and 8 cm. What kind of triangle is it?","isosceles",[["equilateral","Thought 2 equal sides makes all sides equal"],["scalene","Didn't notice the equal sides"],["right","Classified by angles instead of sides"]],"How many sides are the same length?"],
+  ["Which statement is always true?","Every rhombus is a parallelogram.",[["Every parallelogram is a rhombus.","Classified backward: a general shape isn't always the specific one"],["Every rhombus is a square.","Forgot a rhombus doesn't need right angles"],["A rhombus has no parallel sides.","Mixed up the properties of a rhombus"]],"A rhombus has 2 pairs of parallel sides."]]);
+  return MC(Q[0],Q[1],Q[2],X5,Q[3])},
+"g5-coord":L=>{let x=ri(1,9),y=ri(1,9);if(x===y)y=x===9?8:x+1;const r=R();
+  if(r<.45)return MC(`Start at (0, 0). Move ${x} units right and ${y} units up. Where are you?`,`(${x}, ${y})`,[[`(${y}, ${x})`,"Switched the x- and y-coordinates"],[`(${x+y}, 0)`,"Added the moves together"],[`(0, ${y})`,"Left out the move along the x-axis"]],X5,"The first number tells how far right. The second tells how far up.");
+  if(r<.75){const y2=y+ri(2,6);return NUM(`How far apart are (${x}, ${y}) and (${x}, ${y2})?`,y2-y,[[y2+y,"Added the coordinates instead of subtracting"],[x,"Used the x-coordinate"]],X5,"The x-coordinates match, so count up.","units")}
+  return MC(`Which point is on the x-axis?`,`(${x}, 0)`,[[`(0, ${x})`,"Mixed up the x-axis and y-axis"],[`(${x}, ${x})`,"Chose a point that isn't on an axis"]],X5,"On the x-axis, you haven't moved up at all.")},
+"g5-convert":L=>{const U=pick([["feet","inches",12,"foot"],["yards","feet",3,"yard"],["meters","centimeters",100,"meter"],["kilometers","meters",1000,"kilometer"],["kilograms","grams",1000,"kilogram"],["liters","milliliters",1000,"liter"],["pounds","ounces",16,"pound"],["gallons","quarts",4,"gallon"],["hours","minutes",60,"hour"]]);
+  const n=L>1&&U[2]>=100?pick([1.5,2.5,3.25,0.75,4]):ri(2,9);const big=dec(n*U[2]);
+  if(R()<.55)return NUM(`How many ${U[1]} are in ${n} ${U[0]}?`,big,[[dec(n/U[2]),"Divided instead of multiplied"],[dec(n+U[2]),"Added instead of multiplied"]],X5,`1 ${U[3]} = ${U[2]} ${U[1]}. Bigger unit to smaller unit: multiply.`,U[1]);
+  return NUM(`How many ${U[0]} is ${big} ${U[1]}?`,n,[[dec(big*U[2]),"Multiplied instead of divided"]],X5,`There are ${U[2]} ${U[1]} in each one. Smaller unit to bigger unit: divide.`,U[0])},
+"g5-volume":L=>{const l=ri(2,L>1?12:6),w=ri(2,L>1?9:5),h=ri(2,L>1?8:5),r=R();
+  if(r<.4)return NUM(`A box is ${l} cm long, ${w} cm wide, and ${h} cm tall. What is its volume?`,l*w*h,[[l+w+h,"Added the edge lengths"],[l*w,"Left out the height"],[2*(l*w+l*h+w*h),"Found the surface area"]],X5,"V = l × w × h.","cubic cm");
+  if(r<.7)return NUM(`Each layer of a box holds ${l} × ${w} unit cubes. The box is ${h} layers tall. How many cubes fill it?`,l*w*h,[[l*w+h,"Added the layers instead of multiplying"],[l*w,"Counted only one layer"]],X5,"Find the cubes in one layer, then multiply by the number of layers.","cubes");
+  const l2=ri(2,5),w2=ri(2,5),h2=ri(2,5);return NUM(`A shape is made of two boxes: ${l} × ${w} × ${h} and ${l2} × ${w2} × ${h2} (in feet). What is the total volume?`,l*w*h+l2*w2*h2,[[l*w*h,"Found only one box"],[(l+l2)*(w+w2)*(h+h2),"Added the edges before multiplying"]],X5,"Find each box's volume, then add.","cubic feet")},
+"g5-area":L=>{const r=R();
+  if(r<.5){const n1=ri(1,3),d1=ri(n1+1,5),n2=ri(1,4),d2=ri(n2+1,6);return NUM(`A rectangle is ${n1}/${d1} ft long and ${n2}/${d2} ft wide. What is its area?`,frac(n1*n2,d1*d2),[[frac(2*(n1*d2+n2*d1),d1*d2),"Found the perimeter instead of the area"],[frac(n1+n2,d1+d2),"Added instead of multiplied"]],X5,"Area = length × width. Multiply the fractions.","square feet")}
+  const w=ri(2,6),a=ri(1,5),n=pick([1,1,3]),d=n===3?4:pick([2,3,4]);return NUM(`A garden is ${w} m wide and ${a} ${n}/${d} m long. What is its area?`,frac(w*(a*d+n),d),[[fs(w*a*d+n,d),"Multiplied only the whole numbers"],[fs(2*(w*d+a*d+n),d),"Found the perimeter instead of the area"]],X5,`Multiply ${w} by ${a}, then ${w} by ${n}/${d}, and add.`,"square meters")},
+"g5-lineplot":L=>{const d=pick([4,8]),vals=Array.from({length:ri(8,12)},()=>ri(1,d-1)).sort((a,b)=>a-b),str=vals.map(v=>frac(v,d)).join(", "),r=R();
+  if(r<.4){const t=pick([1,2,3].map(k=>k*d/4));return NUM(`A line plot shows plant heights in feet: ${str}. How many plants are taller than ${frac(t,d)} foot?`,vals.filter(v=>v>t).length,[[vals.filter(v=>v>=t).length,"Included the value itself in \"taller than\""]],X5,`Count only the Xs to the right of ${frac(t,d)}.`,"plants")}
+  if(r<.75){const mx=vals[vals.length-1],mn=vals[0];if(mx===mn)return MG["g5-lineplot"](L);return NUM(`A line plot shows plant heights in feet: ${str}. What is the difference between the tallest and shortest plant?`,frac(mx-mn,d),[[frac(mx,d),"Gave the tallest height instead of the difference"],[frac(mx+mn,d),"Added instead of subtracted"]],X5,"Subtract the least value from the greatest.","foot")}
+  const t=vals[Math.floor(vals.length/2)],k=vals.filter(v=>v===t).length;return NUM(`A line plot shows how much water each beaker holds in liters: ${str}. What is the total of the beakers that hold ${frac(t,d)} liter?`,frac(k*t,d),[[k,"Counted the beakers instead of adding their amounts"],[frac(t,d),"Gave one beaker's amount"]],X5,`Count the ${frac(t,d)} marks, then multiply by ${frac(t,d)}.`,"liters")}
+});
+
+/* ---------- grade 5 math mini-lessons: big idea, notes, watch me, we do, stop and jot ---------- */
+Object.assign(ML,{
+"g5-compare":["To compare fractions and decimals, think about where each one sits on a number line.","Numbers farther to the [[right]] are greater. Write decimals with the same number of [[places|digits]] before comparing.","Compare 0.5 and 0.47 →?\nStep 1: Write 0.5 as 0.50.\nStep 2: Compare hundredths: 50 hundredths and 47 hundredths.\nStep 3: **0.5 > 0.47**.","Which is greater, 2/3 or 2/5? [[2/3]]","Why isn't the decimal with more digits always greater?"],
+"g5-fracdiv":["A fraction is also a division problem: the numerator divided by the denominator.","3/4 means 3 [[÷|divided by]] 4. When 3 pizzas are shared by 4 people, each gets [[3/4]] of a pizza.","4 friends share 3 sandwiches equally. How much does each get?\nStep 1: Sharing means divide: 3 ÷ 4.\nStep 2: 3 ÷ 4 is the fraction 3/4.\nStep 3: **Each friend gets 3/4 of a sandwich.**","5 ÷ 8 as a fraction: [[5/8]]","Draw a picture to show why 2 ÷ 3 = 2/3."],
+"g5-place":["Each place is worth 10 times the place to its right.","Multiplying by 10 moves every digit one place to the [[left]]. Dividing by 10 moves every digit one place to the [[right]].","3.45 × 10 = ?\nStep 1: Each digit moves one place left.\nStep 2: The 3 ones become 3 tens.\nStep 3: **3.45 × 10 = 34.5**.","6.2 ÷ 10 = [[0.62]]","Why doesn't adding a zero to the end of 3.45 multiply it by 10?"],
+"g5-round":["Rounding finds the nearest easier number at a place you choose.","Look at the digit to the [[right]] of the rounding place. 5 or more rounds [[up]].","Round 4.372 to the nearest tenth.\nStep 1: The tenths digit is 3.\nStep 2: The digit to its right is 7, which is 5 or more.\nStep 3: **4.372 ≈ 4.4**.","Round 8.649 to the nearest hundredth: [[8.65]]","Why doesn't rounding just mean cutting off digits?"],
+"g5-percent":["Percent means \"out of 100.\"","45% means 45 out of [[100]]. 1/2 is the same as [[50]]%.","Write 3/5 as a percent.\nStep 1: Make the denominator 100: multiply by 20.\nStep 2: 3 × 20 = 60, so 60/100.\nStep 3: **3/5 = 60%**.","1/4 = [[25]]%","Where do you see percents outside of school?"],
+"g5-divide":["Division splits a number into equal groups. The remainder is what's left over.","The remainder must be [[less|smaller]] than the divisor. Estimate the [[quotient]] first.","Divide 745 ÷ 23.\nStep 1: Estimate: 23 is about 25, and 750 ÷ 25 = 30.\nStep 2: 23 × 32 = 736, and 745 − 736 = 9.\nStep 3: **32 R 9**. 9 is less than 23. ✓","100 ÷ 12 = 8 R [[4]]","In a word problem, how do you decide what to do with the remainder?"],
+"g5-decimal":["Decimal operations work like whole numbers. Place value tells where the decimal point goes.","When adding or subtracting, line up the [[decimal points]]. Always [[estimate]] to check.","2.5 + 1.38 = ?\nStep 1: Write 2.5 as 2.50.\nStep 2: Line up the points and add: 2.50 + 1.38.\nStep 3: **3.88**. Estimate: 3 + 1 = 4. ✓","0.4 × 0.2 = [[0.08]]","How does estimating help you place the decimal point?"],
+"g5-fracadd":["To add or subtract fractions, the pieces must be the same size first.","Find a common [[denominator]]. Add or subtract only the [[numerators]].","1/2 + 1/3 = ?\nStep 1: A common denominator is 6.\nStep 2: 1/2 = 3/6 and 1/3 = 2/6.\nStep 3: **3/6 + 2/6 = 5/6**. Estimate: ½ + a bit less than ½ is a bit less than 1. ✓","1/4 + 1/2 = [[3/4]]","Why can't you add the denominators?"],
+"g5-fracmul":["Multiplying by a fraction finds a part of a group.","2/3 × 3/4 means 2/3 [[of]] 3/4. Multiply the numerators and multiply the [[denominators]].","3 × 2/5 = ?\nStep 1: 3 groups of 2/5.\nStep 2: 3 × 2 = 6, so 6/5.\nStep 3: **6/5 = 1 1/5**.","1/2 × 1/3 = [[1/6]]","Why does multiplying by a fraction less than 1 give a smaller answer?"],
+"g5-fracdivide":["Dividing asks how many groups fit, or how big each share is.","4 ÷ 1/3 asks how many [[thirds]] fit in 4. 1/3 ÷ 4 splits one third into [[4]] parts.","3 ÷ 1/4 = ?\nStep 1: How many fourths are in 1 whole? 4.\nStep 2: In 3 wholes: 3 × 4.\nStep 3: **12**.","2 ÷ 1/5 = [[10]]","Draw a model for 1/2 ÷ 3."],
+"g5-multiply":["The standard algorithm multiplies by each place, then adds the partial products.","When multiplying by the tens digit, write a [[zero|0]] first. Then [[add]] the partial products.","46 × 23 = ?\nStep 1: 46 × 3 = 138.\nStep 2: 46 × 20 = 920.\nStep 3: **138 + 920 = 1,058**.","32 × 11 = [[352]]","Why do you write a zero before multiplying by the tens digit?"],
+"g5-expr":["Parentheses show which step happens first.","In (4 + 5) × 2, you [[add]] first. Without parentheses, multiply before you [[add]].","Write: add 6 and 3, then multiply by 4.\nStep 1: Adding happens first, so it goes in parentheses: (6 + 3).\nStep 2: Then × 4.\nStep 3: **(6 + 3) × 4 = 36**.","(10 − 4) × 3 = [[18]]","How can parentheses change the value of an expression?"],
+"g5-shapes":["Shapes belong to families. A shape can have more than one name.","Every square is a [[rectangle]] and a rhombus. A [[trapezoid]] has at least one pair of parallel sides.","Is every rectangle a parallelogram?\nStep 1: A parallelogram needs 2 pairs of parallel sides.\nStep 2: A rectangle has 2 pairs of parallel sides.\nStep 3: **Yes, every rectangle is a parallelogram.**","A triangle with a 90° angle is a [[right]] triangle.","Is every rhombus a square? Explain."],
+"g5-coord":["An ordered pair tells how far to move over, then up.","In (3, 5), move 3 to the [[right]], then 5 [[up]].","Plot (4, 2).\nStep 1: Start at (0, 0).\nStep 2: Move 4 right along the x-axis.\nStep 3: **Move 2 up and mark the point.**","(0, 6) is on the [[y]]-axis.","Why does the order of the numbers in (2, 7) matter?"],
+"g5-convert":["Converting changes the unit, not the amount.","Big unit to small unit: [[multiply]]. Small unit to big unit: [[divide]].","How many inches are in 4 feet?\nStep 1: 1 foot = 12 inches.\nStep 2: Feet to inches is big to small, so multiply.\nStep 3: **4 × 12 = 48 inches**.","3 meters = [[300]] centimeters","How can you check that your conversion makes sense?"],
+"g5-volume":["Volume counts how many unit cubes fill a solid.","V = length × width × [[height]]. Volume is measured in [[cubic]] units.","A box is 4 cm × 3 cm × 2 cm.\nStep 1: One layer: 4 × 3 = 12 cubes.\nStep 2: There are 2 layers.\nStep 3: **12 × 2 = 24 cubic cm**.","5 × 2 × 3 = [[30]] cubic units","How is volume different from area?"],
+"g5-area":["Area of a rectangle is length × width, even with fractions.","Area uses [[square]] units. To find it, [[multiply]] the side lengths.","A rectangle is 1/2 ft by 3/4 ft.\nStep 1: Area = 1/2 × 3/4.\nStep 2: Multiply: 3/8.\nStep 3: **3/8 square foot**.","2/3 × 1/2 = [[1/3|2/6]] square unit","Draw a model to show 1/2 × 1/3."],
+"g5-lineplot":["A line plot shows how often each value happens. Each X is one data point.","Each X stands for [[one]] measurement. To find a total, [[add]] the values.","Line plot: 1/4, 1/4, 1/2, 3/4, 3/4, 3/4\nStep 1: Count the 3/4 marks: 3.\nStep 2: Total of those: 3 × 3/4.\nStep 3: **9/4 = 2 1/4**.","Three Xs at 1/2 total [[1 1/2|3/2]]","What question could you answer with a line plot of plant heights?"]
+});
+
+/* ---------- grade 5 ELA banks ---------- */
+const FIG=[
+ ["\"The classroom was a zoo after the fire drill.\" What does this metaphor mean?","The classroom was loud and wild.",[["There were animals in the classroom.","Read figurative language literally"],["The class went on a field trip.","Read figurative language literally"],["The classroom was very clean.","Missed the meaning of the comparison"]]],
+ ["\"Her smile was as bright as the sun.\" What does this simile mean?","She looked very happy.",[["Her smile hurt people's eyes.","Read figurative language literally"],["She was standing outside.","Read figurative language literally"],["She was confused.","Missed the meaning of the comparison"]]],
+ ["\"It's raining cats and dogs.\" What does this idiom mean?","It's raining very hard.",[["Animals are falling from the sky.","Read an idiom literally"],["It's barely raining.","Chose the opposite meaning"],["Pets are playing in the rain.","Read an idiom literally"]]],
+ ["\"Break a leg in your play tonight!\" What does this idiom mean?","Good luck.",[["Be careful not to fall.","Read an idiom literally"],["Your play will go badly.","Chose the opposite meaning"],["Leave the play early.","Missed the meaning of the idiom"]]],
+ ["Which sentence has a simile?","The snow was like a soft white blanket.",[["The snow was a soft white blanket.","Confused a metaphor with a simile"],["The snow fell all night.","Chose a literal sentence"],["Snow covered the town.","Chose a literal sentence"]]],
+ ["Which sentence has a metaphor?","My brother is a night owl.",[["My brother stays up as late as an owl.","Confused a simile with a metaphor"],["My brother stays up late.","Chose a literal sentence"],["The owl hooted at night.","Chose a literal sentence"]]],
+ ["\"The test was a piece of cake.\" What does this idiom mean?","The test was easy.",[["The test was about baking.","Read an idiom literally"],["The test was very hard.","Chose the opposite meaning"],["There was cake after the test.","Read an idiom literally"]]]
+];
+const GRAM5=[
+ ["Which sentence uses verb tense correctly?","Yesterday we walked to the park and played soccer.",[["Yesterday we walk to the park and played soccer.","Shifted verb tense in the middle of a sentence"],["Yesterday we walked to the park and play soccer.","Shifted verb tense in the middle of a sentence"]]],
+ ["Which sentence uses the perfect tense correctly?","By noon, she had finished her project.",[["By noon, she has finish her project.","Formed the perfect tense incorrectly"],["By noon, she had finish her project.","Formed the perfect tense incorrectly"]]],
+ ["Which sentence uses correlative conjunctions correctly?","You can have either soup or salad.",[["You can have either soup nor salad.","Mismatched the conjunction pair"],["You can have neither soup or salad.","Mismatched the conjunction pair"]]],
+ ["Which sentence uses correlative conjunctions correctly?","Not only did Kai win, but he also broke a record.",[["Not only did Kai win, or he also broke a record.","Mismatched the conjunction pair"],["Not only did Kai win, and he broke a record.","Mismatched the conjunction pair"]]],
+ ["Which sentence is correct?","Jada sings well.",[["Jada sings good.","Used an adjective where an adverb belongs"],["Jada sings goodly.","Formed the adverb incorrectly"]]],
+ ["Which sentence is correct?","The turtle moved slowly across the road.",[["The turtle moved slow across the road.","Used an adjective where an adverb belongs"],["The turtle slowly moved slow across the road.","Repeated the describing word"]]],
+ ["Which sentence uses the progressive tense correctly?","We were reading when the bell rang.",[["We was reading when the bell rang.","Made the helping verb disagree with the subject"],["We were read when the bell rang.","Formed the progressive tense incorrectly"]]]
+];
+const PUNC5=[
+ ["Which sentence uses a comma correctly after an introductory word or phrase?","After lunch, we went to recess.",[["After, lunch we went to recess.","Put the comma in the wrong place"],["After lunch we, went to recess.","Put the comma in the wrong place"]]],
+ ["Which sentence uses commas correctly in a series?","We packed apples, crackers, and water.",[["We packed apples crackers, and water.","Left out a comma in the series"],["We packed, apples, crackers, and water.","Put a comma before the first item"]]],
+ ["Which sentence uses a comma correctly to speak to someone directly?","Sam, can you help me?",[["Sam can you help me?","Left out the comma after a name used in direct address"],["Sam can, you help me?","Put the comma in the wrong place"]]],
+ ["Which sentence punctuates dialogue correctly?","\"Let's go,\" said Ana.",[["\"Let's go\" said Ana.","Left out the comma inside the quotation marks"],["\"Let's go\", said Ana.","Put the comma outside the quotation marks"]]],
+ ["Which sentence uses an apostrophe correctly?","The dog's bowl is empty.",[["The dogs bowl is empty.","Left out the apostrophe for possession"],["The dog's are hungry.","Used an apostrophe to make a plural"]]],
+ ["Which sentence uses an apostrophe correctly?","The students' desks are in rows.",[["The student's desks are in rows, all of them.","Used a singular possessive for many owners"],["The students desk's are in rows.","Put the apostrophe on the wrong word"]]],
+ ["Which sentence uses a comma correctly with yes or no?","Yes, I finished my book.",[["Yes I finished, my book.","Put the comma in the wrong place"],["Yes I, finished my book.","Put the comma in the wrong place"]]]
+];
+Object.assign(EL,{
+"5.RC.12":["Figurative language says one thing but means another, to paint a picture in your mind.","A simile compares using [[like]] or as. A metaphor says one thing [[is]] another. An idiom doesn't mean what the words say.","\"The hallway was an oven.\"\nStep 1: Is a hallway really an oven? No.\nStep 2: What do ovens have? Heat.\nStep 3: **The hallway was very hot.**","\"as busy as a bee\" is a [[simile]]","Write a simile about today's weather."],
+"5.W.6":["Clear writing keeps verb tenses steady and uses the right describing words.","Keep the same [[tense]] unless the time changes. Adverbs like \"quickly\" describe [[verbs|actions]].","Yesterday we ___ (walk) to school.\nStep 1: \"Yesterday\" tells us it's the past.\nStep 2: Past tense of walk: walked.\nStep 3: **Yesterday we walked to school.**","either ... [[or]]","How can reading your writing aloud help you catch tense shifts?"],
+"5.W.7":["Punctuation tells readers when to pause and who is speaking.","Use a comma after an [[introductory|opening]] word or phrase. Put spoken words inside [[quotation marks]].","After school ___ we played outside.\nStep 1: \"After school\" introduces the sentence.\nStep 2: Put a comma after it.\nStep 3: **After school, we played outside.**","The cat's toy: the apostrophe shows [[possession|ownership]]","When do you use an apostrophe, and when do you not?"]
+});
+
 /* ---------- build a unit ---------- */
-function stdInfo(subj,code){return STD[subj].find(x=>x[0]===code)}
-function canFor(code){return code.startsWith("6.RC.")||code.startsWith("6.W.")||code.startsWith("6.CC.")?"ela":"math"}
-function generateUnit({subject,codes,days,perDay,level,seed,title}){
-  R=rng(seed||Date.now());
-  const skills=codes.map(c=>({id:sid(c),name:stdInfo(subject,c)[1],std:"IN "+c}));
+function stdInfo(subj,code){const x=STD_BY[code];return x?[x.c,x.t,x.e]:[code,code,0]}
+const genOf=c=>(STD_BY[c]||{}).gen||c;
+const gradeOf=c=>(STD_BY[c]||{}).grade||String(c).split(".")[0];
+/* estimation (number line) items fit these generators */
+const EST_GEN={"6.NS.4":1,"g5-fracadd":1};
+function generateUnit({grade,subject,codes,days,perDay,level,seed,title}){
+  R=rng(seed||Date.now());grade=String(grade||gradeOf(codes[0])||"6");
+  const famCode={};codes.forEach(c=>{famCode[genOf(c)]=famCode[genOf(c)]||c});
+  const retag=(q,c)=>{if(q)q.skill=sid(c);return q};
+  const skills=codes.map(c=>({id:sid(c),name:SHORT[c]||stdInfo(subject,c)[1],std:"IN "+c}));
   const plan=[];for(let d=0;d<days;d++){const per=Math.max(1,Math.ceil(codes.length/days));const s=codes.slice((d*per)%codes.length,(d*per)%codes.length+per);plan.push(s.length?s:[codes[d%codes.length]])}
   const unit={id:(title||"unit").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,30)+"-"+Math.random().toString(36).slice(2,7),
-    title:title||`${subject==="math"?"Math":"ELA"} WIN: ${codes.join(", ")}`,room:"",smart:80,subject,third:subject==="ela"?"race":"ixl",
+    title:title||`Grade ${grade} ${subject==="math"?"Math":"ELA"} WIN: ${codes.map(c=>SHORT[c]||c).slice(0,3).join(", ")}`,room:"",smart:80,grade,subject,third:subject==="ela"?"race":"ixl",
     tools:{calc:false,mult:true,fracbars:true,numline:true,formulas:true},turnInNote:"Then open today's WIN assignment in Canvas, paste, and submit.",skills,days:[]};
   plan.forEach((cs,d)=>{
     const short=cs.map(c=>c).join(" + ");
     const day={title:`Day ${d+1}: ${cs.map(c=>SHORT[c]||c).join(" and ")}`,target:"I can "+cs.map(c=>TGT[c]||lower(stdInfo(subject,c)[1])).join(", and I can ")+".",ind:[],sg:[],standards:cs.map(c=>`IN ${c}: ${stdInfo(subject,c)[1]}`),ixl:[],race:""};
     if(subject==="math"){
       let est=0;const seen=new Set();for(let i=0;i<perDay;i++){const c=cs[i%cs.length];let q;
-        for(let t=0;t<8;t++){q=c==="6.NS.4"&&est<2&&R()<.35?estItem(level):MG[c](level);const key=q.type==="est"?q.nums:q.prompt.replace(/[\d.]+/g,"#").slice(0,40);if(!seen.has(key)||t===7){seen.add(key);break}}
+        const gn=genOf(c);for(let t=0;t<8;t++){q=retag(EST_GEN[gn]&&est<2&&R()<.35?estItem(level):MG[gn](level),c);const key=q.type==="est"?q.nums:q.prompt.replace(/[\d.]+/g,"#").slice(0,40);if(!seen.has(key)||t===7){seen.add(key);break}}
         if(q.type==="est")est++;day.ind.push(q)}
-      const L=ML[cs[0]];day.sg=lessonSteps(L);
-      day.ixl=cs.map(c=>({t:`IXL skill plan: Indiana 2023, ${c}`,d:`In IXL, open the Indiana (2023) grade 6 skill plan and choose a skill under ${c}.`})).concat([{t:"IXL Math Arena",d:"Only after you reach your SmartScore goal."}]);
+      const L=ML[genOf(cs[0])];day.sg=lessonSteps(L);
+      day.ixl=cs.map(c=>({t:`IXL skill plan: Indiana 2023, ${c}`,d:`In IXL, open the Indiana (2023) grade ${grade} skill plan and choose a skill under ${c}.`})).concat([{t:"IXL Math Arena",d:"Only after you reach your SmartScore goal."}]);
       day.race=`Explain how you solved problem ${ri(2,Math.max(2,perDay))}. How do you know your answer makes sense?`;
     } else {
-      const pk=pickPassage(cs,d);const P=PASS[pk];
+      const fs_=cs.map(genOf);const pk=pickPassage(fs_,d);const P=PASS[pk];
       day.passage={title:P.title,text:P.text};
-      const auto=cs.filter(c=>P.items.some(x=>x[0]===c)||elaBank(c)!==null);R=rng((seed||1)+d*97);
-      const pool=[];cs.forEach(c=>P.items.filter(x=>x[0]===c).forEach(x=>pool.push(x)));
-      P.items.filter(x=>!cs.includes(x[0])).forEach(x=>pool.push(x));
+      R=rng((seed||1)+d*97);
+      /* passage items are written for grade 6 codes; map each to this grade's matching standard */
+      const gradeCode={};stdList(grade,"ela").forEach(([c])=>{const f=genOf(c);if(!gradeCode[f])gradeCode[f]=c});
+      const codeFor=f=>famCode[f]||gradeCode[f]||(grade==="6"?f:null);
+      const pool=[];fs_.forEach(f=>P.items.filter(x=>x[0]===f).forEach(x=>pool.push(x)));
+      P.items.filter(x=>!fs_.includes(x[0])&&codeFor(x[0])).forEach(x=>pool.push(x));
       const qs=[];
-      const seenE=new Set();cs.forEach(c=>{if(!P.items.some(x=>x[0]===c)){for(let k=0;k<Math.ceil(perDay/cs.length);k++){let q=null;for(let t=0;t<10;t++){q=elaBank(c);if(!q||!seenE.has(q.prompt+q.options.find(o=>o.correct).text))break}if(q){seenE.add(q.prompt+q.options.find(o=>o.correct).text);qs.push(q)}}}});
-      pool.forEach(x=>{if(qs.length<perDay)qs.push(itemFrom(x))});
+      const seenE=new Set();cs.forEach(c=>{const f=genOf(c);if(!P.items.some(x=>x[0]===f)){for(let k=0;k<Math.ceil(perDay/cs.length);k++){let q=null;for(let t=0;t<10;t++){q=elaBank(f);if(!q||!seenE.has(q.prompt+q.options.find(o=>o.correct).text))break}if(q){seenE.add(q.prompt+q.options.find(o=>o.correct).text);qs.push(retag(q,c))}}}});
+      pool.forEach(x=>{if(qs.length<perDay)qs.push(retag(itemFrom(x),codeFor(x[0])))});
       day.ind=qs.slice(0,perDay);
-      day.ind.forEach(q=>{if(!skills.find(s=>s.id===q.skill)){const code=q.skill.replace(/^s6/,"6.").replace(/^6\.(RC|W|CC)(\d+)$/,"6.$1.$2");const info=stdInfo("ela",code);skills.push({id:q.skill,name:info?info[1]:code,std:"IN "+code})}});
-      const lk=cs.find(c=>EL[c]);day.sg=lessonSteps(lk?EL[lk]:ELA_GENERIC);
-      day.race=cs.map(c=>RACE_FOR[c]).find(Boolean)||P.race;
+      day.ind.forEach(q=>{if(!skills.find(s=>s.id===q.skill)){const code=Object.keys(STD_BY).find(c=>sid(c)===q.skill)||q.skill;skills.push({id:q.skill,name:SHORT[code]||stdInfo("ela",code)[1],std:"IN "+code})}});
+      const lk=fs_.find(f=>EL[f]);day.sg=lessonSteps(lk?EL[lk]:ELA_GENERIC);
+      day.race=fs_.map(f=>RACE_FOR[f]).find(Boolean)||P.race;
     }
     unit.days.push(day);
   });
@@ -1205,9 +1370,9 @@ function lessonSteps(L){const w=L[2].split("\n");return[
   {tag:"jot",title:"Stop and jot",text:L[4]}]}
 
 /* ---------- prompt for Copilot or another AI tool ---------- */
-function aiPrompt(subject,codes,days,perDay){
+function aiPrompt(subject,codes,days,perDay,grade){grade=grade||gradeOf(codes[0]);
   const list=codes.map(c=>`- ${c}: ${stdInfo(subject,c)[1]}`).join("\n");
-  return `You are writing remediation practice for Indiana grade 6 ${subject==="math"?"math":"ELA"} students (2023 Indiana Academic Standards). Standards:
+  return `You are writing remediation practice for Indiana grade ${grade} ${subject==="math"?"math":"ELA"} students (2023 Indiana Academic Standards). Standards:
 ${list}
 
 Write ${days} day(s), ${perDay} practice questions per day. Return ONLY valid JSON (no commentary, no code fences) in exactly this shape:
@@ -1223,7 +1388,7 @@ Rules: 3 wrong answers per multiple-choice question, each with a specific miscon
 function importAI(json,subject,codes){
   let o;try{o=JSON.parse(String(json).replace(/^```(json)?|```$/gm,"").trim())}catch(e){throw new Error("That isn't valid JSON. Copy the AI's whole answer, starting with {.")}
   if(!o.days||!o.days.length)throw new Error("The JSON has no days.");
-  const skills=codes.map(c=>({id:sid(c),name:stdInfo(subject,c)[1],std:"IN "+c}));
+  const skills=codes.map(c=>({id:sid(c),name:SHORT[c]||stdInfo(subject,c)[1],std:"IN "+c}));
   const days=o.days.map((d,i)=>({title:d.title||`Day ${i+1}`,target:d.target||"",passage:d.passage&&d.passage.text?{title:d.passage.title||"",text:d.passage.text}:undefined,
     ind:(d.questions||[]).map(q=>{const std=q.standard&&codes.includes(q.standard)?q.standard:codes[0];
       if(q.type==="num")return{type:"num",prompt:q.prompt||"",answer:String(q.answer??""),alts:"",unit:q.unit||"",skill:sid(std),hint:q.hint||"",wrongs:(q.wrong||[]).map(w=>({ans:String(w.text),mis:w.misconception||""}))};
@@ -1238,6 +1403,7 @@ const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&g
 const EXAMPLE={
  "id": "estimating-fractions",
  "title": "Estimating with fractions",
+ "grade": "6",
  "room": "Room 205",
  "smart": 80,
  "turnInNote": "Then open today's WIN assignment in Canvas, paste, and submit.",
@@ -1593,7 +1759,7 @@ const OPS=["","+","−","×","÷"];
 const slug=s=>(String(s||"unit").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"unit").slice(0,40);
 const newId=t=>slug(t)+"-"+Math.random().toString(36).slice(2,7);
 const blankDay=n=>({title:`Day ${n}`,target:"",ind:[],sg:[],standards:[],ixl:[],race:""});
-const blankUnit=()=>({id:newId("unit"),title:"",room:"",subject:"math",third:"ixl",tools:{calc:false,mult:true,fracbars:true,numline:true,formulas:true},smart:80,turnInNote:"Then open today's WIN assignment in Canvas, paste, and submit.",skills:[{id:"k1",name:"",std:""}],days:[blankDay(1)]});
+const blankUnit=()=>({id:newId("unit"),title:"",room:"",grade:"",subject:"math",third:"ixl",tools:{calc:false,mult:true,fracbars:true,numline:true,formulas:true},smart:80,turnInNote:"Then open today's WIN assignment in Canvas, paste, and submit.",skills:[{id:"k1",name:"",std:""}],days:[blankDay(1)]});
 const store={get(k,d){try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 
 let U=store.get("winbuilder:unit",null)||JSON.parse(JSON.stringify(EXAMPLE));
@@ -1639,48 +1805,63 @@ const ta=(p,v,ph="",live="")=>`<textarea data-p="${p}" placeholder="${esc(ph)}" 
 const skillSel=(p,v)=>`<select data-p="${p}"><option value="">Choose a skill</option>${U.skills.map(s=>`<option value="${esc(s.id)}" ${s.id===v?"selected":""}>${esc(s.name||"(unnamed skill)")}</option>`).join("")}</select>`;
 
 /* ---- render ---- */
+let step=store.get("winbuilder:step",0)||(U.days.some(D=>D.ind.length)?2:1);
+const gradeLabel=g=>g?`Grade ${g}`:"";
+function renderSteps(){
+  $("#steps").innerHTML=[[1,"Choose standards","Grade, subject, and skills"],[2,"Edit the unit","Questions, lesson, and rooms"],[3,"Preview and share","Check, download, post in Canvas"]]
+    .map(([n,t,d])=>`<button data-act="step" data-i="${n}" ${step===n?'aria-current="step"':""}><b>${n}</b><span>${t}<small>${d}</small></span></button>`).join("");
+  const n=U.days.reduce((a,D)=>a+D.ind.length,0);
+  $("#unitbar").innerHTML=`<div class="unitbar"><div class="t"><span class="note">Current unit:</span> <b>${esc(U.title||"Untitled unit")}</b>
+    ${U.grade?`<span class="chip">${gradeLabel(U.grade)}</span>`:""}<span class="chip">${U.subject==="ela"?"ELA":"Math"}</span><span class="chip">${U.days.length} day${U.days.length===1?"":"s"}</span><span class="chip">${n} question${n===1?"":"s"}</span></div>
+    <button class="btn ghost sm" data-act="preview">Preview</button><button class="btn ghost sm" data-act="saveUnit">Save unit file</button></div>`;
+}
 function render(){
   if(cur>=U.days.length)cur=U.days.length-1;
-  const D=U.days[cur],P=`days.${cur}`;
   U.subject=U.subject||"math";U.third=U.third||(U.subject==="ela"?"race":"ixl");U.tools=U.tools||{calc:false,mult:true,fracbars:true,numline:true,formulas:true};
-  $("#app").innerHTML=`
-  ${genPanel()}
-  <section class="panel">
-    <h2>Unit</h2><p class="sub">Unit ID: <code>${esc(U.id)}</code>. The dashboard uses this to keep units apart, so keep it the same when you edit a unit.</p>
-    <div class="grid">
+  if(!U.grade){const c=(U.skills||[]).map(k=>String(k.std||"").replace(/^IN\s*/,"")).find(c=>/^[56]\./.test(c));if(c)U.grade=c[0]}
+  store.set("winbuilder:step",step);renderSteps();
+  $("#app").innerHTML=step===1?genPanel():step===3?sharePanel():editPanel();
+  if(step===1)filterStd();
+}
+function editPanel(){
+  const D=U.days[cur],P=`days.${cur}`;
+  return `
+  <details class="panel" ${U.days.length===1&&!D.ind.length?"open":""}><summary><h2>Unit settings and skills</h2> <span class="note">Title, grade, subject, class name, tools</span></summary>
+    <div class="grid" style="margin-top:.75rem">
       <label class="f">Unit title${inp("title",U.title,"Estimating with fractions")}</label>
-      <label class="f">Class name<small> shows at the top</small>${inp("room",U.room,"Room 205")}</label>
+      <label class="f">Grade<select data-p="grade" data-re="1"><option value="">Choose</option>${GRADES.map(g=>`<option value="${g}" ${String(U.grade)===g?"selected":""}>Grade ${g}</option>`).join("")}</select></label>
+      <label class="f">Subject<select data-p="subject" data-re="1"><option value="math" ${U.subject==="math"?"selected":""}>Math</option><option value="ela" ${U.subject==="ela"?"selected":""}>ELA</option></select></label>
+      <label class="f">Class name<small> shows at the top, like "Room 205" or "Period 3"</small>${inp("room",U.room,"Room 205")}</label>
+      <label class="f">Third room<select data-p="third" data-re="1"><option value="ixl" ${U.third==="ixl"?"selected":""}>IXL room</option><option value="race" ${U.third==="race"?"selected":""}>RACE room</option></select></label>
       <label class="f">IXL SmartScore goal<input type="number" min="1" max="100" data-p="smart" value="${esc(U.smart)}"></label>
       <label class="f">Turn-in directions${inp("turnInNote",U.turnInNote)}</label>
-      <label class="f">Subject<select data-p="subject" data-re="1"><option value="math" ${U.subject==="math"?"selected":""}>Math</option><option value="ela" ${U.subject==="ela"?"selected":""}>ELA</option></select></label>
-      <label class="f">Third room<select data-p="third" data-re="1"><option value="ixl" ${U.third==="ixl"?"selected":""}>IXL room</option><option value="race" ${U.third==="race"?"selected":""}>RACE room</option></select></label>
     </div>
-    ${U.subject==="math"?`<p class="f" style="margin:.75rem 0 .3rem;font-weight:700">Math tools students can open</p><div class="adds">${[["calc","Calculator"],["mult","Times table"],["fracbars","Fraction bars"],["numline","Number line"],["formulas","Formula sheet"]].map(([k,v])=>`<label class="chk"><input type="checkbox" data-tool="${k}" ${U.tools[k]?"checked":""}> ${v}</label>`).join("")}</div><p class="note">Turn the calculator off for standards like 6.RP.1 that say "without a calculator."</p>`:""}
-  </section>
-
-  <section class="panel">
-    <h2>Skills</h2><p class="sub">Every question gets tagged with one skill. The dashboard reports mastery by skill. Estimation questions also track rounding skills automatically.</p>
+    ${U.subject==="math"?`<p class="f" style="margin:.75rem 0 .3rem;font-weight:700">Math tools students can open</p><div class="adds">${[["calc","Calculator"],["mult","Times table"],["fracbars","Fraction bars"],["numline","Number line"],["formulas","Formula sheet"]].map(([k,v])=>`<label class="chk"><input type="checkbox" data-tool="${k}" ${U.tools[k]?"checked":""}> ${v}</label>`).join("")}</div><p class="note">Turn the calculator off for standards that say "without a calculator," like 6.RP.1.</p>`:""}
+    <h3 style="margin:1.1rem 0 .2rem">Skills</h3><p class="sub">Every question is tagged with one skill. The dashboard reports mastery by skill, so the standard code here is what shows up in your data.</p>
     ${U.skills.map((s,i)=>`<div class="row"><label class="f">Skill name${inp(`skills.${i}.name`,s.name,"Estimate sums and differences")}</label>
-      <label class="f">Standard${inp(`skills.${i}.std`,s.std,"IN 6.C.2")}</label>
+      <label class="f">Standard${inp(`skills.${i}.std`,s.std,"IN 5.CA.3")}</label>
       <button class="btn ghost sm" data-act="delSkill" data-i="${i}" ${U.skills.length<2?"disabled":""}>Remove</button></div>`).join("")}
     <div class="adds"><button class="btn ghost sm" data-act="addSkill">Add skill</button></div>
-  </section>
+    <p class="note" style="margin-top:.75rem">Unit ID: <code>${esc(U.id)}</code>. The dashboard uses it to keep units apart, so it stays the same while you edit.</p>
+  </details>
 
-  <nav class="days">${U.days.map((d,i)=>`<button class="d" data-act="day" data-i="${i}" aria-pressed="${i===cur}">Day ${i+1}</button>`).join("")}
+  <nav class="days" aria-label="Days">${U.days.map((d,i)=>`<button class="d" data-act="day" data-i="${i}" aria-pressed="${i===cur}">Day ${i+1}</button>`).join("")}
     <button class="btn ghost sm" data-act="addDay">Add day</button>
     ${U.days.length>1?`<button class="btn ghost sm" data-act="delDay">Delete Day ${cur+1}</button>`:""}</nav>
 
   <section class="panel">
+    <h2>Day ${cur+1} overview</h2>
     <div class="grid">
       <label class="f">Day title${inp(`${P}.title`,D.title,"Day 1: Benchmark fractions")}</label>
       <label class="f">Learning target${inp(`${P}.target`,D.target,"I can...")}</label>
     </div>
     ${U.subject==="ela"||D.passage?`<div class="grid" style="margin-top:.6rem"><label class="f">Passage title${inp(`${P}.passage.title`,(D.passage||{}).title||"")}</label></div>
       <label class="f" style="margin-top:.5rem">Passage<small> separate paragraphs with a blank line. Avoid abbreviations like "a.m." so sentences highlight correctly.</small><textarea data-p="${P}.passage.text" style="min-height:10rem">${esc((D.passage||{}).text||"")}</textarea></label>`:""}
+    <label class="f" style="margin-top:.5rem">Standards for this day<small> one per line</small><textarea data-p="${P}.standards" data-lines="1">${esc((D.standards||[]).join("\n"))}</textarea></label>
   </section>
 
   <section class="panel ind">
-    <h2>Independent practice</h2><p class="sub">Self-checking. Students see hints when they miss.</p>
+    <h2>✏️ Independent practice</h2><p class="sub">Self-checking. Students see hints when they miss.</p>
     ${D.ind.map((q,i)=>qCard(q,i,P)).join("")||"<p class='note'>No questions yet.</p>"}
     <div class="adds">
       <button class="btn ghost sm" data-act="addQ" data-t="est">Add estimation question</button>
@@ -1691,8 +1872,8 @@ function render(){
   </section>
 
   <section class="panel sg">
-    <h2>Small group lesson</h2>
-    <div class="help">Formatting: <code>[[answer]]</code> makes a fill-in blank (separate accepted answers with |, like <code>[[1/2|half]]</code>). <code>{{3 4/5}}</code> makes a tappable number line. <code>**word**</code> is bold. Fractions like 3/4 or 2 1/3 display stacked. In "Watch me," the first line is the problem and each line after it is a step you reveal one at a time.</div>
+    <h2>👂 Small group lesson</h2>
+    <details class="help"><summary>Formatting help</summary><code>[[answer]]</code> makes a fill-in blank (separate accepted answers with |, like <code>[[1/2|half]]</code>). <code>{{3 4/5}}</code> makes a tappable number line. <code>**word**</code> is bold. Fractions like 3/4 or 2 1/3 display stacked. In "Watch me," the first line is the problem and each line after it is a step you reveal one at a time.</details>
     ${D.sg.map((s,i)=>`<div class="card"><div class="card-h"><b>Step ${i+1}</b>
       <button class="btn ghost sm" data-act="upS" data-i="${i}" ${i===0?"disabled":""}>Move up</button>
       <button class="btn ghost sm" data-act="downS" data-i="${i}" ${i===D.sg.length-1?"disabled":""}>Move down</button>
@@ -1706,13 +1887,41 @@ function render(){
   </section>
 
   <section class="panel ixl">
-    <h2>${U.third==="race"?"RACE room":"IXL room"}</h2>
+    <h2>${U.third==="race"?"✍️ RACE room":"💻 IXL room"}</h2>
     ${U.third==="race"?`<p class="sub">Students highlight evidence in the passage, then write a RACE response with sentence starters and a live checklist.</p>`:""}
     ${U.third==="race"?"":D.ixl.map((k,i)=>`<div class="row"><label class="f">IXL skill name or code${inp(`${P}.ixl.${i}.t`,k.t)}</label><label class="f">Directions${inp(`${P}.ixl.${i}.d`,k.d)}</label>
       <button class="btn ghost sm" data-act="delIxl" data-i="${i}">Remove</button></div>`).join("")}
     ${U.third==="race"?"":`<div class="adds"><button class="btn ghost sm" data-act="addIxl">Add IXL skill</button></div>`}
-    <label class="f" style="margin-top:.75rem">Standards<small> one per line</small><textarea data-p="${P}.standards" data-lines="1">${esc((D.standards||[]).join("\n"))}</textarea></label>
-    <label class="f" style="margin-top:.5rem">RACE prompt<small>${U.third==="race"?"":" leave blank to skip RACE today"}</small>${ta(`${P}.race`,D.race)}</label>
+    <label class="f" style="margin-top:.75rem">RACE prompt<small>${U.third==="race"?"":" leave blank to skip RACE today"}</small>${ta(`${P}.race`,D.race)}</label>
+  </section>
+  <div class="nextbar"><button class="btn ghost" data-act="step" data-i="1">← Standards</button><button class="btn go big" data-act="step" data-i="3">Next: Preview and share →</button></div>`;
+}
+function sharePanel(){
+  const iss=issues(),days=U.days.length;
+  return `<section class="panel">
+    <h2>1. Check the unit</h2>
+    ${iss.length?`<div class="issues"><b>Fix before sharing:</b><ul>${iss.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div><button class="btn ghost sm" data-act="step" data-i="2">Go fix these</button>`
+      :`<p class="ok">✅ Ready to share. Every question has an answer and a skill.</p>`}
+    <div class="acts"><button class="btn" data-act="preview">Preview as a student</button></div>
+    <p class="note">In the preview, try a few questions and tap "Turn in my work" to see what students send you.</p>
+  </section>
+  <section class="panel">
+    <h2>2. Share it with students</h2>
+    <div class="acts"><button class="btn go big" data-act="download">Download student portal</button><button class="btn ghost" data-act="saveUnit">Save unit file</button></div>
+    <ol class="steplist">
+      <li><b>Upload the portal to Canvas.</b> Put the downloaded .html file in a Canvas module, or in the <code>portals</code> folder of this site.</li>
+      <li><b>Make one Canvas assignment per WIN day</b> (${days} in this unit), with <b>Text Entry</b> as the submission type. Name them "WIN Day 1," "WIN Day 2," and so on.</li>
+      <li><b>Students work, then tap "Turn in my work."</b> The portal copies their results. They paste them into that day's assignment and submit.</li>
+    </ol>
+    <p class="note">Save the unit file so you or a colleague can open and edit this unit later.</p>
+  </section>
+  <section class="panel">
+    <h2>3. After class: see the data</h2>
+    <ol class="steplist">
+      <li><b>Quick look:</b> each turn-in starts with a readable summary (score by standard, confidence), so you can read it right in SpeedGrader.</li>
+      <li><b>Full picture:</b> in the Canvas assignment, choose <b>Download Submissions</b>, then drop the zip on the <a href="dashboard.html">dashboard</a>. You get groups for tomorrow, skill mastery by standard, and misconceptions.</li>
+    </ol>
+    <div class="acts"><a class="btn" href="dashboard.html" style="text-decoration:none">Open the dashboard</a></div>
   </section>`;
 }
 function qCard(q,i,P){
@@ -1766,7 +1975,10 @@ function estLive(q){
 
 /* ---- events ---- */
 $("#app").addEventListener("input",e=>{
-  const t=e.target,p=t.dataset.p;if(!p||t.tagName==="SELECT")return;
+  const t=e.target,p=t.dataset.p;
+  if(t.id==="gq"){G.q=t.value;filterStd();return}
+  if(t.dataset.g==="title"){G.title=t.value;return}
+  if(!p||t.tagName==="SELECT")return;
   if(p.endsWith(".passage.title")||p.endsWith(".passage.text")){const D=U.days[cur];D.passage=D.passage||{title:"",text:""};delete D._sent}
   let v=t.value;if(t.dataset.lines)v=v.split("\n").map(x=>x.trim()).filter(Boolean);if(t.type==="number")v=+v;
   setPath(p,v);save();
@@ -1775,8 +1987,8 @@ $("#app").addEventListener("input",e=>{
 $("#app").addEventListener("change",e=>{
   const t=e.target;
   if(t.dataset.tool){U.tools[t.dataset.tool]=t.checked;save();return}
-  if(t.dataset.gstd){const c=t.dataset.gstd;G.codes=t.checked?[...G.codes,c]:G.codes.filter(x=>x!==c);return}
-  if(t.dataset.g){G[t.dataset.g]=t.type==="number"?+t.value:t.value;if(t.dataset.g==="subject"){G.codes=[];render()}return}
+  if(t.dataset.gstd){const c=t.dataset.gstd;G.codes=t.checked?[...G.codes,c]:G.codes.filter(x=>x!==c);filterStd();return}
+  if(t.dataset.g){G[t.dataset.g]=t.type==="number"?+t.value:t.value;saveG();return}
   if(t.dataset.act==="correct"){const q=U.days[cur].ind[+t.dataset.i];q.options.forEach((o,k)=>{o.correct=k===+t.dataset.k;if(o.correct)delete o.mis});save();render();return}
   if(t.tagName==="SELECT"&&t.dataset.p){setPath(t.dataset.p,t.value);save();if(t.dataset.re)render()}
 });
@@ -1802,54 +2014,88 @@ document.addEventListener("click",async e=>{
     addS:()=>D.sg.push({tag:"listen",title:"",text:""}),
     delS:()=>D.sg.splice(i,1),upS:()=>mv(D.sg,i,-1),downS:()=>mv(D.sg,i,1),
     addIxl:()=>D.ixl.push({t:"",d:""}),delIxl:()=>D.ixl.splice(i,1),
+    step:()=>{step=i;scrollTo(0,0)},
+    gset:()=>{if(G[b.dataset.k]!==b.dataset.v){G[b.dataset.k]=b.dataset.v;G.codes=[]}saveG()},
+    gall:()=>{const cs=stdList(G.grade,G.subject).map(x=>x[0]).filter(c=>domainOf(c)===b.dataset.d);const all=cs.every(c=>G.codes.includes(c));G.codes=all?G.codes.filter(c=>!cs.includes(c)):[...new Set([...G.codes,...cs])]},
   };
-  if(acts[a]){acts[a]();save();render();return}
-  if(a==="gen"){if(!G.codes.length){say("Check at least one standard.",true);return}
-    if(!confirm("Replace what's in the builder with a new generated unit? Save your current unit file first if you want to keep it."))return;
-    const order=STD[G.subject].map(x=>x[0]).filter(c=>G.codes.includes(c));
-    U=generateUnit({subject:G.subject,codes:order,days:G.days,perDay:G.per,level:G.level,seed:Date.now(),title:G.title||""});cur=0;save();render();showIssues(issues());
-    say(`Generated ${G.days} day${G.days===1?"":"s"}. Preview it, then edit anything you want.`);return}
+  if(acts[a]){acts[a]();save();render();if(a==="step")showIssues([]);return}
+  if(a==="gen"){if(!G.codes.length){say("Check at least one standard first.",true);return}
+    if(U.days.some(D=>D.ind.length)&&!confirm("Replace the current unit with a new generated unit? Save your current unit file first if you want to keep it."))return;
+    U=generateUnit({grade:G.grade,subject:G.subject,codes:chosen(),days:G.days,perDay:G.per,level:G.level,seed:Date.now(),title:G.title||""});cur=0;step=2;save();render();showIssues(issues());scrollTo(0,0);
+    say(`Generated ${G.days} day${G.days===1?"":"s"} for grade ${G.grade}. Look it over, edit anything, then go to Preview and share.`);return}
   if(a==="genPrompt"){if(!G.codes.length){say("Check at least one standard.",true);return}
-    const txt=aiPrompt(G.subject,STD[G.subject].map(x=>x[0]).filter(c=>G.codes.includes(c)),G.days,G.per);
+    const txt=aiPrompt(G.subject,chosen(),G.days,G.per,G.grade);
     try{await navigator.clipboard.writeText(txt);say("Prompt copied. Paste it into Copilot or another AI tool, then paste its answer below.")}catch(err){$("#aiIn").value=txt;say("Copy didn't work, so the prompt is in the box below. Select it and copy.",true)}return}
-  if(a==="genImport"){try{if(!G.codes.length)throw new Error("Check the standards you used in the prompt first.");const r=importAI($("#aiIn").value,G.subject,STD[G.subject].map(x=>x[0]).filter(c=>G.codes.includes(c)));
+  if(a==="genImport"){try{if(!G.codes.length)throw new Error("Check the standards you used in the prompt first.");const r=importAI($("#aiIn").value,G.subject,chosen());
       if(!confirm("Replace what's in the builder with the AI draft?"))return;
-      U={...blankUnit(),id:newId(G.title||"ai-unit"),title:G.title||"AI draft",subject:G.subject,third:G.subject==="ela"?"race":"ixl",skills:r.skills,days:r.days};cur=0;save();render();showIssues(issues());say("AI draft imported. Check every answer before students use it.")}
+      U={...blankUnit(),id:newId(G.title||"ai-unit"),title:G.title||"AI draft",grade:G.grade,subject:G.subject,third:G.subject==="ela"?"race":"ixl",skills:r.skills,days:r.days};cur=0;step=2;save();render();showIssues(issues());say("AI draft imported. Check every answer before students use it.")}
     catch(err){say(err.message,true)}return}
-  if(a==="elaExample"){if(confirm("Replace what's here with an ELA example unit?")){U=generateUnit({subject:"ela",codes:["6.RC.1","6.RC.2","6.RC.8","6.RC.13","6.W.7"],days:3,perDay:6,level:1,seed:42,title:"ELA WIN: Evidence and theme"});cur=0;save();render();showIssues([]);say("ELA example loaded.")}return}
+  if(a==="elaExample"){if(confirm("Replace what's here with an ELA example unit?")){U=generateUnit({grade:"6",subject:"ela",codes:["6.RC.1","6.RC.2","6.RC.8","6.RC.13","6.W.7"],days:3,perDay:6,level:1,seed:42,title:"ELA WIN: Evidence and theme"});cur=0;step=2;save();render();showIssues([]);say("ELA example loaded.")}return}
+  if(a==="g5Example"){if(confirm("Replace what's here with a grade 5 math example unit?")){U=generateUnit({grade:"5",subject:"math",codes:["5.CA.3","5.CA.4","5.NS.1"],days:3,perDay:6,level:1,seed:5,title:"Grade 5 WIN: Fraction operations"});cur=0;step=2;save();render();showIssues([]);say("Grade 5 math example loaded.")}return}
   if(a==="preview"){$("#pv").srcdoc=buildPortal();$("#modal").hidden=false;return}
   if(a==="closePreview"){$("#modal").hidden=true;$("#pv").srcdoc="";return}
   if(a==="download"){const iss=issues();showIssues(iss);if(iss.length&&!confirm(`${iss.length} thing${iss.length===1?"":"s"} to fix (listed above). Download anyway?`))return;
     const r=await saveFile(`win-${slug(U.title)}.html`,buildPortal());say(r==="saved"?"Student portal downloaded. Upload it to Canvas.":r==="declined"?"Download canceled.":"Download didn't work here. Open this builder from the downloaded file and try again.",r!=="saved"&&r!=="declined");return}
   if(a==="saveUnit"){const r=await saveFile(`${slug(U.title)}-unit.json`,JSON.stringify(U,null,1));say(r==="saved"?"Unit file saved. Share it with colleagues or open it later.":r==="declined"?"Save canceled.":"Saving didn't work here.",r!=="saved"&&r!=="declined");return}
-  if(a==="example"){if(confirm("Replace what's here with the example unit? Save your unit file first if you want to keep it.")){U=JSON.parse(JSON.stringify(EXAMPLE));cur=0;save();render();showIssues([]);say("Example unit loaded.")}return}
-  if(a==="newUnit"){if(confirm("Start a new unit? Save your unit file first if you want to keep this one.")){U=blankUnit();cur=0;save();render();showIssues([]);say("New unit started.")}return}
+  if(a==="example"){if(confirm("Replace what's here with the example unit? Save your unit file first if you want to keep it.")){U=JSON.parse(JSON.stringify(EXAMPLE));cur=0;step=2;save();render();showIssues([]);say("Example unit loaded.")}return}
+  if(a==="newUnit"){if(confirm("Start a new unit? Save your unit file first if you want to keep this one.")){U=blankUnit();U.grade=G.grade;U.subject=G.subject;U.third=G.subject==="ela"?"race":"ixl";cur=0;step=2;save();render();showIssues([]);say("New unit started.")}return}
 });
 $("#openUnit").onchange=async e=>{const f=e.target.files[0];if(!f)return;
-  try{const o=JSON.parse(await f.text());if(!o.id||!Array.isArray(o.days))throw 0;U=o;cur=0;save();render();showIssues([]);say(`Opened "${o.title||"unit"}".`)}
+  try{const o=JSON.parse(await f.text());if(!o.id||!Array.isArray(o.days))throw 0;U=o;cur=0;step=2;save();render();showIssues([]);say(`Opened "${o.title||"unit"}".`)}
   catch(err){say("That file isn't a WIN unit file.",true)}e.target.value=""};
 $("#modal").addEventListener("click",e=>{if(e.target.id==="modal"){$("#modal").hidden=true;$("#pv").srcdoc=""}});
 
-/* ---- generator panel ---- */
-const G={subject:"math",codes:[],days:3,per:6,level:1,title:"",open:false};
-document.addEventListener("toggle",e=>{if(e.target.id==="genD")G.open=e.target.open},true);
-function genPanel(){const list=STD[G.subject];
-  return `<section class="panel gen"><details id="genD" ${G.open||(U.days.length===1&&!U.days[0].ind.length)?"open":""}><summary><h2 style="display:inline">Build from standards</h2> <span class="note">Pick the standards students need to relearn. The builder writes the questions, lessons, and RACE prompts.</span></summary>
-    <div class="grid" style="margin-top:.75rem">
-      <label class="f">Subject<select data-g="subject"><option value="math" ${G.subject==="math"?"selected":""}>Math</option><option value="ela" ${G.subject==="ela"?"selected":""}>ELA</option></select></label>
-      <label class="f">Unit title<input type="text" data-g="title" value="${esc(G.title)}" placeholder="Ratios reteach"></label>
+/* ---- step 1: choose standards ---- */
+const G=Object.assign({grade:GRADES.includes("6")?"6":GRADES[0],subject:"math",codes:[],days:3,per:6,level:1,title:"",q:""},store.get("winbuilder:gen",{}));
+const saveG=()=>store.set("winbuilder:gen",{grade:G.grade,subject:G.subject,days:G.days,per:G.per,level:G.level});
+(()=>{const q=new URLSearchParams(location.search);if(GRADES.includes(q.get("grade"))){G.grade=q.get("grade");G.codes=[]}if(["math","ela"].includes(q.get("subject"))){G.subject=q.get("subject");G.codes=[]}if(q.get("grade")||q.get("subject"))step=1})();
+const chosen=()=>stdList(G.grade,G.subject).map(x=>x[0]).filter(c=>G.codes.includes(c));
+function genPanel(){const list=stdList(G.grade,G.subject);
+  const groups=[];list.forEach(x=>{const d=domainOf(x[0]);let g=groups.find(y=>y.d===d);if(!g)groups.push(g={d,items:[]});g.items.push(x)});
+  const rv=(WS.review||{})[G.grade];
+  return `<section class="panel gen">
+    <h2>What do students need?</h2>
+    <p class="sub">Choose the grade and subject, then check the standards students need to relearn. The builder writes the questions, the small group lesson, and the RACE prompts.</p>
+    <div class="pickrow">
+      <div><span>Grade</span><div class="seg" role="group" aria-label="Grade">${GRADES.map(g=>`<button data-act="gset" data-k="grade" data-v="${g}" aria-pressed="${G.grade===g}">Grade ${g}</button>`).join("")}</div></div>
+      <div><span>Subject</span><div class="seg" role="group" aria-label="Subject"><button data-act="gset" data-k="subject" data-v="math" aria-pressed="${G.subject==="math"}">Math</button><button data-act="gset" data-k="subject" data-v="ela" aria-pressed="${G.subject==="ela"}">ELA</button></div></div>
+      <label class="f" style="flex:1;min-width:200px">Find a standard<input type="text" id="gq" value="${esc(G.q)}" placeholder="Try: fractions, theme, 5.CA.3"></label>
+    </div>
+    ${rv?`<p class="review">${esc(rv)} Edit the wording in <code>standards.js</code>.</p>`:""}
+    <p class="note" style="margin:0 0 .5rem">${esc(WS.framework)}, grade ${G.grade}.${list.some(x=>x[2])?" <span class='ess'>E</span> marks an essential standard.":""}${G.subject==="ela"?" Writing and discussion standards become RACE prompts, since they can't be auto-scored.":""} <span class="count" id="gcount"></span></p>
+    <div class="stdwrap">${groups.map(g=>`<fieldset class="dom" data-dom="${esc(g.d)}"><legend>${esc(DOMAINS[g.d.split(".")[1]]||g.d)} <span class="note">(${esc(g.d)})</span><button type="button" data-act="gall" data-d="${esc(g.d)}">Select all</button></legend>
+      <div class="domlist">${g.items.map(([c,t,e,x])=>`<label class="std" data-s="${esc((c+" "+t+" "+(x.s||"")).toLowerCase())}"><input type="checkbox" data-gstd="${c}" ${G.codes.includes(c)?"checked":""}><span><b>${c}</b>${e?' <span class="ess">E</span>':""} ${esc(x.s||"")}<br><span class="note">${esc(t)}</span></span></label>`).join("")}</div></fieldset>`).join("")||"<p class='note'>No standards found. Check that standards.js is next to this page.</p>"}</div>
+  </section>
+  <section class="panel">
+    <h2>Unit options</h2>
+    <div class="grid">
+      <label class="f">Unit title<small> optional</small><input type="text" data-g="title" value="${esc(G.title)}" placeholder="Fractions reteach"></label>
       <label class="f">Days<input type="number" data-g="days" min="1" max="10" value="${G.days}"></label>
       <label class="f">Questions per day<input type="number" data-g="per" min="3" max="12" value="${G.per}"></label>
       ${G.subject==="math"?`<label class="f">Number level<select data-g="level"><option value="1" ${G.level==1?"selected":""}>Foundational (friendlier numbers)</option><option value="2" ${G.level==2?"selected":""}>On grade level</option></select></label>`:""}
     </div>
-    <p class="note" style="margin:.75rem 0 .3rem">Indiana Academic Standards (2023), grade 6. E marks an essential standard.${G.subject==="ela"?" Writing and discussion standards become RACE prompts, since they can't be auto-scored.":""}</p>
-    <div class="stdlist">${list.map(([c,t,e])=>`<label class="std"><input type="checkbox" data-gstd="${c}" ${G.codes.includes(c)?"checked":""}><b>${c}</b>${e?' <span class="ess">E</span>':""} ${esc(t)}</label>`).join("")}</div>
-    <div class="adds" style="margin-top:.75rem"><button class="btn go" data-act="gen">Generate unit</button><button class="btn ghost" data-act="genPrompt">Copy prompt for Copilot</button><button class="btn ghost" data-act="elaExample">Load ELA example</button></div>
-    <details style="margin-top:.6rem"><summary class="note">Use Copilot or another AI tool for new passages or more variety</summary>
+    <div class="nextbar"><span class="note">Generating replaces the current unit. Save its unit file first if you want to keep it.</span><button class="btn go big" data-act="gen">Generate unit →</button></div>
+    <details style="margin-top:.75rem"><summary class="note">Use Copilot or another AI tool for new passages or more variety</summary>
       <p class="note">1. Check standards and tap "Copy prompt for Copilot." 2. Paste it into Copilot. 3. Paste Copilot's whole answer here and import. Always check the answers before students see them.</p>
-      <textarea id="aiIn" placeholder="Paste the AI's JSON answer here"></textarea>
+      <div class="adds"><button class="btn ghost sm" data-act="genPrompt">Copy prompt for Copilot</button></div>
+      <textarea id="aiIn" placeholder="Paste the AI's JSON answer here" style="margin-top:.5rem"></textarea>
       <div class="adds"><button class="btn ghost sm" data-act="genImport">Import AI answer</button></div></details>
-  </details></section>`}
+  </section>
+  <section class="panel">
+    <h2>Or start another way</h2>
+    <div class="acts">
+      <label class="btn ghost" for="openUnit" style="cursor:pointer">Open a unit file</label>
+      <button class="btn ghost" data-act="newUnit">Start a blank unit</button>
+      <button class="btn ghost" data-act="example">Example: Grade 6 math</button>
+      <button class="btn ghost" data-act="elaExample">Example: Grade 6 ELA</button>
+      <button class="btn ghost" data-act="g5Example">Example: Grade 5 math</button>
+    </div>
+    ${U.days.some(D=>D.ind.length)?`<p class="note">Or keep working on "${esc(U.title||"Untitled unit")}": <button class="btn ghost sm" data-act="step" data-i="2">Edit current unit →</button></p>`:""}
+  </section>`}
+function filterStd(){const q=G.q.trim().toLowerCase();
+  document.querySelectorAll("label.std").forEach(l=>l.classList.toggle("hide",!!q&&!l.dataset.s.includes(q)));
+  document.querySelectorAll("fieldset.dom").forEach(f=>f.classList.toggle("hide",!f.querySelector("label.std:not(.hide)")));
+  const n=chosen().length,c=$("#gcount");if(c)c.textContent=n?`${n} selected`:""}
 
 /* ---- checks, build, save ---- */
 function issues(){
@@ -1867,7 +2113,7 @@ function issues(){
   if(U.skills.some(s=>!s.name.trim()))out.push("Name every skill or remove the blank ones.");
   return out;
 }
-function showIssues(list){let el=$("#issues");if(!el){el=document.createElement("div");el.id="issues";$("#app").before(el)}
+function showIssues(list){if(step===3)list=[];let el=$("#issues");if(!el){el=document.createElement("div");el.id="issues";$("#app").before(el)}
   el.className=list.length?"issues":"";el.innerHTML=list.length?`<b>Fix before sharing:</b><ul>${list.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}
 function buildPortal(){return TPL.replace("/*__CONFIG__*/null",JSON.stringify(U).replace(/</g,"\\u003c"))}
 async function saveFile(name,data){
