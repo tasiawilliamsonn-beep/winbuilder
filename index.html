@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>WIN Portal</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧭</text></svg>">
+<title>LSIS W.I.N Builder</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⭐</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
-  --bg:#F3F7FB;--ink:#1B2B40;--soft:#51637A;--card:#FFFFFF;--line:#D5DFEA;--ind:#2A9D8F;--ind-bg:#E3F4F1;--sg:#5B5BD6;--sg-bg:#ECECFB;--ixl:#E0A31B;--ixl-bg:#FDF3DC;--race:#D1495B}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#121A26;--ink:#EEF3F9;--soft:#A9B7C8;--card:#1B2636;--line:#2E3D52;--ind-bg:#16332F;--sg-bg:#23244A;--ixl-bg:#3A2F14}}
-:root[data-theme="dark"]{--bg:#121A26;--ink:#EEF3F9;--soft:#A9B7C8;--card:#1B2636;--line:#2E3D52;--ind-bg:#16332F;--sg-bg:#23244A;--ixl-bg:#3A2F14}
+  --bg:#F7F5F5;--ink:#1A1A1A;--soft:#5C5555;--card:#FFFFFF;--line:#E3DADA;--ind:#C8102E;--ind-bg:#FBE9EC;--sg:#2B2B2B;--sg-bg:#EFEDED;--ixl:#8A8484;--ixl-bg:#F2F0F0;--race:#C8102E}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#141111;--ink:#F5F1F1;--soft:#BFB5B5;--card:#1F1A1A;--line:#3A3131;--ind-bg:#3A1119;--sg:#EDE6E6;--sg-bg:#2B2727;--ixl-bg:#2E2B2B}}
+:root[data-theme="dark"]{--bg:#141111;--ink:#F5F1F1;--soft:#BFB5B5;--card:#1F1A1A;--line:#3A3131;--ind-bg:#3A1119;--sg:#EDE6E6;--sg-bg:#2B2727;--ixl-bg:#2E2B2B}
 *,*::before,*::after{box-sizing:inherit}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",Verdana,system-ui,sans-serif;font-size:1.05rem;line-height:1.55}
 h1,h2,h3{font-family:"Fredoka","Trebuchet MS",system-ui,sans-serif;line-height:1.15}
@@ -23,6 +23,7 @@ a{color:inherit}
 .site{background:var(--card);border-bottom:2px solid var(--line)}
 .site-in{max-width:1080px;margin:0 auto;padding:.55rem 1rem;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap}
 .brand{font-family:"Fredoka","Trebuchet MS",system-ui,sans-serif;font-weight:700;font-size:1.2rem;text-decoration:none;color:var(--ink);display:inline-flex;gap:.4rem;align-items:center}
+.brand .logo{height:34px;width:auto;display:block}.brand .mark{color:#C8102E;font-size:1.3rem}
 .site nav{display:flex;gap:.25rem;margin-left:auto;flex-wrap:wrap}
 .site nav a{color:var(--soft);text-decoration:none;font-weight:700;padding:.4rem .85rem;border-radius:999px}
 .site nav a:hover{background:var(--bg);color:var(--ink)}
@@ -65,17 +66,17 @@ a{color:inherit}
 </head>
 <body>
 <header class="site"><div class="site-in">
-  <a class="brand" href="index.html"><span aria-hidden="true">🧭</span> WIN Portal</a>
-  <nav aria-label="Main"><a href="index.html" aria-current="page">Home</a><a href="builder.html">Build</a><a href="dashboard.html">Dashboard</a></nav>
+  <a class="brand" href="index.html"><img class="logo" src="logo.png" alt="" onerror="this.nextElementSibling.hidden=false;this.remove()"><span class="mark" aria-hidden="true" hidden>★</span> LSIS W.I.N Builder</a>
+  <nav aria-label="Main"><a href="index.html" aria-current="page">Home</a><a href="builder.html">Build</a><a href="dashboard.html">Dashboard</a><a href="resources.html">Resources</a></nav>
 </div></header>
 <div class="wrap">
   <div class="pagehead">
-    <h1>WIN Portal</h1>
+    <h1>LSIS W.I.N Builder</h1>
     <p>Standards-based WIN rotations for grade 5 and grade 6 math and ELA, built on the Indiana Academic Standards. Build a unit, share it in Canvas or print it as a paper packet, and see who needs what the next day.</p>
   </div>
 
   <nav class="route" aria-label="How it works">
-    <a class="stop s1" href="builder.html"><span class="n">Step 1</span><b>🛠️ Build</b><span>Pick the standards students need. The builder writes practice, a small group lesson, and RACE prompts.</span><em>Open the builder →</em></a>
+    <a class="stop s1" href="builder.html"><span class="n">Step 1</span><b>🛠️ Build</b><span>Pick the standards students need. The builder writes practice at three levels, a small group lesson, and a 12-question end-of-unit assessment.</span><em>Open the builder →</em></a>
     <a class="stop s2" href="portals/estimating-fractions-math.html"><span class="n">Step 2</span><b>🧭 Share</b><span>Students work through Independent, Small group, and IXL or RACE rooms, then paste their turn-in into Canvas.</span><em>See a student portal →</em></a>
     <a class="stop s3" href="dashboard.html"><span class="n">Step 3</span><b>📊 See the data</b><span>Drop the Canvas download on the dashboard. Get tomorrow's groups, mastery by standard, and who's missing.</span><em>Open the dashboard →</em></a>
   </nav>
