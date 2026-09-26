@@ -57,7 +57,7 @@ The dashboard opens on **Results**: one simple view of the whole unit.
 
 ## Getting data to the teacher
 
-1. Each student's turn-in starts with a **readable summary** (problems finished, first-try score for each standard, confidence, what was tricky). You can read it right in SpeedGrader.
+1. Each student's turn-in starts with a **readable summary** for every day so far (problems finished, first-try score for each standard, written answers, confidence if they chose one). You can read it right in SpeedGrader.
 2. For the full picture, open the Canvas assignment, choose **Download Submissions**, and **drop the zip anywhere on the dashboard**. You can also paste turn-ins, or press Ctrl+V anywhere on the dashboard page.
 3. The dashboard opens on **Next steps**: who needs reteaching, who is on track, and who is ready to extend, a reteach focus, and (after you add a roster) who hasn't turned in. **Copy groups** puts the groups on your clipboard for an email or your plans.
 4. Filter by **grade**, **class**, **unit**, and **day**. Export a CSV with one row per turn-in, or a **standards CSV** with one row per student and a column for each standard.
@@ -86,11 +86,12 @@ Free GitHub Pages sites must come from a public repository. That's fine here: th
 
 ## Using it with students
 
-1. Open the builder, choose the grade, subject, and standards, and tap **Generate unit**.
+1. Open the builder, choose the grade, subject, standards, and your W.I.N. group, and tap **Generate unit**.
 2. Look it over in **Edit the unit**, then go to **Preview and share** and tap **Download student portal**.
 3. Upload that file to your Canvas course, or add it to the `portals` folder in the repository and link students to it.
-4. Create a text-entry Canvas assignment for each WIN day. Students tap **Turn in my work**, copy, and paste.
-5. After class, use Canvas **Download Submissions** and drop the zip on the dashboard.
+4. Make **one** text-entry Canvas assignment for the whole unit. Paste its link into **Canvas assignment link** in Preview and share, then download the portal again.
+5. After each W.I.N. day, students tap **Turn in my work**, then **Copy and open Canvas**, paste, and submit. Each turn-in includes all their days so far, so resubmitting the same assignment is fine. Only their name is required.
+6. After class, use Canvas **Download Submissions** and drop the zip on the dashboard. Download again any day; the dashboard skips work it already has.
 
 ## Using it without Canvas: the paper packet
 
