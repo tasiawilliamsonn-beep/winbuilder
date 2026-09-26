@@ -97,7 +97,7 @@ details.panel{border-bottom:2px solid var(--line);padding:1rem 1.1rem}
 .drop{display:flex;flex-direction:column;align-items:center;gap:.2rem;text-align:center;border:3px dashed var(--sg);background:var(--sg-bg);border-radius:14px;padding:1.25rem 1rem;margin-top:.9rem;cursor:pointer}
 .drop b{font-family:"Fredoka",sans-serif;font-size:1.2rem}
 .drop input{display:none}
-.dropcover{position:fixed;inset:0;z-index:20;background:rgba(91,91,214,.85);display:grid;place-items:center;color:#fff;font-family:"Fredoka",sans-serif;font-size:2rem;pointer-events:none}
+.dropcover{position:fixed;inset:0;z-index:20;background:rgba(200,16,46,.85);display:grid;place-items:center;color:#fff;font-family:"Fredoka",sans-serif;font-size:2rem;pointer-events:none}
 .dropcover[hidden]{display:none}
 .steplist{counter-reset:s;list-style:none;padding:0;margin:.4rem 0 0}
 .steplist li{counter-increment:s;position:relative;padding:.1rem 0 .55rem 2.3rem}
@@ -118,6 +118,19 @@ details.panel{border-bottom:2px solid var(--line);padding:1rem 1.1rem}
 @media (max-width:760px){.groups,.two{grid-template-columns:1fr}.bars div{grid-template-columns:110px 1fr 34px}.tabs{flex-wrap:nowrap;overflow-x:auto}.tabs button{white-space:nowrap}}
 
 @media print{.noprint{display:none}body{background:#fff}.panel,.stat{break-inside:avoid}}
+.st{display:inline-block;border-radius:999px;padding:.1rem .65rem;font-size:.85rem;font-weight:700;white-space:nowrap}
+.st.c0{background:var(--good-bg);color:var(--good)}.st.c1{background:var(--mid-bg);color:var(--mid)}.st.c2{background:var(--bad-bg);color:var(--bad)}.st.cn{color:var(--soft)}
+table.res{min-width:560px}table.res tr.cls td{border-top:2px solid var(--ink)}
+.summary{font-size:1.08rem;margin:0}.nexts{margin:0;padding-left:1.2rem}.nexts li{margin:.2rem 0}
+.chk{display:inline-flex;gap:.4rem;align-items:center;font-weight:700}.chk input{width:18px;height:18px}
+.fl input{border:2px solid var(--line);border-radius:10px;padding:.4rem .6rem;background:var(--bg);font-weight:400;max-width:100%}
+.paper{border-top:1px solid var(--line);margin-top:.9rem;padding-top:.75rem}.paper h3{margin:.2rem 0 .3rem}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.6rem}
+table.pt{min-width:520px}table.pt input{border:2px solid var(--line);border-radius:8px;padding:.3rem .45rem;background:var(--bg);width:100%}
+table.pt input[type=number]{width:4.2rem;text-align:center}table.pt .pOf{width:3.6rem;margin-top:.2rem}
+#repBox{position:fixed;left:-10000px;top:0}
+@media print{body.printrep>*:not(#repBox){display:none!important}body.printrep #repBox{position:static}}
+@page{size:letter;margin:.5in}
 </style>
 <script src="logo.js"></script>
 </head>
@@ -127,10 +140,10 @@ details.panel{border-bottom:2px solid var(--line);padding:1rem 1.1rem}
   <nav aria-label="Main"><a href="index.html">Home</a><a href="builder.html">Build</a><a href="dashboard.html" aria-current="page">Dashboard</a><a href="resources.html">Resources</a></nav>
 </div></header>
 <div class="wrap">
-  <div class="pagehead"><h1>WIN Data Dashboard</h1><p>See who needs what for the next WIN block. Turn-ins stay on this device and are never uploaded.</p></div>
+  <div class="pagehead"><h1>W.I.N. Results</h1><p>See how your W.I.N. group is doing at a glance, plan the next block, and download a one-page report for your administrator. Canvas turn-ins and paper scores both work, and everything stays on this device.</p></div>
 
   <details class="panel noprint" id="import">
-    <summary><h2>Add turn-ins</h2> <span class="note" id="count"></span></summary>
+    <summary><h2>Add turn-ins or paper scores</h2> <span class="note" id="count"></span></summary>
     <label class="drop" id="drop" for="files"><span aria-hidden="true" style="font-size:2rem">📦</span><b>Drop the Canvas zip here</b><span class="note">or click to choose files. Zip, HTML, text, and CSV files all work. Duplicates are skipped.</span><input type="file" id="files" multiple accept=".zip,.html,.htm,.txt,.csv"></label>
     <div class="two" style="margin-top:.9rem">
       <div><h3>From Canvas, in 3 steps</h3><ol class="steplist">
@@ -141,6 +154,7 @@ details.panel{border-bottom:2px solid var(--line);padding:1rem 1.1rem}
         <textarea id="paste" placeholder="Paste turn-ins here. Anything with a WIN205: code gets read."></textarea>
         <div class="row"><button class="btn" id="add">Add pasted turn-ins</button></div></div>
     </div>
+    <div class="paper" id="paperBox"></div>
     <div class="row" style="border-top:1px solid var(--line);padding-top:.75rem;margin-top:.9rem">
       <button class="btn ghost sm" id="sample">Load sample class</button>
       <button class="btn ghost sm" id="exportCsv">Export CSV (one row per turn-in)</button>
@@ -152,8 +166,10 @@ details.panel{border-bottom:2px solid var(--line);padding:1rem 1.1rem}
   <div id="filters" class="noprint"></div>
   <main id="out"></main>
 </div>
+<div id="repBox" aria-hidden="true"></div>
 <div class="dropcover" id="dropcover" hidden><div>📦 Drop to add turn-ins</div></div>
 
+<script src="standards.js"></script>
 <script>
 const CONF=["","I'm lost","I need more help","I almost got it","I can teach it"];
 const HELPED=["Number lines","Hints","Small group","Scratch pad","IXL"];
@@ -203,10 +219,176 @@ const level=v=>v===null?["–","cn"]:v>=80?["Mastered","c0"]:v>=60?["Developing"
 const GROUP={sg:["Below: reteach","Under 60% first-try accuracy, under 75% finished, or confidence 1 to 2. Start them with you in small group; next cycle, the below-grade-level W.I.N. group."],ind:["At: on track","60 to 84% first-try accuracy. Keep practicing at grade level."],ixl:["Above: ready to extend","85%+ first-try accuracy, all finished, confidence 3 to 4. Next cycle, the above-grade-level W.I.N. group."]};
 const cellPct=v=>{const[t,c]=level(v);return `<span class="cell ${c}" style="width:auto;min-width:48px;padding:0 .4rem" title="${t}">${v===null?"–":v+"%"}</span>`};
 
+/* ---------- Results: the whole unit at a glance, for teachers and administrators ---------- */
+const STDNAME={};(()=>{const W=window.WIN_STANDARDS;if(!W)return;Object.values(W.grades||{}).forEach(g=>["math","ela"].forEach(sb=>(g[sb]||[]).forEach(x=>{STDNAME[x.c]=x.s})))})();
+const ASMT=99;/* paper scores for the end-of-unit assessment are stored as day 99 */
+const dayLabel=d=>d>=ASMT?"Assessment":"Day "+d;
+const bare=c=>String(c||"").replace(/^IN\s*/,"");
+const status=v=>v===null||v===undefined?["–","cn"]:v>=80?["Mastered","c0"]:v>=60?["Developing","c1"]:["Needs reteach","c2"];
+const LVLNAME={below:"Below grade level",at:"At grade level",above:"Above grade level"};
+const fmtDate=t=>t?new Date(t).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"}):"";
+function accOfSubs(ss){const it=ss.flatMap(s=>s.items.filter(x=>x.att));return pct(it.filter(x=>x.ft).length,it.length)}
+function stdAccOf(ss,code){const sk=new Set();ss.forEach(s=>(s.skills||[]).forEach(k=>{if(k.std===code)sk.add(k.n)}));const it=ss.flatMap(s=>s.items.filter(x=>x.att&&x.sk.some(k=>sk.has(k))));return pct(it.filter(x=>x.ft).length,it.length)}
+function unitResults(inSet){
+  const ds=[...new Set(inSet.map(s=>s.day))].sort((a,b)=>a-b),pd=ds.filter(d=>d<ASMT),hasA=ds.some(d=>d>=ASMT);
+  const practice=inSet.filter(s=>s.day<ASMT),asmt=inSet.filter(s=>s.day>=ASMT);
+  const names=[...new Set(inSet.map(s=>s.name))].sort((a,b)=>a.localeCompare(b));
+  const base=inSet[0]||{},room=roomOf(base),rl=roster[room]||[];
+  const stu=names.map(n=>{const mine=inSet.filter(s=>s.name===n),one=d=>{const s=mine.find(x=>x.day===d);return s?accOfSubs([s]):null};
+    const pv=pd.map(one).filter(v=>v!==null),first=pv.length?pv[0]:null,last=pv.length?pv[pv.length-1]:null,a=hasA?one(ds[ds.length-1]):null;
+    return{name:n,byDay:ds.map(one),first,last,a,now:a!==null?a:last,change:pv.length>1?last-first:null,days:mine.filter(s=>s.day<ASMT).length}});
+  const codes=[...new Set(inSet.flatMap(s=>(s.skills||[]).map(k=>k.std).filter(Boolean)))].sort();
+  const stds=codes.map(c=>{const dc=pd.filter(d=>stdAccOf(practice.filter(s=>s.day===d),c)!==null);
+    const first=dc.length?stdAccOf(practice.filter(s=>s.day===dc[0]),c):null,last=dc.length?stdAccOf(practice.filter(s=>s.day===dc[dc.length-1]),c):null,a=hasA?stdAccOf(asmt,c):null;
+    /* a student has mastered a standard at 80%+ on the assessment, or on the practice when there's no assessment score */
+    const per=names.map(n=>{const src=hasA&&asmt.some(s=>s.name===n)?asmt.filter(s=>s.name===n):practice.filter(s=>s.name===n);return stdAccOf(src,c)}).filter(v=>v!==null);
+    return{code:c,name:STDNAME[bare(c)]||"",first,last,a,now:a!==null?a:last,change:dc.length>1&&first!==null&&last!==null?last-first:null,mastered:per.filter(v=>v>=80).length,of:per.length}});
+  const classDay=pd.map(d=>accOfSubs(practice.filter(s=>s.day===d)));
+  const withNow=stu.filter(x=>x.now!==null),mastered=withNow.filter(x=>x.now>=80).length;
+  const expected=(rl.length||names.length)*pd.length,partic=expected?Math.min(100,Math.round(practice.length/expected*100)):null;
+  const cf=classDay.find(v=>v!==null),cl=[...classDay].reverse().find(v=>v!==null);
+  const growth=classDay.filter(v=>v!==null).length>1?cl-cf:null;
+  const ts=inSet.map(s=>s.t).filter(Boolean);
+  return{ds,pd,hasA,names,stu,stds,classDay,avg:accOfSubs(practice),aAvg:hasA?accOfSubs(asmt):null,mastered,withNow:withNow.length,partic,turned:practice.length,expected,
+    growth,firstDay:pd[classDay.indexOf(cf)],lastDay:pd[classDay.length-1-[...classDay].reverse().indexOf(cl)],cf,cl,
+    grade:gradeOf(base),lvl:(inSet.find(s=>s.lvl)||{}).lvl||"",room,rosterN:rl.length,title:base.setTitle||"",t0:ts.length?Math.min(...ts):0,t1:ts.length?Math.max(...ts):0,
+    paper:inSet.filter(s=>s.src==="paper").length,online:inSet.filter(s=>s.src!=="paper").length}}
+const plural=(n,w)=>`${n} ${w}${n===1?"":"s"}`;
+const stdLabel=x=>`${bare(x.code)}${x.name?` (${x.name.toLowerCase()})`:""}`;
+function summaryOf(R){const out=[];
+  out.push(`${plural(R.names.length,"student")} took part${R.pd.length?` over ${plural(R.pd.length,"W.I.N. day")}`:""}${R.partic!==null&&R.pd.length?`, with ${R.partic}% of practice sessions turned in`:""}.`);
+  if(R.growth!==null)out.push(`Class first-try accuracy went from ${R.cf}% on ${dayLabel(R.firstDay)} to ${R.cl}% on ${dayLabel(R.lastDay)} (${R.growth>=0?"+":""}${R.growth} points).`);
+  else if(R.avg!==null)out.push(`Average first-try accuracy on practice was ${R.avg}%.`);
+  if(R.aAvg!==null)out.push(`On the end-of-unit assessment, the class averaged ${R.aAvg}%.`);
+  if(R.withNow)out.push(`${R.mastered} of ${R.withNow} students (${pct(R.mastered,R.withNow)}%) reached mastery, 80% or higher${R.hasA?" on the assessment":" on their most recent day"}.`);
+  const strong=R.stds.filter(x=>x.now!==null&&x.now>=80),weak=R.stds.filter(x=>x.now!==null&&x.now<60);
+  if(strong.length)out.push(`Mastered as a class: ${strong.map(stdLabel).join(", ")}.`);
+  if(weak.length)out.push(`Still needs reteaching: ${weak.map(stdLabel).join(", ")}.`);
+  return out}
+function nextStepsOf(R,names){const out=[],re=R.stu.filter(x=>x.now!==null&&x.now<60),up=R.stu.filter(x=>x.now!==null&&x.now>=85);
+  const dev=R.stds.filter(x=>x.now!==null&&x.now<80);
+  if(dev.length)out.push(`Reteach ${dev.map(x=>bare(x.code)).join(", ")} in the next W.I.N. cycle.`);
+  if(re.length)out.push(`Keep ${plural(re.length,"student")} in a below-grade-level group${names?`: ${re.map(x=>x.name).join(", ")}`:""}.`);
+  if(up.length)out.push(`Consider moving ${plural(up.length,"student")} to an above-grade-level group${names?`: ${up.map(x=>x.name).join(", ")}`:""}.`);
+  if(R.partic!==null&&R.partic<90&&R.pd.length)out.push(`Follow up on missing work: ${R.partic}% of practice sessions were turned in.`);
+  if(!R.hasA)out.push("Give the 12-question end-of-unit assessment and enter the scores to confirm mastery.");
+  if(!out.length)out.push("Every standard is at mastery. Choose the next standards for W.I.N.");
+  return out}
+const tile=(v,label)=>`<div class="stat"><b>${v}</b><span>${label}</span></div>`;
+const chip=v=>{const[t,c]=status(v);return `<span class="st ${c}">${t}</span>`};
+function resultsHTML(R){
+  const meta=[R.grade?`Grade ${R.grade}`:"",R.room,LVLNAME[R.lvl]||"",R.t0?`${fmtDate(R.t0)}${R.t1&&fmtDate(R.t1)!==fmtDate(R.t0)?` to ${fmtDate(R.t1)}`:""}`:"",R.ds.map(dayLabel).join(", ")].filter(Boolean).map(esc).join(" · ");
+  const opt=store.get("win205report",{teacher:"",names:false});
+  return `<div class="dayhead"><div><h2>Results: ${esc(R.title||"Unit")}</h2><p class="note">${meta}</p></div>
+    <div class="acts noprint"><button class="btn" id="repPdf">Administrator report (PDF)</button><button class="btn ghost sm" id="repPrint">Print report</button></div></div>
+  <div class="stats">
+    ${tile(`${R.names.length}${R.rosterN?` of ${R.rosterN}`:""}`,"students served")}
+    ${tile(R.partic===null||!R.pd.length?"–":R.partic+"%","practice turned in")}
+    ${tile(R.avg===null?"–":R.avg+"%","average first-try accuracy")}
+    ${tile(R.withNow?`${R.mastered} of ${R.withNow}`:"–",`students at mastery (80%+)${R.hasA?", assessment":""}`)}
+    ${tile(R.growth===null?(R.aAvg===null?"–":R.aAvg+"%"):`${R.growth>=0?"+":""}${R.growth}`,R.growth===null?(R.aAvg===null?"growth (needs 2 days)":"assessment average"):"points of growth, first to last day")}
+  </div>
+  <section class="panel">
+    <h2>Summary</h2>
+    <p class="summary">${summaryOf(R).map(esc).join(" ")}</p>
+    <h3 style="margin:.9rem 0 .3rem">Next steps</h3><ul class="nexts">${nextStepsOf(R,true).map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+  </section>
+  <section class="panel">
+    <h2>Mastery by standard</h2>
+    <p class="sub">First-try accuracy on each Indiana standard. Mastered is 80% or higher.</p>
+    ${R.stds.length?`<div class="scroll"><table class="res"><thead><tr><th>Standard</th><th class="c">${esc(R.pd.length?dayLabel(R.pd[0]):"First day")}</th><th class="c">Latest day</th><th class="c">Change</th>${R.hasA?`<th class="c">Assessment</th>`:""}<th class="c">Students mastered</th><th>Status</th></tr></thead>
+      <tbody>${R.stds.map(x=>`<tr><td><b>${esc(bare(x.code))}</b>${x.name?`<br><span class="note">${esc(x.name)}</span>`:""}</td><td class="c">${x.first??"–"}${x.first!==null?"%":""}</td><td class="c">${x.last??"–"}${x.last!==null?"%":""}</td><td class="c">${x.change===null?"–":`<b style="color:${x.change>=0?"var(--good)":"var(--bad)"}">${x.change>0?"+":""}${x.change}</b>`}</td>${R.hasA?`<td class="c">${x.a??"–"}${x.a!==null?"%":""}</td>`:""}<td class="c">${x.of?`${x.mastered} of ${x.of}`:"–"}</td><td>${chip(x.now)}</td></tr>`).join("")}</tbody></table></div>`
+      :"<p class='note'>These turn-ins have no standard codes. Add codes to the skills in the builder, or enter paper scores by standard.</p>"}
+  </section>
+  <section class="panel">
+    <h2>Student progress</h2>
+    <p class="sub">First-try accuracy each day. Status uses the assessment when there is one, otherwise the most recent day.</p>
+    <div class="scroll"><table class="res"><thead><tr><th>Student</th>${R.ds.map(d=>`<th class="c">${esc(dayLabel(d))}</th>`).join("")}<th class="c">Change</th><th>Status</th></tr></thead>
+      <tbody>${R.stu.map(x=>`<tr><td>${esc(x.name)}</td>${x.byDay.map(v=>`<td class="c">${cellPct(v)}</td>`).join("")}<td class="c">${x.change===null?"–":`<b style="color:${x.change>=0?"var(--good)":"var(--bad)"}">${x.change>0?"+":""}${x.change}</b>`}</td><td>${chip(x.now)}</td></tr>`).join("")}
+      ${R.pd.length>1?`<tr class="cls"><td><b>Class</b></td>${R.ds.map((d,i)=>`<td class="c">${cellPct(d>=ASMT?R.aAvg:R.classDay[R.pd.indexOf(d)])}</td>`).join("")}<td class="c">${R.growth===null?"–":`<b>${R.growth>0?"+":""}${R.growth}</b>`}</td><td></td></tr>`:""}</tbody></table></div>
+    <div class="legend"><span><i class="cell c0">✓</i> Mastered, 80%+</span><span><i class="cell c1">~</i> Developing, 60 to 79%</span><span><i class="cell c2">!</i> Needs reteach, under 60%</span></div>
+  </section>
+  <section class="panel noprint">
+    <h2>Report settings</h2>
+    <div class="row"><label class="fl" style="flex:1;min-width:200px">Teacher name on the report<input id="repTeacher" value="${esc(opt.teacher)}" placeholder="Ms. Rivera"></label>
+      <label class="chk"><input type="checkbox" id="repNames" ${opt.names?"checked":""}> Include student names</label></div>
+    <p class="note">The report is made on this device. Leave student names off when you share it outside your building.</p>
+  </section>`}
+/* the administrator report: one or two printed pages, built from the same results */
+function reportHTML(R){const opt=store.get("win205report",{teacher:"",names:false}),logo=window.WIN_LOGO||"";
+  const rows=[["Teacher",opt.teacher||"________________"],["Unit",R.title],["Class",R.room||"–"],["Grade",R.grade||"–"],["W.I.N. group",LVLNAME[R.lvl]||"–"],["Dates",R.t0?`${fmtDate(R.t0)}${R.t1&&fmtDate(R.t1)!==fmtDate(R.t0)?` to ${fmtDate(R.t1)}`:""}`:"–"],["Data",[R.online?`${R.online} online turn-in${R.online===1?"":"s"}`:"",R.paper?`${R.paper} paper score entr${R.paper===1?"y":"ies"}`:""].filter(Boolean).join(", ")||"–"]];
+  const k=(v,l)=>`<div class="k"><b>${v}</b><span>${l}</span></div>`;
+  return `<div class="rep">
+  <div class="rh">${logo?`<img src="${esc(logo)}" alt="">`:""}<div><p class="kick">LSIS W.I.N Builder</p><h1>W.I.N. Results Report</h1><p class="soft">Created ${fmtDate(Date.now())}</p></div></div>
+  <table class="info">${rows.map(([a,b])=>`<tr><th>${a}</th><td>${esc(b)}</td></tr>`).join("")}</table>
+  <div class="ks">${k(`${R.names.length}${R.rosterN?` of ${R.rosterN}`:""}`,"students served")}${k(R.partic===null||!R.pd.length?"–":R.partic+"%","practice turned in")}${k(R.avg===null?"–":R.avg+"%","average accuracy")}${k(R.withNow?pct(R.mastered,R.withNow)+"%":"–","students at mastery")}${k(R.growth===null?(R.aAvg===null?"–":R.aAvg+"%"):`${R.growth>=0?"+":""}${R.growth}`,R.growth===null?(R.aAvg===null?"growth":"assessment average"):"points of growth")}</div>
+  <h2>Summary</h2><p>${summaryOf(R).map(esc).join(" ")}</p>
+  <h2>Mastery by standard</h2>
+  ${R.stds.length?`<table class="t"><tr><th>Standard</th><th class="c">First day</th><th class="c">Latest day</th><th class="c">Change</th>${R.hasA?`<th class="c">Assessment</th>`:""}<th class="c">Students mastered</th><th>Status</th></tr>
+    ${R.stds.map(x=>`<tr><td><b>${esc(bare(x.code))}</b> ${esc(x.name)}</td><td class="c">${x.first??"–"}${x.first!==null?"%":""}</td><td class="c">${x.last??"–"}${x.last!==null?"%":""}</td><td class="c">${x.change===null?"–":(x.change>0?"+":"")+x.change}</td>${R.hasA?`<td class="c">${x.a??"–"}${x.a!==null?"%":""}</td>`:""}<td class="c">${x.of?`${x.mastered} of ${x.of}`:"–"}</td><td><span class="s ${status(x.now)[1]}">${status(x.now)[0]}</span></td></tr>`).join("")}</table>`:"<p>No standard codes in this data.</p>"}
+  <h2>Next steps</h2><ul>${nextStepsOf(R,opt.names).map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+  ${opt.names?`<h2>Student results</h2><table class="t"><tr><th>Student</th><th class="c">First day</th><th class="c">Latest day</th>${R.hasA?`<th class="c">Assessment</th>`:""}<th class="c">Change</th><th>Status</th></tr>
+    ${R.stu.map(x=>`<tr><td>${esc(x.name)}</td><td class="c">${x.first??"–"}${x.first!==null?"%":""}</td><td class="c">${x.last??"–"}${x.last!==null?"%":""}</td>${R.hasA?`<td class="c">${x.a??"–"}${x.a!==null?"%":""}</td>`:""}<td class="c">${x.change===null?"–":(x.change>0?"+":"")+x.change}</td><td><span class="s ${status(x.now)[1]}">${status(x.now)[0]}</span></td></tr>`).join("")}</table>`
+    :`<h2>Students by status</h2><table class="t"><tr><th>Mastered (80%+)</th><th>Developing (60 to 79%)</th><th>Needs reteach (under 60%)</th></tr><tr>${[[80,101],[60,80],[0,60]].map(([a,b])=>`<td class="c"><b>${R.stu.filter(x=>x.now!==null&&x.now>=a&&x.now<b).length}</b></td>`).join("")}</tr></table>`}
+  <p class="fine">First-try accuracy is the percent of questions answered correctly on the first attempt (for paper scores, the percent correct). Mastery is 80% or higher. Standards are the Indiana Academic Standards (2023).</p>
+  </div>`}
+const REPCSS=`.rep{width:7.5in;background:#fff;color:#1A1A1A;font:11pt/1.45 "Atkinson Hyperlegible",Verdana,sans-serif;padding:0}
+.rep h1{font:700 22pt "Fredoka","Trebuchet MS",sans-serif;margin:0}.rep h2{font:600 13pt "Fredoka","Trebuchet MS",sans-serif;margin:.18in 0 .06in;border-bottom:2px solid #C8102E;padding-bottom:2px}
+.rep .rh{display:flex;gap:.18in;align-items:center;margin-bottom:.1in}.rep .rh img{height:.85in;width:auto}.rep .kick{font:600 9pt "Fredoka",sans-serif;text-transform:uppercase;letter-spacing:.08em;color:#C8102E;margin:0}
+.rep .soft{color:#5C5555;margin:0;font-size:9.5pt}.rep p{margin:.04in 0}.rep ul{margin:.04in 0;padding-left:.25in}.rep li{margin:.02in 0}
+.rep table{border-collapse:collapse;width:100%;font-size:10pt}.rep th,.rep td{border:1px solid #D9CECE;padding:3px 6px;text-align:left;vertical-align:top}.rep th{background:#F4EFEF;font-family:"Fredoka",sans-serif;font-weight:600}.rep .c{text-align:center}
+.rep table.info{width:auto;min-width:4.5in}.rep table.info th{width:1.2in}
+.rep .ks{display:grid;grid-template-columns:repeat(5,1fr);gap:.08in;margin:.12in 0}.rep .k{border:1.5px solid #D9CECE;border-top:5px solid #C8102E;border-radius:6px;padding:.05in .08in}.rep .k b{display:block;font:700 17pt "Fredoka",sans-serif}.rep .k span{font-size:8.5pt;color:#5C5555}
+.rep .s{font-weight:700;border-radius:999px;padding:0 6px;font-size:9pt}.rep .s.c0{background:#E2F5EA;color:#1F8A4C}.rep .s.c1{background:#FCEFCF;color:#8A5A12}.rep .s.c2{background:#FBE6E9;color:#A3162B}.rep .s.cn{color:#5C5555}
+.rep .fine{font-size:8.5pt;color:#5C5555;margin-top:.15in}
+.rep tr,.rep .k{break-inside:avoid}`;
+
+/* ---------- paper scores: teachers without Canvas type scores from the class score sheet ---------- */
+const P0=Object.assign({title:"",room:"",grade:"6",lvl:"at",day:"1",stds:""},store.get("win205paper",{}));
+function paperHTML(){const titles=[...new Set(subs.map(s=>s.setTitle).filter(Boolean))];
+  return `<h3>Enter scores from paper</h3>
+  <p class="note" style="margin-top:0">For classes that use the paper packet. Type the number correct from each student's worksheet or assessment. The results and report work the same way.</p>
+  <div class="pgrid">
+    <label class="fl">Unit<input id="pTitle" list="pTitles" value="${esc(P0.title)}" placeholder="Fractions reteach"><datalist id="pTitles">${titles.map(t=>`<option value="${esc(t)}">`).join("")}</datalist></label>
+    <label class="fl">Class<input id="pRoom" value="${esc(P0.room)}" placeholder="Room 205"></label>
+    <label class="fl">Grade<select id="pGrade">${["5","6"].map(g=>`<option ${P0.grade===g?"selected":""}>${g}</option>`).join("")}</select></label>
+    <label class="fl">W.I.N. group<select id="pLvl">${Object.entries(LVLNAME).map(([k,t])=>`<option value="${k}" ${P0.lvl===k?"selected":""}>${t}</option>`).join("")}</select></label>
+    <label class="fl">Scores from<select id="pDay">${[...Array(10)].map((_,i)=>`<option value="${i+1}" ${P0.day==String(i+1)?"selected":""}>Day ${i+1} worksheet</option>`).join("")}<option value="${ASMT}" ${P0.day==String(ASMT)?"selected":""}>End-of-unit assessment</option></select></label>
+    <label class="fl" style="grid-column:span 2">Standards<small style="font-weight:400"> separate with commas, like 6.RP.2, 6.RP.3</small><input id="pStds" value="${esc(P0.stds)}" placeholder="6.RP.2, 6.RP.3"></label>
+  </div>
+  <div class="row"><button class="btn ghost sm" id="pSetup">Set up the score grid</button></div>
+  <div id="pBox"></div>`}
+function paperGrid(){const codes=$("#pStds").value.split(/[,\s]+/).map(c=>c.trim().replace(/^IN/i,"")).filter(c=>/^\d\.[A-Z]+\.\d+$/i.test(c)).map(c=>c.toUpperCase());
+  Object.assign(P0,{title:$("#pTitle").value.trim(),room:$("#pRoom").value.trim(),grade:$("#pGrade").value,lvl:$("#pLvl").value,day:$("#pDay").value,stds:codes.join(", ")});store.set("win205paper",P0);
+  if(!P0.title){say("Type the unit name first.");return}
+  if(!codes.length){say("Type at least one standard, like 6.RP.2.");return}
+  const names=(roster[P0.room]||[]).length?roster[P0.room]:[...new Set(subs.filter(s=>s.setTitle===P0.title).map(s=>s.name))];
+  const rows=Math.max(names.length,8);
+  $("#pBox").innerHTML=`<div class="scroll"><table class="pt"><thead><tr><th>Student</th>${codes.map((c,j)=>`<th class="c">${esc(c)}<br><span class="note">correct out of</span> <input type="number" min="1" max="50" class="pOf" data-j="${j}" value="${P0.day==String(ASMT)?Math.max(1,Math.round(12/codes.length)):3}" aria-label="Questions on ${esc(c)}"></th>`).join("")}<th class="c">Confidence</th></tr></thead>
+    <tbody>${[...Array(rows)].map((_,r)=>`<tr><td><input class="pName" value="${esc(names[r]||"")}" placeholder="Student name" aria-label="Student name"></td>${codes.map((c,j)=>`<td class="c"><input type="number" min="0" class="pC" data-j="${j}" aria-label="${esc(c)} correct"></td>`).join("")}<td class="c"><select class="pConf" aria-label="Confidence"><option value="0">–</option>${[1,2,3,4].map(v=>`<option>${v}</option>`).join("")}</select></td></tr>`).join("")}</tbody></table></div>
+    <div class="row"><button class="btn ghost sm" id="pAddRow">Add a row</button><button class="btn" id="pSave">Save these scores</button><span class="note">Leave a student's scores blank if they were absent.</span></div>`;
+  $("#pAddRow").onclick=()=>{const tb=$("#pBox tbody"),tr=tb.lastElementChild.cloneNode(true);tr.querySelectorAll("input").forEach(i=>i.value="");tr.querySelector("select").value="0";tb.appendChild(tr)};
+  $("#pSave").onclick=()=>{const of=[...document.querySelectorAll(".pOf")].map(i=>Math.max(1,+i.value||1));
+    const existing=subs.find(s=>(s.setTitle||"").toLowerCase()===P0.title.toLowerCase()&&(!P0.room||roomOf(s)===P0.room));
+    const setId=existing?existing.set:"paper-"+P0.title.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,40);
+    const dnum=+P0.day,made=[];let bad="";
+    document.querySelectorAll("#pBox tbody tr").forEach(tr=>{const name=tr.querySelector(".pName").value.trim(),cs=[...tr.querySelectorAll(".pC")].map(i=>i.value.trim());
+      if(!name||cs.every(v=>v===""))return;
+      const items=[],probs=[];cs.forEach((v,j)=>{if(v==="")return;const n=Math.min(+v,of[j]);if(+v>of[j])bad=`${name}: ${codes[j]} is more than ${of[j]}. Saved as ${of[j]}.`;
+        for(let k=0;k<of[j];k++)items.push({q:j,k:"paper",sk:[codes[j]],att:1,ft:k<n?1:0,wrong:[]});probs.push({p:`${codes[j]} (paper, ${of[j]} questions)`,d:1,w:`${n} of ${of[j]} correct`})});
+      made.push({v:3,src:"paper",set:setId,setTitle:P0.title,grade:P0.grade,room:P0.room,lvl:P0.lvl,name,day:dnum,dayTitle:dnum>=ASMT?"End-of-unit assessment":`Day ${dnum} (paper)`,t:Date.now(),
+        skills:codes.map(c=>({n:c,std:"IN "+c})),items,probs,sg:{done:0,br:0,bt:0,jot:""},ixl:[],race:{},hl:null,subject:"",conf:+tr.querySelector(".pConf").value||0,help:[],tricky:""})});
+    if(!made.length){say("Type at least one student's scores.");return}
+    made.forEach(o=>{const i=subs.findIndex(s=>s.set===o.set&&s.name.toLowerCase()===o.name.toLowerCase()&&s.day===o.day);if(i<0)subs.push(o);else subs[i]=o});
+    store.set("win205dash",subs);set=made[0].set;day=made[0].day;F.tab="results";if(P0.room)F.room="";saveF();
+    say(`Saved scores for ${made.length} student${made.length===1?"":"s"}.${bad?" "+bad:""}`);collapseImport=true;render()}}
+
 /* ---------- filters: grade, class, unit, day ---------- */
 const gradeOf=s=>String(s.grade||((s.skills||[]).map(k=>String(k.std||"").match(/(?:^|\s)([5-8])\.[A-Z]/)).find(Boolean)||[])[1]||"");
 const roomOf=s=>String(s.room||"").trim();
-const F=Object.assign({grade:"",room:"",tab:"next"},store.get("win205view",{}));
+const F=Object.assign({grade:"",room:"",tab:"results"},store.get("win205view",{}));
+/* the Results view is new: show it first once, even if another tab was saved */
+if(!store.get("win205seenResults",false)){F.tab="results";store.set("win205seenResults",true)}
 const saveF=()=>store.set("win205view",{grade:F.grade,room:F.room,tab:F.tab});
 let roster=store.get("win205roster",{});
 const norm=s=>String(s||"").toLowerCase().replace(/[^a-z0-9 ]/g,"").replace(/\s+/g," ").trim();
@@ -218,7 +400,7 @@ function pick(){
   const ds=[...new Set(inScope.filter(s=>s.set===set).map(s=>s.day))].sort((a,b)=>a-b);
   if(!ds.includes(day))day=ds[ds.length-1]||0;
 }
-const TABS=[["next","Next steps"],["skills","Skills and misconceptions"],["items","Problems"],["growth","Growth by standard"],["writing","Writing and feedback"]];
+const TABS=[["results","Results"],["next","Next steps"],["skills","Skills and misconceptions"],["items","Problems"],["growth","Growth by standard"],["writing","Writing and feedback"]];
 function renderFilters(){
   const grades=[...new Set(subs.map(gradeOf).filter(Boolean))].sort(),rooms=[...new Set(subs.map(roomOf).filter(Boolean))].sort();
   const inScope=scope(),sets=[...new Set(inScope.map(s=>s.set))];
@@ -228,7 +410,7 @@ function renderFilters(){
     ${grades.length>1||F.grade?sel("fGrade","Grade",[["","All grades"],...grades.map(g=>[g,"Grade "+g])],F.grade):""}
     ${rooms.length>1||F.room?sel("fRoom","Class",[["","All classes"],...rooms.map(r=>[r,r])],F.room):""}
     ${sets.length?sel("fSet","Unit",sets.map(x=>{const s=inScope.find(y=>y.set===x);return[x,(s.setTitle||x)+(gradeOf(s)?` (grade ${gradeOf(s)})`:"")]}),set):""}
-    <div class="fl"><span>Day</span><div class="days">${ds.map(d=>`<button data-d="${d}" aria-pressed="${d===day}">Day ${d}</button>`).join("")||"<span class='note'>None</span>"}</div></div>
+    <div class="fl"><span>Day</span><div class="days">${ds.map(d=>`<button data-d="${d}" aria-pressed="${d===day}">${dayLabel(d)}</button>`).join("")||"<span class='note'>None</span>"}</div></div>
   </div>
   <nav class="tabs" role="tablist" aria-label="Views">${TABS.map(([k,t])=>`<button role="tab" data-tab="${k}" aria-selected="${F.tab===k}">${t}</button>`).join("")}</nav>`;
   const on=(id,fn)=>{const el=$("#"+id);if(el)el.onchange=e=>{fn(e.target.value);saveF();render()}};
@@ -352,7 +534,7 @@ function render(){
     <h2>Growth across days</h2>
     <p class="sub">First-try accuracy each day in this unit. If later days are harder, holding steady is progress.</p>
     <div class="scroll"><table>
-      <thead><tr><th>Student</th>${ds.map(d=>`<th>Day ${d}</th>`).join("")}<th>Change</th></tr></thead>
+      <thead><tr><th>Student</th>${ds.map(d=>`<th>${dayLabel(d)}</th>`).join("")}<th>Change</th></tr></thead>
       <tbody>${names.map(nm=>{const v=ds.map(d=>accOf(nm,d));const got=v.filter(x=>x!==null);const ch=got.length>1?got[got.length-1]-got[0]:null;
         return `<tr><td>${esc(nm)}</td>${v.map(x=>`<td>${cellPct(x)}</td>`).join("")}<td>${ch===null?"–":`<b style="color:${ch>=0?"var(--good)":"var(--bad)"}">${ch>0?"+":""}${ch}</b>`}</td></tr>`}).join("")}
       <tr><td><b>Class</b></td>${classDay.map(v=>`<td>${cellPct(v)}</td>`).join("")}<td></td></tr></tbody>
@@ -387,9 +569,15 @@ function render(){
     </dl></details>`).join("")}
   </section>`;
 
-  out.innerHTML=head+`<div class="tabview">${T[F.tab]||T.next}</div>`;
+  const RR=unitResults(inSet);T.results=resultsHTML(RR);
+  out.innerHTML=(F.tab==="results"?"":head)+`<div class="tabview">${T[F.tab]||T.next}</div>`;
+  if(F.tab==="results"){
+    const saveOpt=()=>store.set("win205report",{teacher:$("#repTeacher").value.trim(),names:$("#repNames").checked});
+    $("#repTeacher").oninput=saveOpt;$("#repNames").onchange=saveOpt;
+    $("#repPdf").onclick=()=>reportPdf(RR);$("#repPrint").onclick=()=>reportPrint(RR)}
 
   /* view actions */
+  if(F.tab==="results")return;
   $("#print").onclick=()=>window.print();
   $("#copyGroups").onclick=async()=>{
     const g=k=>{const m=S.filter(x=>x.g===k);return `${GROUP[k][0]} (${m.length}): ${m.map(x=>x.s.name+(k!=="ixl"&&x.weak[0]?` [${x.weak[0].toLowerCase()}]`:"")).join(", ")||"no one"}`};
@@ -399,6 +587,28 @@ function render(){
   const rs=$("#rosterSave");if(rs)rs.onclick=()=>{roster[rkey]=$("#rosterIn").value.split("\n").map(x=>x.trim()).filter(Boolean);store.set("win205roster",roster);say("Roster saved.");render()};
   const rf=$("#rosterFill");if(rf)rf.onclick=()=>{$("#rosterIn").value=names.join("\n")};
 }
+
+/* ---------- administrator report: PDF and print ---------- */
+const LIBS=["lib/html2pdf.bundle.min.js","https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"];
+function loadLib(i){return new Promise((ok,no)=>{if(window.html2pdf)return ok();if(i>=LIBS.length)return no(new Error("the PDF maker couldn't load"));
+  const s=document.createElement("script");s.src=LIBS[i];s.onload=()=>ok();s.onerror=()=>{s.remove();loadLib(i+1).then(ok,no)};document.head.appendChild(s)})}
+function fillReport(R){$("#repBox").innerHTML=`<style>${REPCSS}</style>`+reportHTML(R);return $("#repBox .rep")}
+/* the report renders in a hidden frame with its own styles, then saves as a PDF */
+async function reportPdf(R){const b=$("#repPdf");b.disabled=true;say("Making the report...");
+  const f=document.createElement("iframe");f.setAttribute("aria-hidden","true");f.style.cssText="position:fixed;left:-10000px;top:0;width:816px;height:1056px;border:0";
+  try{f.srcdoc=`<!DOCTYPE html><html><head><meta charset="UTF-8"><link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet"><style>body{margin:0;background:#fff}${REPCSS}</style></head><body>${reportHTML(R)}</body></html>`;
+    await new Promise(ok=>{f.onload=ok;document.body.appendChild(f)});const w=f.contentWindow;
+    await new Promise((ok,no)=>{const urls=LIBS.map(u=>new URL(u,location.href).href);const next=i=>{if(i>=urls.length)return no(new Error("lib"));const sc=w.document.createElement("script");sc.src=urls[i];sc.onload=()=>ok();sc.onerror=()=>{sc.remove();next(i+1)};w.document.head.appendChild(sc)};next(0)});
+    try{await w.document.fonts.ready}catch(e){}
+    const blob=await w.html2pdf().set({margin:.5,image:{type:"jpeg",quality:.9},html2canvas:{scale:2,backgroundColor:"#ffffff",logging:false},jsPDF:{unit:"in",format:"letter",orientation:"portrait"},pagebreak:{mode:["css"],avoid:["tr",".k",".rh"]}}).from(w.document.querySelector(".rep")).outputPdf("blob");
+    const name=`win-results-${(R.title||"unit").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,40)}.pdf`,url=URL.createObjectURL(blob),a=document.createElement("a");
+    a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
+    say("Report downloaded. Share it with your administrator or bring it to your data meeting.")}
+  catch(e){say("Couldn't make the PDF here. Use Print report, then choose Save as PDF.")}
+  finally{b.disabled=false;f.remove()}}
+function reportPrint(R){fillReport(R);document.body.classList.add("printrep");const done=()=>{document.body.classList.remove("printrep");$("#repBox").innerHTML="";removeEventListener("afterprint",done)};addEventListener("afterprint",done);window.print()}
+function initPaper(){$("#paperBox").innerHTML=paperHTML();$("#pSetup").onclick=paperGrid}
+initPaper();$("#import").addEventListener("toggle",()=>{if($("#import").open&&!$("#pBox").innerHTML)initPaper()});
 
 /* ---------- controls ---------- */
 $("#add").onclick=()=>{const[a,f]=ingest($("#paste").value);say(f?`Added ${a} new turn-in${a===1?"":"s"}${f>a?` (${f-a} already here)`:""}.`:"No WIN205 codes found. Make sure students used a portal from the WIN Builder.");$("#paste").value="";if(a)jumpToNewest();render()};
