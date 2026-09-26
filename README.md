@@ -2,7 +2,7 @@
 
 Tools for running standards-based WIN (What I Need) rotations in **grade 5 and grade 6 math and ELA**, built on the Indiana Academic Standards (2023), the standards ILEARN assesses in 2025-26 and 2026-27.
 
-Teachers build a unit with practice at three levels (below, at, and above grade level) and a 12-question end-of-unit assessment, share it through Canvas or print it as a paper packet, and read student turn-ins in a data dashboard. Everything is plain HTML, so it runs on GitHub Pages with no server, no database, and no logins.
+Each teacher builds a unit for their W.I.N. group (below, at, or above grade level) with three daily rotations, ready-made small group slides, and a 12-question end-of-unit assessment, share it through Canvas or print it as a paper packet, and read student turn-ins in a data dashboard. Everything is plain HTML, so it runs on GitHub Pages with no server, no database, and no logins.
 
 ## What's in this repository
 
@@ -11,7 +11,8 @@ Teachers build a unit with practice at three levels (below, at, and above grade 
 | `index.html` | Home page: start a unit by grade and subject, the weekly routine, example portals |
 | `builder.html` | WIN Builder, in 3 steps: **Choose standards** (grade 5 or 6, math or ELA), **Edit the unit**, **Preview and share** (a Canvas portal or a printable paper packet) |
 | `standards.js` | The grade 5 and grade 6 standards list the builder uses. Edit this file to fix a code or its wording. |
-| `resources.html` | Teacher Resources: download the W.I.N. cycle teacher guide, a 12-slide landscape PDF with talking points |
+| `resources.html` | Teacher Resources: ready-made small group slides for every standard and for each day of your unit, plus a short W.I.N. cycle guide for teachers. Present, print, or save as PDF. |
+| `lessons.js` | The small group mini-lessons used by the builder's lesson plans and the Resources slides |
 | `logo.js` | Finds the school logo and shows it in every header, on the packet cover, and on the slides. |
 | `logo.png` (or `.jpg`) | The school logo. Add it yourself (see below). |
 | `dashboard.html` | Teacher data dashboard: next-day groups, who's missing, skill mastery, misconceptions, mastery by standard, RACE writing |
@@ -28,21 +29,24 @@ The pages look for the school logo next to `index.html`, named `logo.png`, `logo
 2. In the repository on GitHub, click **Add file → Upload files**, drag in the file, and click **Commit changes**. Put it in the top folder, not in `lib`, `portals`, or `units`.
 3. Wait about a minute, then refresh the site (Ctrl+Shift+R, or Cmd+Shift+R on a Mac).
 
-## What a unit includes
+## How W.I.N. works here
 
-- **Three levels every day.** Level 1 is below grade level (friendlier numbers, fewer answer choices). Level 2 is at grade level, with ILEARN-style rigor: typed answers, multi-part questions, and written explanations. Level 3 is above grade level: extension tasks where students find and fix errors, write and solve their own problems, justify two strategies, or rewrite and argue. Students see only "Level 1, 2, 3."
-- **About half open-ended.** Each level mixes selected-response and open-ended questions about 50/50. Open responses come with a 0 to 2 point scoring guide (0 to 3 for extension tasks). Math units have no RACE response; explanations live in two-part math questions.
-- **Needs supports.** In the portal, students tap **I need supports** for a worked example, hints up front, sentence starters, and one fewer answer choice. In the paper packet, choose supports for Level 1 worksheets, every worksheet, or none.
-- **End-of-unit assessment.** 12 open-ended questions across the unit's standards, however many days the unit has. Math questions have show-your-work boxes and two-part items; ELA uses a new passage. Edit it under **Unit assessment** in Step 2. It prints with an answer key, a scoring guide, and a mastery-by-standard table.
-
-Units saved before these features get a Below and Above set and an assessment, built from their existing questions, the next time they're opened in the builder.
+- **One group per teacher.** Students are split into W.I.N. groups by level, and each teacher takes one: **below**, **at**, or **above** grade level. In the builder's Step 1, the teacher picks their group and builds the plan for it.
+  - **Below:** friendlier numbers, fewer answer choices, and supports turned on (worked example, hints, sentence starters).
+  - **At:** on-grade rigor that mirrors ILEARN: typed answers, two-part "solve, then explain" questions, and written responses.
+  - **Above:** extension. About half the practice asks students to produce: find and fix an error, write and solve their own problem, justify two strategies, or rewrite and argue.
+- **Three rotations every day:** independent practice, small group with the teacher, and IXL or RACE. RACE is for ELA only; math uses IXL. The printed lesson plan has a rotation chart for splitting the group into three small groups.
+- **About half open-ended.** Each day's practice mixes selected-response and open-ended questions about 50/50. Open responses come with a 0 to 2 point scoring guide (0 to 3 for extension tasks).
+- **Supports.** In the portal, students tap **I need supports**; it starts on for below-grade-level units. In the paper packet, supports match the unit unless you turn them on or off.
+- **End-of-unit assessment.** 12 open-ended questions across the unit's standards, however many days the unit has. Edit it under **Unit assessment** in Step 2. It prints with an answer key, a scoring guide, and a mastery-by-standard table.
+- **Small group slides.** The **Resources** page has ready-made slides for every standard's small group lesson, plus slides built from each day of the unit you made. Present them full screen, print them, or save them as a PDF.
 
 ## Getting data to the teacher
 
 1. Each student's turn-in starts with a **readable summary** (problems finished, first-try score for each standard, confidence, what was tricky). You can read it right in SpeedGrader.
 2. For the full picture, open the Canvas assignment, choose **Download Submissions**, and **drop the zip anywhere on the dashboard**. You can also paste turn-ins, or press Ctrl+V anywhere on the dashboard page.
-3. The dashboard opens on **Next steps**: tomorrow's Below, At, and Above groups, a reteach focus, and (after you add a roster) who hasn't turned in. **Copy groups** puts the groups on your clipboard for an email or your plans.
-4. Each level reports as its own set (for example, "Fractions (Level 1)"), so problem-by-problem results compare the same questions. Filter by **grade**, **class**, **unit**, and **day**. Export a CSV with one row per turn-in, or a **standards CSV** with one row per student and a column for each standard.
+3. The dashboard opens on **Next steps**: who needs reteaching, who is on track, and who is ready to extend, a reteach focus, and (after you add a roster) who hasn't turned in. **Copy groups** puts the groups on your clipboard for an email or your plans.
+4. Filter by **grade**, **class**, **unit**, and **day**. Export a CSV with one row per turn-in, or a **standards CSV** with one row per student and a column for each standard.
 
 ## Checking the standards list
 
@@ -80,15 +84,15 @@ In **Preview and share**, the **No Canvas? Print a paper packet** section turns 
 
 | Page | Who it's for | What's on it |
 |---|---|---|
-| Teacher lesson plan | You | Learning target, standards, how Below, At, and Above rotate, the small group lesson script with every blank filled in, and the mistakes to watch for |
-| Answer keys | You | One per level: every answer, the misconception behind each wrong choice, and scoring guides for open responses |
-| Class score sheet | You | A row per student: level worked, number correct, open-response points, confidence, and tomorrow's group (Below, At, Above). Names come from a dashboard roster if you saved one. |
+| Teacher lesson plan | You | Learning target, standards, the three-rotation chart, the small group lesson script with every blank filled in, and the mistakes to watch for |
+| Answer key | You | Every answer, the misconception behind each wrong choice, and scoring guides for open responses |
+| Class score sheet | You | A row per student: number correct, open-response points, confidence, and the W.I.N. group they should join next. Names come from a dashboard roster if you saved one. |
 | Small group notes | Students | Guided notes with fill-in blanks, lines for the example steps, and number lines to mark |
-| Practice worksheets | Students | One per level. A "Show your work" box on every math problem, "How I know" lines under ELA choices, and writing lines for open responses. Supported worksheets add a Remember box, hints, and sentence starters. |
+| Practice worksheet | Students | A "Show your work" box on every math problem, "How I know" lines under ELA choices, and writing lines for open responses. Supported worksheets add a Remember box, hints, and sentence starters. |
 | IXL page (math) or IXL and RACE page (ELA) | Students | An IXL checklist with a SmartScore goal, and for ELA a RACE response organizer |
 | End-of-unit assessment and key | Students and you | 12 open-ended questions with work space, plus the key, scoring guide, and mastery by standard |
 
-1. Check the pages and worksheet levels you want, choose where supports go, choose one day or all days, and choose the page order: by day, or with all copies of each worksheet together.
+1. Check the pages you want, choose whether worksheets have supports, choose one day or all days, and choose the page order: by day, or with all copies of each worksheet together.
 2. Tap **Download PDF**. The builder makes the PDF in your browser (a few seconds per page) and downloads it. Nothing is uploaded.
 3. Or tap **Print** to open the packet in a new tab with the print window, or **Preview** to look it over first.
 

@@ -14,6 +14,7 @@
       var star=img.nextElementSibling;if(star&&star.classList.contains("mark"))star.hidden=false;
       img.remove();
     });
+    document.dispatchEvent(new Event("winlogo"));
   }
   function find(k){
     if(k>=names.length)return show("");

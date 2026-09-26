@@ -193,14 +193,14 @@ function profile(s){
   const weak=Object.keys(sk).filter(k=>sk[k]&&pct(sk[k].ft,sk[k].n)<80).sort((a,b)=>pct(sk[a].ft,sk[a].n)-pct(sk[b].ft,sk[b].n));
   const mis=it.flatMap(x=>x.wrong.map(w=>({...w,q:x.q})));
   let g="ind";
-  /* Level 3 extension work is all written, so it has no auto-scored accuracy: group it by finishing and confidence */
+  /* extension work is mostly written, so it may have no auto-scored accuracy: group it by finishing and confidence */
   if(acc===null&&s.lvl==="above")g=fin>=tot*.75&&s.conf>=3?"ixl":"ind";
   else if(acc===null||acc<60||fin<tot*.75||(s.conf&&s.conf<=2))g="sg";
   else if(acc>=85&&fin===tot&&s.conf>=3)g="ixl";
   return{sk,acc,fin,tot,weak,g,mis};
 }
 const level=v=>v===null?["–","cn"]:v>=80?["Mastered","c0"]:v>=60?["Developing","c1"]:["Needs reteach","c2"];
-const GROUP={sg:["Below: small group reteach","Under 60% first-try accuracy, under 75% finished, or confidence 1 to 2. Next: Level 1 practice with supports."],ind:["At: independent practice","60 to 84% first-try accuracy. Next: Level 2 practice."],ixl:["Above: extension + IXL","85%+ first-try accuracy, all finished, confidence 3 to 4. Next: Level 3 extension tasks."]};
+const GROUP={sg:["Below: reteach","Under 60% first-try accuracy, under 75% finished, or confidence 1 to 2. Start them with you in small group; next cycle, the below-grade-level W.I.N. group."],ind:["At: on track","60 to 84% first-try accuracy. Keep practicing at grade level."],ixl:["Above: ready to extend","85%+ first-try accuracy, all finished, confidence 3 to 4. Next cycle, the above-grade-level W.I.N. group."]};
 const cellPct=v=>{const[t,c]=level(v);return `<span class="cell ${c}" style="width:auto;min-width:48px;padding:0 .4rem" title="${t}">${v===null?"–":v+"%"}</span>`};
 
 /* ---------- filters: grade, class, unit, day ---------- */
