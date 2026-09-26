@@ -861,44 +861,57 @@ function buildPayload(d){
     race:store.get(`race${d}`,{}),rc:raceChecks(D.race,store.get(`race${d}`,{})),hl:Object.keys(store.get(`hl${d}`,{})).length,subject:C.subject,conf:tn.conf||0,help:tn.help||[],tricky:tn.tricky||""};
 }
 const enc=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o))));
+/* a day counts once a student has done anything in it */
+function hasWork(d){return Object.values(store.get(`w${d}`,{})).some(x=>x&&(x.done||x.ok||(x.wa||[]).length||x.val))||store.get(`sg${d}done`,false)||store.get(`ixl${d}`,[]).some(Boolean)||Object.values(store.get(`race${d}`,{})).some(v=>String(v||"").trim())||!!store.get(`turn${d}`,{}).conf}
+/* one turn-in carries every day so far, so a unit needs only one Canvas assignment */
+function turnText(name){const days=C.days.map((_,d)=>d).filter(d=>d===day||hasWork(d));
+  const parts=days.map(d=>{const Q=C.days[d].ind,w=store.get(`w${d}`,{}),tn=store.get(`turn${d}`,{}),fin=Object.values(w).filter(x=>x&&x.done).length;
+    const pl=buildPayload(d),sk={};pl.items.forEach(x=>{if(!x.att)return;x.sk.forEach(n=>{sk[n]=sk[n]||[0,0];sk[n][1]++;if(x.ft)sk[n][0]++})});
+    const std=n=>{const k=pl.skills.find(z=>z.n===n);return k&&k.std?` (${k.std})`:""};
+    return{d,code:`WIN205:${enc(pl)}`,lines:[`Day ${d+1}: ${fin} of ${Q.length} problems finished${tn.conf?`, confidence ${tn.conf} of 4`:""}.`,
+      ...Object.entries(sk).map(([n,[a,b]])=>`  - ${n}${std(n)}: ${a} of ${b} right on the first try`),
+      ...Q.map((q,i)=>q.type==="open"&&String((w[i]||{}).val||"").trim()?`  Problem ${i+1}: ${String(w[i].val).trim()}`:"").filter(Boolean),
+      ...(tn.tricky?[`  Tricky: ${tn.tricky}`]:[])]}});
+  return{days,text:`${name}: W.I.N. turn-in${C.title?`, ${C.title}`:""} (Day${days.length>1?"s":""} ${days.map(d=>d+1).join(", ")})${SUP()?", with supports":""}\n${parts.map(p=>p.lines.join("\n")).join("\n")}\n\n${parts.map(p=>p.code).join("\n")}`}}
 function renderTurn(el,D){
-  const k=`turn${day}`,tn=store.get(k,{conf:0,help:[],tricky:""});
+  const k=`turn${day}`,tn=store.get(k,{conf:0,help:[],tricky:""});tn.help=tn.help||[];
   const fin=Object.values(store.get(wk(day),{})).filter(x=>x&&x.done).length,NQ=LIST(day).length;
   const need=C.third==="race"?0:Math.min(2,(D.ixl||[]).length),ixlN=store.get(`ixl${day}`,[]).filter(Boolean).length,race=store.get(`race${day}`,{}),raceN=["R","A","C","E"].filter(x=>(race[x]||"").trim()).length;
-  el.innerHTML=`<section class="room turn"><h2>Turn in Day ${day+1}</h2>
+  const url=/^https?:\/\//.test(C.canvasUrl||"")?C.canvasUrl:"";
+  el.innerHTML=`<section class="room turn"><h2>Turn in my work</h2>
     <ul class="checklist">
       <li>${fin===NQ?"✅":"⬜"} Independent practice: ${fin} of ${NQ} finished</li>
       <li>${store.get(`sg${day}done`,false)?"✅":"⬜"} Small group lesson</li>
       ${need?`<li>${ixlN>=need?"✅":"⬜"} IXL skills: ${ixlN} of ${need}</li>`:""}
       ${D.race?`<li>${raceN===4?"✅":"⬜"} RACE response: ${raceN} of 4 parts</li>`:""}
-      ${D.passage?`<li>🖍️ Highlights in the passage: ${Object.keys(store.get(`hl${day}`,{})).length}</li>`:""}
     </ul>
-    <h3>How do you feel about today's target?</h3><p class="tip">${fr(D.target)}</p>
+    <p class="tip">Not done? That's OK. Turn in what you have. You can turn in again later.</p>
+    <h3>How do you feel about today's target? <span class="tip">(optional)</span></h3><p class="tip">${fr(D.target)}</p>
     <div class="conf">${CONF.map(([e,t],i)=>`<button data-c="${i+1}" aria-pressed="${tn.conf===i+1}"><span aria-hidden="true">${e}</span>${t}</button>`).join("")}</div>
-    <h3>What helped you most today?</h3>
-    <div class="chips">${HELPED.map(h=>`<button data-h="${h}" aria-pressed="${tn.help.includes(h)}">${h}</button>`).join("")}</div>
-    <h3>What was tricky today?</h3><textarea id="tricky" aria-label="What was tricky today">${esc(tn.tricky||"")}</textarea>
+    <details class="tip" style="margin:.6rem 0"><summary>Tell your teacher more (optional)</summary>
+      <h3>What helped you most today?</h3>
+      <div class="chips">${HELPED.map(h=>`<button data-h="${h}" aria-pressed="${tn.help.includes(h)}">${h}</button>`).join("")}</div>
+      <h3>What was tricky today?</h3><textarea id="tricky" aria-label="What was tricky today">${esc(tn.tricky||"")}</textarea></details>
     <p class="fb no" id="tmsg" aria-live="polite"></p>
     <h3>Send it to your teacher</h3>
-    <ol class="tsteps"><li>Tap <b>Copy my turn-in</b>.</li><li>Open <b>WIN Day ${day+1}</b> in Canvas.</li><li>Paste, then tap <b>Submit</b>.</li></ol>
-    <button class="btn" id="turnCopy" style="background:var(--ink);color:var(--bg)">Copy my turn-in</button><span class="copied" id="tcmsg" aria-live="polite"></span>
-    ${C.turnInNote&&C.turnInNote!=="Then open today's WIN assignment in Canvas, paste, and submit."?`<p class="tip" style="margin-top:.75rem">${esc(C.turnInNote)}</p>`:""}
-    <details class="tip" style="margin-top:.5rem"><summary>Copy button not working?</summary><p>Select all the text in this box, copy it, and paste it in Canvas.</p><textarea id="turnTxt" readonly aria-label="Turn-in text" style="width:100%;min-height:5rem"></textarea></details></section>`;
+    <ol class="tsteps">${url?`<li>Tap <b>Copy and open Canvas</b>.</li><li>In Canvas, click the text box and paste (<b>Ctrl+V</b>).</li><li>Tap <b>Submit</b>.</li>`
+      :`<li>Tap <b>Copy my turn-in</b>.</li><li>Open the <b>W.I.N.</b> assignment in Canvas and paste (<b>Ctrl+V</b>).</li><li>Tap <b>Submit</b>.</li>`}</ol>
+    <button class="btn" id="turnCopy" style="background:var(--ink);color:var(--bg)">📋 ${url?"Copy and open Canvas":"Copy my turn-in"}</button><span class="copied" id="tcmsg" aria-live="polite"></span>
+    <p class="tip" style="margin-top:.6rem">Turn in after every W.I.N. day. Each turn-in includes all your days so far, so submitting again is fine.</p>
+    ${C.turnInNote&&!/^Then open today's WIN assignment/.test(C.turnInNote)?`<p class="tip">${esc(C.turnInNote)}</p>`:""}
+    <details class="tip" style="margin-top:.5rem"><summary>Copy button not working?</summary><p>Select all the text in this box, copy it, and paste it in Canvas.${url?` <a href="${esc(url)}" target="_blank" rel="noopener">Open the Canvas assignment</a>.`:""}</p><textarea id="turnTxt" readonly aria-label="Turn-in text" style="width:100%;min-height:5rem"></textarea></details></section>`;
   const save=()=>store.set(k,tn);
   el.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{tn.conf=+b.dataset.c;save();el.querySelectorAll("[data-c]").forEach(x=>x.setAttribute("aria-pressed",x===b))});
   el.querySelectorAll("[data-h]").forEach(b=>b.onclick=()=>{const h=b.dataset.h;tn.help=tn.help.includes(h)?tn.help.filter(x=>x!==h):[...tn.help,h];save();b.setAttribute("aria-pressed",tn.help.includes(h))});
   $("#tricky").oninput=e=>{tn.tricky=e.target.value;save()};
   $("#turnCopy").onclick=async()=>{const m=$("#tmsg");
-    if(!nameEl.value.trim()){m.textContent="Type your name at the top first.";nameEl.focus();return}
-    if(!tn.conf){m.textContent="Tap how you feel about today's target first.";return}
-    m.textContent="";
-    const pl=buildPayload(day),sk={};pl.items.forEach(x=>{if(!x.att)return;x.sk.forEach(n=>{sk[n]=sk[n]||[0,0];sk[n][1]++;if(x.ft)sk[n][0]++})});
-    const std=n=>{const k=pl.skills.find(z=>z.n===n);return k&&k.std?` (${k.std})`:""};
-    const lines=Object.entries(sk).map(([n,[a,b]])=>`- ${n}${std(n)}: ${a} of ${b} right on the first try`);
-    const txt=`${nameEl.value.trim()}, WIN Day ${day+1}${C.title?` (${C.title})`:""}${SUP()?", with supports":""}: ${fin} of ${NQ} problems finished, confidence ${tn.conf} of 4.\n${LIST(day).map((q,i)=>q.type==="open"&&(getS(i).val||"").trim()?`Problem ${i+1}: ${getS(i).val.trim()}\n`:"").join("")}${lines.length?lines.join("\n")+"\n":""}${tn.tricky?`Tricky: ${tn.tricky}\n`:""}WIN205:${enc(pl)}`;
-    $("#turnTxt").value=txt;
-    try{await navigator.clipboard.writeText(txt);$("#tcmsg").textContent="Copied. Now paste it in Canvas."}
-    catch(e){$("#tcmsg").textContent="Copy didn't work. Open \"Copy button not working?\" below.";$("#turnTxt").closest("details").open=true;$("#turnTxt").select()}};
+    if(!nameEl.value.trim()){m.textContent="Type your first and last name at the top first.";nameEl.focus();nameEl.scrollIntoView({behavior:"smooth",block:"center"});return}
+    m.textContent="";save();
+    const T=turnText(nameEl.value.trim());$("#turnTxt").value=T.text;
+    let copied=false;try{await navigator.clipboard.writeText(T.text);copied=true}catch(e){}
+    if(url){const w=window.open(url,"_blank");if(!w)m.textContent="Your browser blocked the new tab. Use the link under \"Copy button not working?\""}
+    if(copied)$("#tcmsg").textContent=url?"Copied. Paste it in Canvas, then Submit.":"Copied. Now paste it in Canvas.";
+    else{$("#tcmsg").textContent="Copy didn't work. Open \"Copy button not working?\" below.";$("#turnTxt").closest("details").open=true;$("#turnTxt").select()}};
 }
 render();
 
@@ -2033,8 +2046,11 @@ function sharePanel(){
     <div class="acts"><button class="btn go big" data-act="download">Download student portal</button><button class="btn ghost" data-act="saveUnit">Save unit file</button></div>
     <ol class="steplist">
       <li><b>Upload the portal to Canvas.</b> Put the downloaded .html file in a Canvas module, or in the <code>portals</code> folder of this site.</li>
-      <li><b>Make one Canvas assignment per WIN day</b> (${days} in this unit), with <b>Text Entry</b> as the submission type. Name them "WIN Day 1," "WIN Day 2," and so on.</li>
-      <li><b>Students work, then tap "Turn in my work."</b> The portal copies their results. They paste them into that day's assignment and submit.</li>
+      <li><b>Make one Canvas assignment for the whole unit</b>, with <b>Text Entry</b> as the submission type, and name it "W.I.N.: ${esc(U.title||"unit")}." Students resubmit it after every W.I.N. day; each turn-in includes all their days so far.</li>
+      <li><b>Paste the assignment's link here</b> so students get a "Copy and open Canvas" button. Open the assignment in Canvas and copy the address from the browser bar.
+        <label class="f" style="margin-top:.4rem">Canvas assignment link${inp("canvasUrl",U.canvasUrl||"","https://yourschool.instructure.com/courses/123/assignments/456")}</label>
+        ${U.canvasUrl&&!/^https?:\/\//.test(U.canvasUrl)?`<p class="warn">The link should start with https://</p>`:""}</li>
+      <li><b>Students work, then tap "Turn in my work."</b> One tap copies their work and opens Canvas. They paste and submit.</li>
     </ol>
     <p class="note">Save the unit file so you or a colleague can open and edit this unit later.</p>
   </section>
@@ -2048,7 +2064,7 @@ function sharePanel(){
     <h2>3. After class: see the data</h2>
     <ol class="steplist">
       <li><b>Quick look:</b> each turn-in starts with a readable summary (score by standard, confidence), so you can read it right in SpeedGrader.</li>
-      <li><b>Full picture:</b> in the Canvas assignment, choose <b>Download Submissions</b>, then drop the zip on the <a href="dashboard.html">dashboard</a>. You get groups for tomorrow, skill mastery by standard, and misconceptions.</li>
+      <li><b>Full picture:</b> in the Canvas assignment, choose <b>Download Submissions</b>, then drop the zip on the <a href="dashboard.html">dashboard</a>. Download again any day: the dashboard skips work it already has. You get groups for tomorrow, skill mastery by standard, and misconceptions.</li>
       <li><b>On paper:</b> mark the worksheets with the answer key and fill in the class score sheet from the paper packet. It sorts students into the same three groups.</li>
     </ol>
     <div class="acts"><a class="btn" href="dashboard.html" style="text-decoration:none">Open the dashboard</a></div>
@@ -2186,7 +2202,7 @@ document.addEventListener("click",async e=>{
     catch(err){say("Couldn't make the PDF here ("+(err&&err.message||err)+"). Use Print, then choose Save as PDF.",true)}
     finally{pdfBusy=false;btns.forEach(x=>{x.disabled=false;x.textContent=x.dataset.t})}return}
   if(a==="closePreview"){$("#modal").hidden=true;$("#pv").srcdoc="";return}
-  if(a==="download"){const iss=issues();showIssues(iss);if(iss.length&&!confirm(`${iss.length} thing${iss.length===1?"":"s"} to fix (listed above). Download anyway?`))return;
+  if(a==="download"){if(U.canvasUrl&&!/^https?:\/\//.test(U.canvasUrl)){say("Fix the Canvas assignment link first. It should start with https://",true);return}const iss=issues();showIssues(iss);if(iss.length&&!confirm(`${iss.length} thing${iss.length===1?"":"s"} to fix (listed above). Download anyway?`))return;
     const r=await saveFile(`win-${slug(U.title)}.html`,buildPortal());say(r==="saved"?"Student portal downloaded. Upload it to Canvas.":r==="declined"?"Download canceled.":"Download didn't work here. Open this builder from the downloaded file and try again.",r!=="saved"&&r!=="declined");return}
   if(a==="saveUnit"){const r=await saveFile(`${slug(U.title)}-unit.json`,JSON.stringify(U,null,1));say(r==="saved"?"Unit file saved. Share it with colleagues or open it later.":r==="declined"?"Save canceled.":"Saving didn't work here.",r!=="saved"&&r!=="declined");return}
   if(a==="example"){if(confirm("Replace what's here with the example unit? Save your unit file first if you want to keep it.")){U=JSON.parse(JSON.stringify(EXAMPLE));cur=0;step=2;save();render();showIssues([]);say("Example unit loaded.")}return}
