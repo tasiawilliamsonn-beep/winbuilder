@@ -128,10 +128,11 @@ details.panel[open]>summary::after{content:"Hide"}
 .hide{display:none!important}
 @media (max-width:640px){.steps{grid-template-columns:1fr}.steps button small{display:none}}
 </style>
+<script src="logo.js"></script>
 </head>
 <body>
 <header class="site"><div class="site-in">
-  <a class="brand" href="index.html"><img class="logo" src="logo.png" alt="" onerror="this.nextElementSibling.hidden=false;this.remove()"><span class="mark" aria-hidden="true" hidden>★</span> LSIS W.I.N Builder</a>
+  <a class="brand" href="index.html"><img class="logo" data-logo alt="" hidden><span class="mark" aria-hidden="true" hidden>★</span> LSIS W.I.N Builder</a>
   <nav aria-label="Main"><a href="index.html">Home</a><a href="builder.html" aria-current="page">Build</a><a href="dashboard.html">Dashboard</a><a href="resources.html">Resources</a></nav>
 </div></header>
 <div class="wrap">
@@ -2470,8 +2471,8 @@ function buildPacket(autoprint){
   const nm_=p=>partName(p.k,p.lv,true);
   const list=ps=>[...new Set(ps.map(nm_))].map(n=>{const g=ps.filter(p=>nm_(p)===n),ds=g.filter(p=>p.d!=null);return `<tr><td>${esc(n)}</td><td>${ds.length?`Day${ds.length>1?"s":""} ${ds.map(p=>p.d+1).join(", ")}`:"End of unit"}</td><td>${g[0].k==="notes"?"1 per student in small group":g[0].k==="practice"?"1 per student at this level":g[0].who==="student"?"1 per student":"1 for you"}</td></tr>`}).join("");
   const title=U.title||"WIN unit",sub=[U.grade?`Grade ${U.grade}`:"",U.subject==="ela"?"ELA":"Math",`${days.length} day${days.length===1?"":"s"}`,U.room].filter(Boolean).join(" · ");
-  const logo=new URL("logo.png",location.href).href;
-  const cover=`<div class="brandrow"><img src="${esc(logo)}" alt="" onerror="this.remove()"><span>LSIS W.I.N Builder</span></div><h1 class="big">${esc(title)}</h1><p class="dt">${esc(sub)}</p>
+  const logo=window.WIN_LOGO||"";
+  const cover=`<div class="brandrow">${logo?`<img src="${esc(logo)}" alt="">`:""}<span>LSIS W.I.N Builder</span></div><h1 class="big">${esc(title)}</h1><p class="dt">${esc(sub)}</p>
     <h2>Running WIN on paper</h2><ol class="how"><li><b>Before class:</b> copy the student pages for the day. Keep the lesson plan and answer key.</li>
       <li><b>During WIN:</b> give each student the practice worksheet for their level: Level 1 (below grade level), Level 2 (at grade level), or Level 3 (above grade level, extension). Teach the small group lesson while the others practice, then ${U.subject==="math"?"IXL":"IXL or RACE"}. Rotate.</li>
       <li><b>After class:</b> mark the worksheets with the answer key for each level and fill in the class score sheet. It sorts students into tomorrow's Below, At, and Above groups.</li>

@@ -76,10 +76,11 @@ a{color:inherit}
 @media print{.site,.pagehead,.panel,.deckhead,.noprint{display:none!important}body{background:#fff}.fit{box-shadow:none;border-radius:0;height:auto!important;margin:0;overflow:visible}.slide{transform:none!important;break-after:page}.fit:last-of-type .slide{break-after:auto}}
 @page{size:letter landscape;margin:.5in}
 </style>
+<script src="logo.js"></script>
 </head>
 <body>
 <header class="site"><div class="site-in">
-  <a class="brand" href="index.html"><img class="logo" src="logo.png" alt="" onerror="this.nextElementSibling.hidden=false;this.remove()"><span class="mark" aria-hidden="true" hidden>★</span> LSIS W.I.N Builder</a>
+  <a class="brand" href="index.html"><img class="logo" data-logo alt="" hidden><span class="mark" aria-hidden="true" hidden>★</span> LSIS W.I.N Builder</a>
   <nav aria-label="Main"><a href="index.html">Home</a><a href="builder.html">Build</a><a href="dashboard.html">Dashboard</a><a href="resources.html" aria-current="page">Resources</a></nav>
 </div></header>
 <div class="wrap">
@@ -106,7 +107,7 @@ a{color:inherit}
   <div id="slides">
 
 <div class="fit"><section class="slide title-slide">
-  <img class="big-logo" src="logo.png" alt="" onerror="this.remove()">
+  <img class="big-logo" data-logo alt="" hidden>
   <p class="kick">LSIS W.I.N Builder · Teacher guide</p>
   <h3>The W.I.N. Cycle</h3>
   <p style="font-size:28px;margin:6px 0 0">What I Need: every student gets reteaching, practice, or extension, every day.</p>
@@ -115,7 +116,7 @@ a{color:inherit}
 </section></div>
 
 <div class="fit"><section class="slide">
-  <img class="logo" src="logo.png" alt="" onerror="this.remove()">
+  <img class="logo" data-logo alt="" hidden>
   <p class="kick">Why W.I.N.</p><h3>What W.I.N. time is</h3>
   <ul>
     <li>A protected block where students work on the standards <b>they</b> need, not the next lesson in the pacing guide.</li>
@@ -128,7 +129,7 @@ a{color:inherit}
 </section></div>
 
 <div class="fit"><section class="slide">
-  <img class="logo" src="logo.png" alt="" onerror="this.remove()">
+  <img class="logo" data-logo alt="" hidden>
   <p class="kick">The big picture</p><h3>The W.I.N. cycle</h3>
   <div class="two" style="grid-template-columns:470px 1fr;align-items:center">
     <svg id="cycle" width="460" height="460" viewBox="0 0 460 460" role="img" aria-label="The W.I.N. cycle: assess, group, teach, practice, check, and back to assess"></svg>
@@ -144,7 +145,7 @@ a{color:inherit}
 </section></div>
 
 <div class="fit"><section class="slide">
-  <img class="logo" src="logo.png" alt="" onerror="this.remove()">
+  <img class="logo" data-logo alt="" hidden>
   <p class="kick">Planning</p><h3>A week of W.I.N.</h3>
   <table>
     <tr><th style="width:17%">When</th><th>What happens</th><th style="width:30%">What you use</th></tr>
@@ -158,7 +159,7 @@ a{color:inherit}
 </section></div>
 
 <div class="fit"><section class="slide">
-  <img class="logo" src="logo.png" alt="" onerror="this.remove()">
+  <img class="logo" data-logo alt="" hidden>
   <p class="kick">Differentiation</p><h3>Three levels, every day</h3>
   <div class="cols">
     <div style="--c:#C8102E"><h4>Below · Level 1</h4>For students rebuilding the skill.<ul><li>Friendlier numbers</li><li>Fewer answer choices</li><li>Supports: hints, a worked example, sentence starters</li><li>Small group first</li></ul></div>
@@ -169,7 +170,7 @@ a{color:inherit}
 </section></div>
 
 <div class="fit"><section class="slide">
-  <img class="logo" src="logo.png" alt="" onerror="this.remove()">
+  <img class="logo" data-logo alt="" hidden>
   <p class="kick">The block</p><h3>The rotation</h3>
   <table>
     <tr><th>Station</th><th>Students</th><th>Math</th><th>ELA</th></tr>
@@ -182,7 +183,7 @@ a{color:inherit}
 </section></div>
 
 <div class="fit"><section class="slide">
-  <img class="logo" src="logo.png" alt="" onerror="this.remove()">
+  <img class="logo" data-logo alt="" hidden>
   <p class="kick">Teaching</p><h3>The small group lesson</h3>
   <div class="steps5">
     <div><b>1. Big idea</b>Say it in one sentence. Students say it back.</div>
@@ -196,7 +197,7 @@ a{color:inherit}
 </section></div>
 
 <div class="fit"><section class="slide">
-  <img class="logo" src="logo.png" alt="" onerror="this.remove()">
+  <img class="logo" data-logo alt="" hidden>
   <p class="kick">Rigor</p><h3>Open-ended practice, like ILEARN</h3>
   <div class="two">
     <div><b>About half of every set is open-ended</b><ul><li>Typed numeric answers, not just choices</li><li>Estimates with rounding steps</li><li>Two-part questions: solve, then explain</li><li>ELA short responses with two text details</li></ul></div>
@@ -206,7 +207,7 @@ a{color:inherit}
 </section></div>
 
 <div class="fit"><section class="slide">
-  <img class="logo" src="logo.png" alt="" onerror="this.remove()">
+  <img class="logo" data-logo alt="" hidden>
   <p class="kick">Level 3</p><h3>Extension: students produce</h3>
   <table>
     <tr><th style="width:26%">Task type</th><th>Math</th><th>ELA</th></tr>
@@ -219,7 +220,7 @@ a{color:inherit}
 </section></div>
 
 <div class="fit"><section class="slide">
-  <img class="logo" src="logo.png" alt="" onerror="this.remove()">
+  <img class="logo" data-logo alt="" hidden>
   <p class="kick">Access</p><h3>Needs supports</h3>
   <div class="two">
     <div><b>What the supports are</b><ul><li>A hint printed with each problem</li><li>A "Remember" box with the notes and a worked example</li><li>Sentence starters for written answers</li><li>One fewer answer choice</li></ul></div>
@@ -229,7 +230,7 @@ a{color:inherit}
 </section></div>
 
 <div class="fit"><section class="slide">
-  <img class="logo" src="logo.png" alt="" onerror="this.remove()">
+  <img class="logo" data-logo alt="" hidden>
   <p class="kick">Data</p><h3>Check and regroup</h3>
   <div class="cols">
     <div style="--c:#C8102E"><h4>Below</h4>Under 60% correct, or confidence 1 to 2.<ul><li>Small group reteach</li><li>Level 1 with supports</li></ul></div>
@@ -241,7 +242,7 @@ a{color:inherit}
 </section></div>
 
 <div class="fit"><section class="slide">
-  <img class="logo" src="logo.png" alt="" onerror="this.remove()">
+  <img class="logo" data-logo alt="" hidden>
   <p class="kick">Closing the cycle</p><h3>The end-of-unit assessment</h3>
   <ul>
     <li><b>12 open-ended questions</b> across every standard in the unit, however many days you planned.</li>

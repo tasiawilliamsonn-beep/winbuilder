@@ -12,7 +12,8 @@ Teachers build a unit with practice at three levels (below, at, and above grade 
 | `builder.html` | WIN Builder, in 3 steps: **Choose standards** (grade 5 or 6, math or ELA), **Edit the unit**, **Preview and share** (a Canvas portal or a printable paper packet) |
 | `standards.js` | The grade 5 and grade 6 standards list the builder uses. Edit this file to fix a code or its wording. |
 | `resources.html` | Teacher Resources: download the W.I.N. cycle teacher guide, a 12-slide landscape PDF with talking points |
-| `logo.png` | The school logo shown in every page header, on the packet cover, and on the slides. Add it yourself (see below). |
+| `logo.js` | Finds the school logo and shows it in every header, on the packet cover, and on the slides. |
+| `logo.png` (or `.jpg`) | The school logo. Add it yourself (see below). |
 | `dashboard.html` | Teacher data dashboard: next-day groups, who's missing, skill mastery, misconceptions, mastery by standard, RACE writing |
 | `portals/*.html` | Example student portals (grade 6 math and ELA, 3 days each) |
 | `units/*.json` | Unit files for the examples. Open them in the builder to edit. |
@@ -21,10 +22,11 @@ Teachers build a unit with practice at three levels (below, at, and above grade 
 
 ## Add the logo
 
-The pages look for a file named `logo.png` next to `index.html`. Until it's there, the header shows a red star instead.
+The pages look for the school logo next to `index.html`, named `logo.png`, `logo.jpg`, `logo.jpeg`, `logo.webp`, or `logo.svg`. Until one is there, the header shows a red star instead. The logo appears in every page header, on the paper packet cover, and on the teacher guide slides.
 
-1. Save the logo image as `logo.png` (a PNG with a transparent background looks best).
-2. In the repository on GitHub, click **Add file → Upload files**, drag in `logo.png`, and click **Commit changes**.
+1. Rename the logo file to `logo` plus its extension, all lowercase (for example, `logo.png` or `logo.jpg`).
+2. In the repository on GitHub, click **Add file → Upload files**, drag in the file, and click **Commit changes**. Put it in the top folder, not in `lib`, `portals`, or `units`.
+3. Wait about a minute, then refresh the site (Ctrl+Shift+R, or Cmd+Shift+R on a Mac).
 
 ## What a unit includes
 
