@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Teacher Resources</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⭐</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#F7F5F5;--ink:#1A1A1A;--soft:#5C5555;--card:#FFFFFF;--line:#E3DADA;--red:#C8102E;--red-bg:#FBE9EC;--sg:#2B2B2B;--good:#1F8A4C}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#141111;--ink:#F5F1F1;--soft:#BFB5B5;--card:#1F1A1A;--line:#3A3131;--red-bg:#3A1119;--sg:#EDE6E6}}
+:root[data-theme="dark"]{--bg:#141111;--ink:#F5F1F1;--soft:#BFB5B5;--card:#1F1A1A;--line:#3A3131;--red-bg:#3A1119;--sg:#EDE6E6}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",Verdana,system-ui,sans-serif;font-size:1.05rem;line-height:1.55}
+h1,h2,h3{font-family:"Fredoka","Trebuchet MS",system-ui,sans-serif;line-height:1.15}
+.wrap{max-width:1080px;margin:0 auto;padding:0 1rem 4rem}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--sg);outline-offset:3px}
+/* ---- shared site header (same on every teacher page) ---- */
+.site{background:var(--card);border-bottom:2px solid var(--line)}
+.site-in{max-width:1080px;margin:0 auto;padding:.55rem 1rem;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap}
+.brand{font-family:"Fredoka","Trebuchet MS",system-ui,sans-serif;font-weight:700;font-size:1.2rem;text-decoration:none;color:var(--ink);display:inline-flex;gap:.4rem;align-items:center}
+.brand .logo{height:34px;width:auto;display:block}.brand .mark{color:#C8102E;font-size:1.3rem}
+.site nav{display:flex;gap:.25rem;margin-left:auto;flex-wrap:wrap}
+.site nav a{color:var(--soft);text-decoration:none;font-weight:700;padding:.4rem .85rem;border-radius:999px}
+.site nav a:hover{background:var(--bg);color:var(--ink)}
+.site nav a[aria-current="page"]{background:var(--ink);color:var(--bg)}
+.pagehead{margin:1.25rem 0 1rem}
+.pagehead h1{font-size:clamp(1.7rem,4.5vw,2.3rem);margin:0}
+.pagehead p{margin:.25rem 0 0;color:var(--soft);max-width:65ch}
+.panel{background:var(--card);border:2px solid var(--line);border-top:8px solid var(--red);border-radius:16px;padding:1rem 1.1rem;margin-bottom:1.25rem}
+.panel h2{margin:0 0 .25rem;font-size:1.35rem}
+.panel .sub{color:var(--soft);margin:0 0 .75rem}
+.acts{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.btn{border:0;border-radius:10px;padding:.6rem 1.1rem;background:var(--ink);color:var(--bg);font:600 1.05rem "Fredoka",sans-serif;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+.btn.go{background:var(--red);color:#fff}
+.btn.ghost{background:var(--card);color:var(--ink);border:2px solid var(--line)}
+.btn:disabled{opacity:.6;cursor:wait}
+.msg{min-height:1.4em;font-weight:700;color:var(--good);margin:.5rem 0 0}
+.msg.err{color:var(--red)}
+.links{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.75rem}
+.links a{display:block;text-decoration:none;border:2px solid var(--line);border-radius:12px;padding:.7rem .9rem;background:var(--bg)}
+.links a b{font-family:"Fredoka",sans-serif;display:block}
+.links a span{color:var(--soft);font-size:.95rem}
+/* ---- slides: 10in x 7.5in, the printable area of landscape letter paper ---- */
+.deckhead{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap;margin:1.5rem 0 .5rem}
+.deckhead h2{margin:0}
+.fit{overflow:hidden;margin:0 0 1rem;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.slide{width:960px;height:720px;background:#fff;color:#1A1A1A;position:relative;overflow:hidden;transform-origin:0 0;font-family:"Atkinson Hyperlegible",Verdana,sans-serif;font-size:21px;line-height:1.4;padding:44px 56px 70px 72px}
+.slide::before{content:"";position:absolute;left:0;top:0;bottom:0;width:18px;background:#C8102E}
+.slide h3{font:700 44px/1.1 "Fredoka","Trebuchet MS",sans-serif;margin:0 0 6px;color:#1A1A1A}
+.slide .kick{font:600 17px "Fredoka",sans-serif;text-transform:uppercase;letter-spacing:.08em;color:#C8102E;margin:0 0 4px}
+.slide ul{margin:14px 0 0;padding-left:26px}.slide li{margin:0 0 10px}
+.slide .logo{position:absolute;top:30px;right:40px;height:70px;width:auto}
+.slide .foot{position:absolute;left:72px;right:40px;bottom:0;height:62px;border-top:2px solid #E3DADA;display:flex;gap:14px;align-items:center;font-size:15px;color:#5C5555}
+.slide .foot b{color:#C8102E;font-family:"Fredoka",sans-serif;white-space:nowrap}
+.slide .foot .n{margin-left:auto;font-family:"Fredoka",sans-serif;font-weight:600}
+.slide table{border-collapse:collapse;width:100%;font-size:18px;margin-top:14px}
+.slide th,.slide td{border:1.5px solid #D9CECE;padding:7px 10px;text-align:left;vertical-align:top}
+.slide th{background:#F4EFEF;font-family:"Fredoka",sans-serif;font-weight:600}
+.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}
+.cols>div{border:2px solid #E3DADA;border-top:10px solid var(--c,#C8102E);border-radius:12px;padding:12px 14px;font-size:17.5px}
+.cols h4{font:700 23px "Fredoka",sans-serif;margin:0 0 4px}
+.cols ul{padding-left:20px;margin:6px 0 0}.cols li{margin:0 0 5px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:10px}
+.pill{display:inline-block;background:#1A1A1A;color:#fff;border-radius:999px;padding:1px 12px;font:600 16px "Fredoka",sans-serif;margin-right:6px}
+.title-slide{display:flex;flex-direction:column;justify-content:center}
+.title-slide h3{font-size:64px}
+.title-slide .big-logo{height:190px;width:auto;margin-bottom:18px;align-self:flex-start}
+.steps5{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:22px}
+.steps5>div{border:2px solid #E3DADA;border-radius:12px;padding:10px 12px;font-size:16.5px}
+.steps5 b{display:block;font:700 20px "Fredoka",sans-serif;color:#C8102E}
+@media print{.site,.pagehead,.panel,.deckhead,.noprint{display:none!important}body{background:#fff}.fit{box-shadow:none;border-radius:0;height:auto!important;margin:0;overflow:visible}.slide{transform:none!important;break-after:page}.fit:last-of-type .slide{break-after:auto}}
+@page{size:letter landscape;margin:.5in}
+</style>
+</head>
+<body>
+<header class="site"><div class="site-in">
+  <a class="brand" href="index.html"><img class="logo" src="logo.png" alt="" onerror="this.nextElementSibling.hidden=false;this.remove()"><span class="mark" aria-hidden="true" hidden>★</span> LSIS W.I.N Builder</a>
+  <nav aria-label="Main"><a href="index.html">Home</a><a href="builder.html">Build</a><a href="dashboard.html">Dashboard</a><a href="resources.html" aria-current="page">Resources</a></nav>
+</div></header>
+<div class="wrap">
+  <div class="pagehead"><h1>Teacher Resources</h1><p>Guides for running the W.I.N. cycle with the builder, the portal, and the paper packet.</p></div>
+
+  <section class="panel">
+    <h2>The W.I.N. Cycle: teacher guide</h2>
+    <p class="sub">A slideshow-style guide for PLCs, new teachers, and coaches: the cycle, the three levels, small group lessons, open-ended practice, supports, extension, regrouping, and the end-of-unit assessment. Each slide has talking points.</p>
+    <div class="acts"><button class="btn go" id="pdf">Download the guide (PDF)</button><button class="btn ghost" id="prt">Print</button><a class="btn ghost" href="#deck">View the slides</a></div>
+    <p class="msg" id="msg" aria-live="polite"></p>
+  </section>
+
+  <section class="panel" style="border-top-color:var(--ink)">
+    <h2>Other tools</h2>
+    <div class="links">
+      <a href="builder.html"><b>Build a unit</b><span>Choose standards, check all three levels and the assessment, then share or print.</span></a>
+      <a href="dashboard.html"><b>Data dashboard</b><span>Drop Canvas turn-ins to see tomorrow's Below, At, and Above groups.</span></a>
+      <a href="https://www.in.gov/doe/students/indiana-academic-standards/" target="_blank" rel="noopener"><b>Indiana Academic Standards</b><span>IDOE's official 2023 standards documents.</span></a>
+      <a href="https://www.in.gov/doe/students/assessment/ilearn/" target="_blank" rel="noopener"><b>ILEARN</b><span>IDOE's ILEARN page, with blueprints and item samplers.</span></a>
+    </div>
+  </section>
+
+  <div class="deckhead" id="deck"><h2>The slides</h2><span class="noprint" style="color:var(--soft)">12 slides · landscape</span></div>
+  <div id="slides">
+
+<div class="fit"><section class="slide title-slide">
+  <img class="big-logo" src="logo.png" alt="" onerror="this.remove()">
+  <p class="kick">LSIS W.I.N Builder · Teacher guide</p>
+  <h3>The W.I.N. Cycle</h3>
+  <p style="font-size:28px;margin:6px 0 0">What I Need: every student gets reteaching, practice, or extension, every day.</p>
+  <p style="color:#5C5555;margin-top:26px">Grades 5 and 6 math and ELA · Indiana Academic Standards (2023) · aligned to ILEARN</p>
+  <div class="foot"><b>Talking points</b><span>Use this guide to launch W.I.N. with a team or a new teacher. Every slide ends with notes like these.</span><span class="n">1</span></div>
+</section></div>
+
+<div class="fit"><section class="slide">
+  <img class="logo" src="logo.png" alt="" onerror="this.remove()">
+  <p class="kick">Why W.I.N.</p><h3>What W.I.N. time is</h3>
+  <ul>
+    <li>A protected block where students work on the standards <b>they</b> need, not the next lesson in the pacing guide.</li>
+    <li>Groups come from data, and they change as students grow. No one is stuck in a group.</li>
+    <li>Every day has three levels of practice: <b>Below</b>, <b>At</b>, and <b>Above</b> grade level.</li>
+    <li>Practice mirrors ILEARN: about half open-ended, with students showing work and explaining their thinking.</li>
+    <li>Every unit ends with a 12-question open-ended assessment that shows who mastered each standard.</li>
+  </ul>
+  <div class="foot"><b>Talking points</b><span>W.I.N. is not a second math or ELA class. It's targeted time: reteach, practice, or stretch, based on evidence.</span><span class="n">2</span></div>
+</section></div>
+
+<div class="fit"><section class="slide">
+  <img class="logo" src="logo.png" alt="" onerror="this.remove()">
+  <p class="kick">The big picture</p><h3>The W.I.N. cycle</h3>
+  <div class="two" style="grid-template-columns:470px 1fr;align-items:center">
+    <svg id="cycle" width="460" height="460" viewBox="0 0 460 460" role="img" aria-label="The W.I.N. cycle: assess, group, teach, practice, check, and back to assess"></svg>
+    <ol style="margin:0;padding-left:24px;font-size:19px">
+      <li><b>Assess:</b> yesterday's work, the score sheet, or the dashboard.</li>
+      <li><b>Group:</b> sort students into Below, At, and Above.</li>
+      <li><b>Teach:</b> the small group lesson, starting with Below.</li>
+      <li><b>Practice:</b> each student works at their level, showing work.</li>
+      <li><b>Check:</b> score with the key, note confidence, and regroup.</li>
+    </ol>
+  </div>
+  <div class="foot"><b>Talking points</b><span>The cycle turns every day. Today's check is tomorrow's assessment, so groups stay current.</span><span class="n">3</span></div>
+</section></div>
+
+<div class="fit"><section class="slide">
+  <img class="logo" src="logo.png" alt="" onerror="this.remove()">
+  <p class="kick">Planning</p><h3>A week of W.I.N.</h3>
+  <table>
+    <tr><th style="width:17%">When</th><th>What happens</th><th style="width:30%">What you use</th></tr>
+    <tr><td><b>Before the unit</b></td><td>Pick the standards students missed. Generate the unit and look over all three levels.</td><td>Builder, Steps 1 and 2</td></tr>
+    <tr><td><b>Day 1</b></td><td>Place students in Below, At, or Above using recent data. Run the first rotation.</td><td>Lesson plan, Level 1 to 3 worksheets</td></tr>
+    <tr><td><b>Days 2 to 4</b></td><td>Regroup from yesterday's score sheet or dashboard. Rotate.</td><td>Score sheet or dashboard groups</td></tr>
+    <tr><td><b>Last day</b></td><td>Give the end-of-unit assessment. Score with the guide.</td><td>Assessment and scoring guide</td></tr>
+    <tr><td><b>After</b></td><td>Reteach any standard below 80%. Pick the next W.I.N. standards.</td><td>Mastery by standard table</td></tr>
+  </table>
+  <div class="foot"><b>Talking points</b><span>A unit can be 1 to 10 days. The assessment always has 12 questions, whatever the length.</span><span class="n">4</span></div>
+</section></div>
+
+<div class="fit"><section class="slide">
+  <img class="logo" src="logo.png" alt="" onerror="this.remove()">
+  <p class="kick">Differentiation</p><h3>Three levels, every day</h3>
+  <div class="cols">
+    <div style="--c:#C8102E"><h4>Below · Level 1</h4>For students rebuilding the skill.<ul><li>Friendlier numbers</li><li>Fewer answer choices</li><li>Supports: hints, a worked example, sentence starters</li><li>Small group first</li></ul></div>
+    <div style="--c:#1A1A1A"><h4>At · Level 2</h4>On grade level, like ILEARN.<ul><li>Typed answers and multi-part items</li><li>About half open-ended</li><li>Show work on every problem</li><li>Explain how you know</li></ul></div>
+    <div style="--c:#8A8484"><h4>Above · Level 3</h4>Extension: students produce.<ul><li>Find and fix errors</li><li>Write and solve their own problems</li><li>Solve two ways and justify</li><li>Rewrite, argue, create</li></ul></div>
+  </div>
+  <div class="foot"><b>Talking points</b><span>Students see "Level 1, 2, 3." Keep "below" and "above" for teacher materials.</span><span class="n">5</span></div>
+</section></div>
+
+<div class="fit"><section class="slide">
+  <img class="logo" src="logo.png" alt="" onerror="this.remove()">
+  <p class="kick">The block</p><h3>The rotation</h3>
+  <table>
+    <tr><th>Station</th><th>Students</th><th>Math</th><th>ELA</th></tr>
+    <tr><td><b>Small group</b> with you</td><td>Below first, then At</td><td colspan="2">5-step lesson: big idea, notes, watch me, try it with me, stop and jot</td></tr>
+    <tr><td><b>Independent practice</b></td><td>Everyone, at their level</td><td>Show-your-work boxes, estimates, typed answers</td><td>Passage, evidence, written responses</td></tr>
+    <tr><td><b>Third station</b></td><td>After practice</td><td>IXL skills to a SmartScore goal</td><td>RACE written response</td></tr>
+  </table>
+  <p style="margin-top:18px"><span class="pill">30 min</span> 3 × 10 minutes &nbsp; <span class="pill">45 min</span> 3 × 15 minutes &nbsp; <span class="pill">Above</span> may skip small group and extend</p>
+  <div class="foot"><b>Talking points</b><span>Math has no RACE station. Math explanations live inside the practice as two-part questions.</span><span class="n">6</span></div>
+</section></div>
+
+<div class="fit"><section class="slide">
+  <img class="logo" src="logo.png" alt="" onerror="this.remove()">
+  <p class="kick">Teaching</p><h3>The small group lesson</h3>
+  <div class="steps5">
+    <div><b>1. Big idea</b>Say it in one sentence. Students say it back.</div>
+    <div><b>2. Notes</b>Students fill in the blanks as you talk.</div>
+    <div><b>3. Watch me</b>Model one step at a time. Students copy the steps.</div>
+    <div><b>4. Try it with me</b>Students try first, then check together.</div>
+    <div><b>5. Stop and jot</b>Students explain in their own words.</div>
+  </div>
+  <ul style="margin-top:26px"><li>The lesson plan has every blank filled in and the mistakes to watch for.</li><li>Students use the Small group notes page (paper) or the portal.</li><li>Keep it to 10 to 15 minutes. Send students to practice with the target fresh.</li></ul>
+  <div class="foot"><b>Talking points</b><span>I do, we do, you do. The jot tells you who is ready for Level 2.</span><span class="n">7</span></div>
+</section></div>
+
+<div class="fit"><section class="slide">
+  <img class="logo" src="logo.png" alt="" onerror="this.remove()">
+  <p class="kick">Rigor</p><h3>Open-ended practice, like ILEARN</h3>
+  <div class="two">
+    <div><b>About half of every set is open-ended</b><ul><li>Typed numeric answers, not just choices</li><li>Estimates with rounding steps</li><li>Two-part questions: solve, then explain</li><li>ELA short responses with two text details</li></ul></div>
+    <div><b>Every answer shows thinking</b><ul><li>A "Show your work" box on every math problem</li><li>"How I know" lines under ELA choices</li><li>Written responses are scored 0 to 2 with a guide</li><li>Answer keys name the misconception behind each wrong answer</li></ul></div>
+  </div>
+  <div class="foot"><b>Talking points</b><span>ILEARN mixes selected and constructed responses. Practicing both builds stamina and shows you why students miss.</span><span class="n">8</span></div>
+</section></div>
+
+<div class="fit"><section class="slide">
+  <img class="logo" src="logo.png" alt="" onerror="this.remove()">
+  <p class="kick">Level 3</p><h3>Extension: students produce</h3>
+  <table>
+    <tr><th style="width:26%">Task type</th><th>Math</th><th>ELA</th></tr>
+    <tr><td><b>Error analysis</b></td><td>Find a student's mistake, fix it, and write a tip.</td><td>Explain why a tempting answer is wrong.</td></tr>
+    <tr><td><b>Create</b></td><td>Write and solve a new word problem with the same math.</td><td>Write an ILEARN-style question with a key.</td></tr>
+    <tr><td><b>Justify</b></td><td>Solve two ways; argue which is more efficient.</td><td>Argue whether the title fits, with evidence.</td></tr>
+    <tr><td><b>Transform</b></td><td>Change the numbers and predict the effect.</td><td>Rewrite from another point of view or write a new ending.</td></tr>
+  </table>
+  <div class="foot"><b>Talking points</b><span>Above-level students aren't given more problems. They're given harder thinking. Score with the 0 to 3 guide.</span><span class="n">9</span></div>
+</section></div>
+
+<div class="fit"><section class="slide">
+  <img class="logo" src="logo.png" alt="" onerror="this.remove()">
+  <p class="kick">Access</p><h3>Needs supports</h3>
+  <div class="two">
+    <div><b>What the supports are</b><ul><li>A hint printed with each problem</li><li>A "Remember" box with the notes and a worked example</li><li>Sentence starters for written answers</li><li>One fewer answer choice</li></ul></div>
+    <div><b>Who gets them</b><ul><li>Level 1 worksheets by default</li><li>Any student with IEP, 504, or EL accommodations</li><li>Students turn them on in the portal with "I need supports"</li><li>Fade supports as accuracy rises</li></ul></div>
+  </div>
+  <div class="foot"><b>Talking points</b><span>In the packet, choose supports for Level 1 only, every level, or none. The answer keys adjust automatically.</span><span class="n">10</span></div>
+</section></div>
+
+<div class="fit"><section class="slide">
+  <img class="logo" src="logo.png" alt="" onerror="this.remove()">
+  <p class="kick">Data</p><h3>Check and regroup</h3>
+  <div class="cols">
+    <div style="--c:#C8102E"><h4>Below</h4>Under 60% correct, or confidence 1 to 2.<ul><li>Small group reteach</li><li>Level 1 with supports</li></ul></div>
+    <div style="--c:#1A1A1A"><h4>At</h4>60 to 84% correct.<ul><li>Level 2 practice</li><li>Small group as needed</li></ul></div>
+    <div style="--c:#8A8484"><h4>Above</h4>85% or more and confidence 3 to 4.<ul><li>Level 3 extension</li><li>IXL or RACE</li></ul></div>
+  </div>
+  <p style="margin-top:18px"><b>Canvas:</b> drop the submissions zip on the dashboard. &nbsp; <b>Paper:</b> mark with the key and fill in the class score sheet.</p>
+  <div class="foot"><b>Talking points</b><span>Groups are fluid. Move students every day the data says so, and watch for high confidence with low accuracy.</span><span class="n">11</span></div>
+</section></div>
+
+<div class="fit"><section class="slide">
+  <img class="logo" src="logo.png" alt="" onerror="this.remove()">
+  <p class="kick">Closing the cycle</p><h3>The end-of-unit assessment</h3>
+  <ul>
+    <li><b>12 open-ended questions</b> across every standard in the unit, however many days you planned.</li>
+    <li>Math: show-your-work boxes and two-part questions. ELA: a new passage and written responses.</li>
+    <li>Typed answers are 1 point. Written and two-part answers are 2 points, scored with the guide.</li>
+    <li>The key includes a <b>mastery by standard</b> table: 80% of a standard's points means mastered.</li>
+    <li>Standards below 80% become the next W.I.N. unit.</li>
+  </ul>
+  <p style="margin-top:16px"><span class="pill">Build</span> <span class="pill">Share or print</span> <span class="pill">Check</span> <span class="pill">Assess</span> <span class="pill">Repeat</span></p>
+  <div class="foot"><b>Talking points</b><span>Find the assessment in the builder under "Unit assessment" and in the paper packet.</span><span class="n">12</span></div>
+</section></div>
+
+  </div>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+/* the cycle diagram: five stops around a ring, drawn with inline colors so it prints and exports */
+(function(){const svg=$("#cycle"),cx=230,cy=230,r=160,labels=[["1","Assess"],["2","Group"],["3","Teach"],["4","Practice"],["5","Check"]];
+  let h=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#D9CECE" stroke-width="10"/>`;
+  labels.forEach((_,i)=>{const a=(-90+36+i*72)*Math.PI/180,x=cx+r*Math.cos(a),y=cy+r*Math.sin(a),deg=-90+36+i*72+90;
+    h+=`<path d="M-11,-10 L11,0 L-11,10 Z" fill="#8A8484" transform="translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${deg})"/>`});
+  labels.forEach(([n,t],i)=>{const a=(-90+i*72)*Math.PI/180,x=cx+r*Math.cos(a),y=cy+r*Math.sin(a);
+    h+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="56" fill="${i===2?"#1A1A1A":"#C8102E"}"/><text x="${x.toFixed(1)}" y="${(y-8).toFixed(1)}" fill="#fff" font-family="Fredoka,Trebuchet MS,sans-serif" font-weight="700" font-size="26" text-anchor="middle">${n}</text><text x="${x.toFixed(1)}" y="${(y+20).toFixed(1)}" fill="#fff" font-family="Fredoka,Trebuchet MS,sans-serif" font-weight="600" font-size="19" text-anchor="middle">${t}</text>`});
+  h+=`<text x="${cx}" y="${cy-6}" fill="#1A1A1A" font-family="Fredoka,Trebuchet MS,sans-serif" font-weight="700" font-size="34" text-anchor="middle">W.I.N.</text><text x="${cx}" y="${cy+24}" fill="#5C5555" font-family="Verdana,sans-serif" font-size="16" text-anchor="middle">every day</text>`;
+  svg.innerHTML=h})();
+/* scale the 960 x 720 slides to fit the page on any screen */
+function fit(){document.querySelectorAll(".fit").forEach(f=>{const s=f.firstElementChild,k=Math.min(1,f.clientWidth/960);s.style.transform=`scale(${k})`;f.style.height=720*k+"px"})}
+addEventListener("resize",fit);fit();
+const say=(t,err)=>{const m=$("#msg");m.textContent=t;m.className="msg"+(err?" err":"")};
+const LIBS=["lib/html2pdf.bundle.min.js","https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"];
+function loadLib(i){return new Promise((ok,no)=>{if(window.html2pdf)return ok();if(i>=LIBS.length)return no(new Error("the PDF maker couldn't load"));
+  const s=document.createElement("script");s.src=LIBS[i];s.onload=()=>ok();s.onerror=()=>{s.remove();loadLib(i+1).then(ok,no)};document.head.appendChild(s)})}
+/* one slide per landscape page; slides are rendered unscaled */
+async function makePDF(){await loadLib(0);try{await document.fonts.ready}catch(e){}
+  const slides=[...document.querySelectorAll(".slide")],saved=slides.map(s=>s.style.transform);slides.forEach(s=>s.style.transform="none");
+  try{const opt={margin:.5,image:{type:"jpeg",quality:.85},html2canvas:{scale:2,backgroundColor:"#ffffff",logging:false},jsPDF:{unit:"in",format:"letter",orientation:"landscape"},pagebreak:{mode:["css"]}};
+    let w=html2pdf().set(opt).from(slides[0]).toPdf();
+    slides.slice(1).forEach(s=>{w=w.get("pdf").then(pdf=>{pdf.addPage()}).from(s).toContainer().toCanvas().toPdf()});
+    return await w.outputPdf("blob")}
+  finally{slides.forEach((s,i)=>s.style.transform=saved[i])}}
+$("#pdf").onclick=async()=>{const b=$("#pdf");b.disabled=true;b.textContent="Making the PDF...";say("Making the guide. This takes a few seconds.");
+  try{const blob=await makePDF(),a=document.createElement("a"),url=URL.createObjectURL(blob);a.href=url;a.download="win-cycle-teacher-guide.pdf";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);say("Guide downloaded.")}
+  catch(e){say("Couldn't make the PDF here. Use Print, then choose Save as PDF.",true)}
+  finally{b.disabled=false;b.textContent="Download the guide (PDF)"}};
+$("#prt").onclick=()=>print();
+addEventListener("beforeprint",()=>document.querySelectorAll(".slide").forEach(s=>s.style.transform="none"));
+addEventListener("afterprint",fit);
+</script>
+</body>
+</html>
