@@ -12,6 +12,7 @@ Each teacher builds a unit for their W.I.N. group (below, at, or above grade lev
 | `builder.html` | WIN Builder, in 3 steps: **Choose standards** (grade 5 or 6, math or ELA), **Edit the unit**, **Preview and share** (a Canvas portal or a printable paper packet) |
 | `standards.js` | The grade 5 and grade 6 standards list the builder uses. Edit this file to fix a code or its wording. |
 | `resources.html` | Teacher Resources: ready-made small group slides for every standard and for each day of your unit, plus a short W.I.N. cycle guide for teachers. Present, print, or save as PDF. |
+| `ixl.js` | IXL skills for every grade 5 and 6 math and ELA standard, by name, plus links to IXL's Indiana (2023) skill plans. Edit the names here. |
 | `lessons.js` | The small group mini-lessons used by the builder's lesson plans and the Resources slides |
 | `logo.js` | Finds the school logo and shows it in every header, on the packet cover, and on the slides. |
 | `logo.png` (or `.jpg`) | The school logo. Add it yourself (see below). |
@@ -37,6 +38,7 @@ The pages look for the school logo next to `index.html`, named `logo.png`, `logo
   - **Above:** extension. About half the practice asks students to produce: find and fix an error, write and solve their own problem, justify two strategies, or rewrite and argue.
 - **Three rotations every day:** independent practice, small group with the teacher, and IXL or RACE. RACE is for ELA only; math uses IXL. The printed lesson plan has a rotation chart for splitting the group into three small groups.
 - **About half open-ended.** Each day's practice mixes selected-response and open-ended questions about 50/50. Open responses come with a 0 to 2 point scoring guide (0 to 3 for extension tasks).
+- **IXL skills.** Each day's IXL rotation lists up to six IXL skills that match that day's standards. Students type the skill name in the IXL search bar to find it. IXL's codes (like E.7) change every school year, so the builder leaves a **Code** box: copy the code from IXL's Indiana skill plan (linked in the builder) and it shows for students and on paper. **Suggest skills for this day's standards** fills the list again. The skill names come from `ixl.js`; check them against IXL once and fix any that don't match.
 - **Supports.** In the portal, students tap **I need supports**; it starts on for below-grade-level units. In the paper packet, supports match the unit unless you turn them on or off.
 - **End-of-unit assessment.** 12 open-ended questions across the unit's standards, however many days the unit has. Edit it under **Unit assessment** in Step 2. It prints with an answer key, a scoring guide, and a mastery-by-standard table.
 - **Small group slides.** The **Resources** page has ready-made slides for every standard's small group lesson, plus slides built from each day of the unit you made. Present them full screen, print them, or save them as a PDF.
