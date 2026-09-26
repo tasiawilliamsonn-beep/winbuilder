@@ -46,6 +46,7 @@ textarea{min-height:4.5rem}
 .type{font-size:.8rem;font-weight:700;border-radius:999px;padding:.1rem .6rem;background:var(--ind-bg)}
 .row{display:grid;grid-template-columns:1fr 1fr auto;gap:.5rem;align-items:end;margin-bottom:.4rem}
 .row.opt{grid-template-columns:auto 1.4fr 1fr auto}
+.row.ixlrow{grid-template-columns:1.4fr .5fr 1.4fr auto}
 .row.opt input[type=radio]{width:22px;height:22px;accent-color:var(--good);margin-bottom:.6rem}
 .adds{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.4rem}
 .live{margin-top:.6rem;background:var(--ind-bg);border-radius:10px;padding:.5rem .75rem;font-size:.95rem}
@@ -276,6 +277,8 @@ textarea.open{min-height:7rem;margin-top:.3rem}
 .skill{display:flex;gap:.9rem;align-items:flex-start;border:2px solid var(--line);border-radius:14px;padding:.8rem 1rem;margin-bottom:.6rem}
 .skill input{width:26px;height:26px;margin-top:.15rem;accent-color:var(--good);flex:none}
 .skill .t{font-weight:700}
+.skill .code{display:inline-block;background:var(--ink);color:var(--bg);border-radius:6px;padding:0 .45rem;font-size:.85rem;margin-right:.35rem}
+.planlink{display:inline-block;margin:0 0 .8rem;font-weight:700}
 .skill .d{font-size:.95rem;color:var(--soft)}
 .skill.got{background:var(--good-bg);border-color:var(--good)}
 .race{margin-top:1.5rem}
@@ -721,9 +724,10 @@ function renderIXL(el,D){
   el.innerHTML=`<section class="room ixl"><h2>IXL room</h2>
     <div class="goal"><b>Your goal:</b> SmartScore ${C.smart||80} on each skill, in order. Check it off when you get there.</div>
     <div class="std">${(D.standards||[]).map(s=>`<span>${esc(s)}</span>`).join("")}</div>
+    ${C.ixlPlan?`<a class="planlink" href="${esc(C.ixlPlan)}" target="_blank" rel="noopener">Open the Indiana skill plan in IXL ↗</a>`:""}
     ${(D.ixl||[]).map((k,i)=>`<label class="skill ${got[i]?"got":""}"><input type="checkbox" data-k="${i}" ${got[i]?"checked":""}>
-      <span><span class="t">${esc(k.t)}</span><br><span class="d">${fr(k.d||"")}</span></span></label>`).join("")}
-    <p style="font-size:.95rem;color:var(--soft)">Can't find a skill? Type its name in the IXL search bar.</p>
+      <span><span class="t">${k.c?`<span class="code">${esc(k.c)}</span>`:""}${esc(k.t)}</span><br><span class="d">${k.std?`${esc(k.std)} · `:""}${fr(k.d||"")}</span></span></label>`).join("")}
+    <p style="font-size:.95rem;color:var(--soft)">To find a skill: in IXL, type its name in the search bar${(D.ixl||[]).some(k=>k.c)?", or look for its code in your grade's skill list":""}.</p>
     ${D.race?`<div class="race"><h3>RACE response</h3><div class="prompt">${fr(D.race)}</div>
       ${RACE.map(([l,n,tip])=>`<div class="rrow"><div class="rletter" aria-hidden="true">${l}</div><div><label for="r${l}">${n}</label><small>${tip}</small><textarea id="r${l}" data-r="${l}">${esc(r[l]||"")}</textarea></div></div>`).join("")}</div>`:""}
   </section>`;
@@ -904,6 +908,7 @@ render();
 </script>
 <script src="standards.js"></script>
 <script src="lessons.js"></script>
+<script src="ixl.js"></script>
 <script>
 /* =====================================================================
    Standards-based generator: Indiana Academic Standards (2023), grades 5 and 6.
@@ -1287,6 +1292,13 @@ const genOf=c=>(STD_BY[c]||{}).gen||c;
 const gradeOf=c=>(STD_BY[c]||{}).grade||String(c).split(".")[0];
 /* estimation (number line) items fit these generators */
 const EST_GEN={"6.NS.4":1,"g5-fracadd":1};
+/* IXL skills for a day's standards come from ixl.js. Codes (like E.7) change each year, so teachers copy them from IXL's skill plan. */
+const IXLD=window.WIN_IXL||{plan:{},skills:{}};
+const ixlPlan=(subject,grade)=>((IXLD.plan||{})[subject]||{})[String(grade)]||"";
+function ixlFor(codes){const out=[],seen=new Set();
+  codes.forEach(c=>(IXLD.skills[c]||[]).forEach(t=>{if(!seen.has(t)&&out.filter(x=>x.std===c).length<3){seen.add(t);out.push({t,c:"",std:c,d:`Type "${t}" in the IXL search bar.`})}}));
+  return out.slice(0,6)}
+const codesOfDay=D=>(D.standards||[]).map(x=>(String(x).match(/(\d\.[A-Z]+\.\d+)/)||[])[1]).filter(Boolean);
 /* each teacher runs W.I.N. with one group, so a unit is built for one level */
 const GROUPS={below:["Below grade level","Friendlier numbers, fewer answer choices, and supports turned on"],at:["At grade level","On-grade rigor that mirrors ILEARN: typed answers, two-part questions, and written explanations"],above:["Above grade level","Extension: about half the practice asks students to produce, justify, analyze errors, and create"]};
 function generateUnit({grade,subject,codes,days,perDay,seed,title,group}){group=GROUPS[group]?group:"at";
@@ -1296,7 +1308,7 @@ function generateUnit({grade,subject,codes,days,perDay,seed,title,group}){group=
   const skills=codes.map(c=>({id:sid(c),name:SHORT[c]||stdInfo(subject,c)[1],std:"IN "+c}));
   const plan=[];for(let d=0;d<days;d++){const per=Math.max(1,Math.ceil(codes.length/days));const s=codes.slice((d*per)%codes.length,(d*per)%codes.length+per);plan.push(s.length?s:[codes[d%codes.length]])}
   const unit={id:(title||"unit").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,30)+"-"+Math.random().toString(36).slice(2,7),
-    title:title||`Grade ${grade} ${subject==="math"?"Math":"ELA"} WIN: ${codes.map(c=>SHORT[c]||c).slice(0,3).join(", ")}`,room:"",smart:80,grade,subject,group,supports:group==="below",third:subject==="ela"?"race":"ixl",
+    title:title||`Grade ${grade} ${subject==="math"?"Math":"ELA"} WIN: ${codes.map(c=>SHORT[c]||c).slice(0,3).join(", ")}`,room:"",smart:80,grade,subject,group,ixlPlan:ixlPlan(subject,grade),supports:group==="below",third:subject==="ela"?"race":"ixl",
     tools:{calc:false,mult:true,fracbars:true,numline:true,formulas:true},turnInNote:"Then open today's WIN assignment in Canvas, paste, and submit.",skills,days:[]};
   const nExt=group==="above"?Math.ceil(perDay/2):0;
   const mixIn=(a,b)=>{const out=[];for(let i=0;i<Math.max(a.length,b.length);i++){if(a[i])out.push(a[i]);if(b[i])out.push(b[i])}return out};
@@ -1312,7 +1324,7 @@ function generateUnit({grade,subject,codes,days,perDay,seed,title,group}){group=
       if(group!=="below"&&!day.ind.some(q=>q.type==="open")){const j=day.ind.map((q,i)=>q.type==="num"?i:-1).filter(i=>i>=0).pop();if(j!==undefined)day.ind[j]=twoPart(day.ind[j],cs[0])}
       if(nExt)day.ind=mixIn(day.ind,make(2,nExt).map((q,k)=>extendMath(q,cs[k%cs.length],k+d)));
       const L=ML[genOf(cs[0])];day.sg=lessonSteps(L);
-      day.ixl=cs.map(c=>({t:`IXL skill plan: Indiana 2023, ${c}`,d:`In IXL, open the Indiana (2023) grade ${grade} skill plan and choose a skill under ${c}.`})).concat([{t:"IXL Math Arena",d:"Only after you reach your SmartScore goal."}]);
+      day.ixl=ixlFor(cs);
     } else {
       const fs_=cs.map(genOf);const pk=pickPassage(fs_,d);const P=PASS[pk];
       day.passage={title:P.title,text:P.text};
@@ -1336,7 +1348,7 @@ function generateUnit({grade,subject,codes,days,perDay,seed,title,group}){group=
       /* above: extension tasks replace the written responses */
       if(nExt)day.ind=mix(sel,[...Array(nExt)].map((_,k)=>extendEla(P,cs[k%cs.length],k+d)));
       const lk=fs_.find(f=>EL[f]);day.sg=lessonSteps(lk?EL[lk]:ELA_GENERIC);
-      day.race=fs_.map(f=>RACE_FOR[f]).find(Boolean)||P.race;
+      day.race=fs_.map(f=>RACE_FOR[f]).find(Boolean)||P.race;day.ixl=ixlFor(cs);
     }
     unit.days.push(day);
   });
@@ -1906,7 +1918,10 @@ function render(){
 function upgradeUnit(U){let R0=R;R=rng(String(U.id||"u").split("").reduce((a,c)=>a*31+c.charCodeAt(0)>>>0,7));
   /* an earlier version stored three levels per day; a unit now has one level, its group */
   if(!GROUPS[U.group])U.group="at";if(U.supports===undefined)U.supports=U.group==="below";
-  U.days.forEach(D=>{delete D.below;delete D.above});
+  U.days.forEach(D=>{delete D.below;delete D.above;
+    /* replace the old "open the skill plan" placeholders with real skills for the day's standards */
+    if(!D.ixl||!D.ixl.length||D.ixl.some(k=>/^IXL skill plan:/.test(k.t||""))){const s=ixlFor(codesOfDay(D));if(s.length||!D.ixl)D.ixl=s}});
+  if(U.ixlPlan===undefined)U.ixlPlan=ixlPlan(U.subject,U.grade);
   if(!U.test){const codes=U.skills.map(k=>String(k.std||"").replace(/^IN\s*/,"")).filter(c=>STD_BY[c]&&STD_BY[c].subject===U.subject&&(U.subject==="ela"||MG[genOf(c)]));
     if(codes.length){const fc={};codes.forEach(c=>{fc[genOf(c)]=fc[genOf(c)]||c});U.test=buildTest(U,codes,U.subject,U.grade||gradeOf(codes[0]),fc,U.group);U.test.items.forEach(q=>{if(!U.skills.find(s=>s.id===q.skill)){const code=Object.keys(STD_BY).find(c=>sid(c)===q.skill)||q.skill;U.skills.push({id:q.skill,name:SHORT[code]||code,std:"IN "+code})}})}
     else{const pool=U.days.flatMap(D=>D.ind).filter(q=>q.type!=="est");U.test={title:"End-of-unit assessment",items:[...Array(Math.min(12,pool.length))].map((_,i)=>{const q=JSON.parse(JSON.stringify(pool[i%pool.length]));
@@ -1978,9 +1993,10 @@ function editPanel(){
   <section class="panel ixl">
     <h2>${U.third==="race"&&U.subject==="ela"?"✍️ RACE":"💻 IXL"}</h2><p class="sub">Rotation 3 of 3.${U.subject==="ela"?" RACE or IXL: choose under Unit settings.":" Math uses IXL."}</p>
     ${U.third==="race"?`<p class="sub">Students highlight evidence in the passage, then write a RACE response with sentence starters and a live checklist.</p>`:""}
-    ${U.third==="race"?"":D.ixl.map((k,i)=>`<div class="row"><label class="f">IXL skill name or code${inp(`${P}.ixl.${i}.t`,k.t)}</label><label class="f">Directions${inp(`${P}.ixl.${i}.d`,k.d)}</label>
-      <button class="btn ghost sm" data-act="delIxl" data-i="${i}">Remove</button></div>`).join("")}
-    ${U.third==="race"?"":`<div class="adds"><button class="btn ghost sm" data-act="addIxl">Add IXL skill</button></div>`}
+    ${U.third==="race"&&U.subject==="ela"?"":`<p class="note" style="margin:0 0 .5rem">Students type each skill name in the IXL search bar. Add the code (like E.7) from ${U.ixlPlan?`<a href="${esc(U.ixlPlan)}" target="_blank" rel="noopener">IXL's Indiana skill plan for grade ${esc(U.grade)}</a>`:"IXL's Indiana (2023) skill plan"} so students can find it faster. Codes change each school year.</p>
+    ${D.ixl.map((k,i)=>`<div class="row ixlrow"><label class="f">IXL skill name${inp(`${P}.ixl.${i}.t`,k.t,"Unit rates: word problems")}</label><label class="f">Code<small> optional</small>${inp(`${P}.ixl.${i}.c`,k.c||"","E.7")}</label><label class="f">Directions${inp(`${P}.ixl.${i}.d`,k.d)}</label>
+      <button class="btn ghost sm" data-act="delIxl" data-i="${i}">Remove</button></div>`).join("")||"<p class='note'>No IXL skills yet.</p>"}
+    <div class="adds"><button class="btn ghost sm" data-act="addIxl">Add IXL skill</button><button class="btn ghost sm" data-act="ixlFill">Suggest skills for this day's standards</button></div>`}
     ${U.subject==="math"?"":`<label class="f" style="margin-top:.75rem">RACE prompt<small>${U.third==="race"?"":" leave blank to skip RACE today"}</small>${ta(`${P}.race`,D.race)}</label>`}
   </section>
   `}
@@ -2138,7 +2154,8 @@ document.addEventListener("click",async e=>{
     delWrong:()=>Q[i].wrongs.splice(k,1),
     addS:()=>D.sg.push({tag:"listen",title:"",text:""}),
     delS:()=>D.sg.splice(i,1),upS:()=>mv(D.sg,i,-1),downS:()=>mv(D.sg,i,1),
-    addIxl:()=>D.ixl.push({t:"",d:""}),delIxl:()=>D.ixl.splice(i,1),
+    addIxl:()=>D.ixl.push({t:"",c:"",d:""}),delIxl:()=>D.ixl.splice(i,1),
+    ixlFill:()=>{const s=ixlFor(codesOfDay(D));if(!s.length){say("No suggested IXL skills for this day's standards. Add them by name.",true);return}if(!D.ixl.length||confirm("Replace this day's IXL skills with the suggested ones?"))D.ixl=s},
     step:()=>{step=i;scrollTo(0,0)},
     gset:()=>{if(G[b.dataset.k]!==b.dataset.v){G[b.dataset.k]=b.dataset.v;if(b.dataset.k!=="group")G.codes=[]}saveG()},
     gall:()=>{const cs=stdList(G.grade,G.subject).map(x=>x[0]).filter(c=>domainOf(c)===b.dataset.d);const all=cs.every(c=>G.codes.includes(c));G.codes=all?G.codes.filter(c=>!cs.includes(c)):[...new Set([...G.codes,...cs])]},
@@ -2348,7 +2365,8 @@ function pPractice(D,d){const list=D.ind||[];if(!list.length)return "";const mat
 function pThird(D,d){const race=U.third==="race",ixl=!race&&(D.ixl||[]).length;if(!ixl&&!D.race)return "";
   let h=`${whoLine()}${dayHead(D,d,race?"RACE response":D.race?"IXL and RACE":"IXL")}`;
   if(ixl)h+=`<h2>IXL</h2><p>Work on each skill in order. Stop when you reach a SmartScore of <b>${esc(U.smart||80)}</b>, then check it off.</p>
-    <table class="grid"><tr><th class="c">Done</th><th>Skill</th><th class="c">My SmartScore</th></tr>${D.ixl.map(k=>`<tr><td class="c"><span class="box"></span></td><td><b>${esc(k.t)}</b>${k.d?`<br><span class="soft">${pfr(k.d)}</span>`:""}</td><td></td></tr>`).join("")}</table>`;
+    <p class="soft">To find a skill, type its name in the IXL search bar.</p>
+    <table class="grid"><tr><th class="c">Done</th><th class="c">Code</th><th>Skill</th><th class="c">My SmartScore</th></tr>${D.ixl.map(k=>`<tr><td class="c"><span class="box"></span></td><td class="c">${k.c?`<b>${esc(k.c)}</b>`:`<span class="soft">____</span>`}</td><td><b>${esc(k.t)}</b>${k.std?` <span class="soft">(${esc(k.std)})</span>`:""}</td><td></td></tr>`).join("")}</table>`;
   if(D.race){const cite=U.subject==="ela"||D.passage?"Quote the text in quotation marks.":"Show your evidence: the numbers or steps you used.";
     h+=`<h2>RACE response</h2>${D.passage&&D.passage.text?`<p class="soft">Use the passage on your practice worksheet. Underline your evidence.</p>`:""}<div class="prompt">${pfr(D.race)}</div>
     ${RACE_P.map(([l,n,tip])=>`<div class="rrow"><div class="rl">${l}</div><div class="rb"><b>${n}</b> <span class="soft">${tip||cite}</span><div class="lines"><i></i><i></i></div></div></div>`).join("")}
