@@ -43,6 +43,18 @@ The pages look for the school logo next to `index.html`, named `logo.png`, `logo
 - **End-of-unit assessment.** 12 open-ended questions across the unit's standards, however many days the unit has. Edit it under **Unit assessment** in Step 2. It prints with an answer key, a scoring guide, and a mastery-by-standard table.
 - **Small group slides.** The **Resources** page has ready-made slides for every standard's small group lesson, plus slides built from each day of the unit you made. Present them full screen, print them, or save them as a PDF.
 
+## Results and the administrator report
+
+The dashboard opens on **Results**: one simple view of the whole unit.
+
+- **Five numbers:** students served, practice turned in, average first-try accuracy, students at mastery (80% or higher), and growth from the first day to the last.
+- **Summary and next steps** written in plain English: which standards to reteach, and which students to keep in a below-grade-level group or move up.
+- **Mastery by standard:** first day, latest day, change, assessment score, and how many students mastered each standard.
+- **Student progress:** each student's score by day, with a status of Mastered, Developing, or Needs reteach.
+- **Administrator report (PDF):** a one-page report with the school logo, teacher, class, W.I.N. group, unit, dates, the five numbers, the summary, mastery by standard, and next steps. Student names are off unless you check **Include student names**. **Print report** prints the same page.
+
+**Teachers who use paper** open **Add turn-ins or paper scores** and use **Enter scores from paper**: pick the unit, class, day (or End-of-unit assessment), and standards, then type how many each student got right. Paper scores and Canvas turn-ins land in the same results and report.
+
 ## Getting data to the teacher
 
 1. Each student's turn-in starts with a **readable summary** (problems finished, first-try score for each standard, confidence, what was tricky). You can read it right in SpeedGrader.
