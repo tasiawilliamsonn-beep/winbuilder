@@ -128,10 +128,11 @@ details.panel[open]>summary::after{content:"Hide"}
 .hide{display:none!important}
 @media (max-width:640px){.steps{grid-template-columns:1fr}.steps button small{display:none}}
 </style>
+<script src="logo.js"></script>
 </head>
 <body>
 <header class="site"><div class="site-in">
-  <a class="brand" href="index.html"><img class="logo" src="logo.png" alt="" onerror="this.nextElementSibling.hidden=false;this.remove()"><span class="mark" aria-hidden="true" hidden>★</span> LSIS W.I.N Builder</a>
+  <a class="brand" href="index.html"><img class="logo" data-logo alt="" hidden><span class="mark" aria-hidden="true" hidden>★</span> LSIS W.I.N Builder</a>
   <nav aria-label="Main"><a href="index.html">Home</a><a href="builder.html" aria-current="page">Build</a><a href="dashboard.html">Dashboard</a><a href="resources.html">Resources</a></nav>
 </div></header>
 <div class="wrap">
@@ -461,7 +462,7 @@ const skillOf=id=>{const s=(C.skills||[]).find(x=>x.id===id);return s?{n:s.name,
 const REAS_OPTS=["Yes, it's close","No, it's too big","No, it's too small"];
 
 /* prepare questions */
-C.days.forEach(D=>{D.below=D.below||[];D.above=D.above||[];[D.below,D.ind,D.above].forEach(l=>l.forEach(q=>{
+C.days.forEach(D=>{[D.ind].forEach(l=>l.forEach(q=>{
   if(q.type!=="est")return;
   q._nums=parseSpec(q.nums).filter(x=>!x.bad);
   q._ans=null;
@@ -505,12 +506,10 @@ nameEl.addEventListener("input",()=>store.set("name",nameEl.value));
 C.subject=C.subject||"math";C.third=C.third||(C.subject==="ela"?"race":"ixl");C.tools=C.tools||{calc:false,mult:true,fracbars:true,numline:true,formulas:true};
 const ELA=C.subject==="ela";
 const ROOMS=[{id:"ind",nm:"Independent",icon:ELA?"📖":"✏️"},{id:"sg",nm:"Small group",icon:"👂"},C.third==="race"?{id:"race",nm:"RACE room",icon:"✍️"}:{id:"ixl",nm:"IXL room",icon:"💻"}];
-/* three levels of practice: Level 1 is below grade level, Level 2 at grade level, Level 3 extension (above) */
-const LVK=["below","ind","above"],LVN={below:"Level 1",ind:"Level 2",above:"Level 3: Extension"};
-const LKEY=d=>{const k=store.get("lvl","ind"),D=C.days[d];return (D[k]||[]).length?k:"ind"};
-const LIST=d=>C.days[d][LKEY(d)];
-const wk=d=>`w${d}`+({ind:"",below:"b",above:"a"})[LKEY(d)];
-const SUP=()=>!!store.get("sup",false);
+const LIST=d=>C.days[d].ind;
+const wk=d=>`w${d}`;
+/* supports start on for units built for a below-grade-level group; students can turn them on or off */
+const SUP=()=>!!store.get("sup",!!C.supports);
 const getS=i=>(store.get(wk(day),{}))[i]||{r:{},e:"",rs:"",wr:[],we:[],wx:[],wa:[],ok:0,done:false};
 const saveS=(i,s)=>{const all=store.get(wk(day),{});all[i]=s;store.set(wk(day),all)};
 
@@ -557,14 +556,12 @@ function workText(q,s){
 function renderInd(el,D){
   el.innerHTML=`<section class="room ind"><h2>Independent practice</h2>
     <div class="goal"><b>Goal:</b> ${fr(D.target)}<br>${ELA?"Read the passage and highlight as you go. Then answer the questions. The page checks your answers.":"Work through each step. The page checks your work as you go. Use the scratch pad and math tools to show your thinking."}</div>
-    <div class="lvlbar">${D.below.length||D.above.length?`<div class="lvls" role="group" aria-label="Level">${LVK.filter(k=>(D[k]||[]).length).map(k=>`<button data-lv="${k}" aria-pressed="${LKEY(day)===k}">${LVN[k]}</button>`).join("")}</div>`:""}
-      <label class="sup"><input type="checkbox" id="supT" ${SUP()?"checked":""}> 🧩 I need supports</label></div>
+    <div class="lvlbar"><label class="sup"><input type="checkbox" id="supT" ${SUP()?"checked":""}> 🧩 I need supports</label></div>
     ${SUP()?workedHTML(D):""}
     ${D.passage?passageHTML(D,true):""}
     <div class="score"><span id="sc"></span><div class="bar"><i id="bar"></i></div></div>
     ${LIST(day).map((q,i)=>`<div class="q" id="q${i}"></div>`).join("")||"<p>No problems today.</p>"}</section>`;
   LIST(day).forEach((q,i)=>renderProblem(i));updScore();hookPassage(el);
-  el.querySelectorAll("[data-lv]").forEach(b=>b.onclick=()=>{store.set("lvl",b.dataset.lv);openPads.clear();renderInd(el,D)});
   $("#supT").onchange=e=>{store.set("sup",e.target.checked);renderInd(el,D)};
 }
 /* with supports on: the teacher's worked example from the small group lesson, answers filled in */
@@ -833,7 +830,7 @@ function estMis(q,str){const v=parseNum(str);if(isNaN(v))return "";const r=q._nu
   if(Math.abs(fold(a,q.op)-v)<.2&&Math.abs(q._ans-v)>.011)return MIS.exact;
   if(Math.abs(v-q._ans)<=1.01)return MIS.slip;return ""}
 function buildPayload(d){
-  const D=C.days[d],Q=LIST(d),lk=LKEY(d),w=store.get(wk(d),{}),tn=store.get(`turn${d}`,{}),items=[],skills={};
+  const D=C.days[d],Q=LIST(d),w=store.get(wk(d),{}),tn=store.get(`turn${d}`,{}),items=[],skills={};
   const addSk=sk=>{skills[sk.n]=sk.std;return sk.n};
   Q.forEach((q,i)=>{const s=w[i]||{};
     if(q.type==="open")return;
@@ -854,8 +851,7 @@ function buildPayload(d){
   const jot=jk.map(k=>{const sv=store.get(`sg${d}s${k}`,[]);return sv[sv.length-1]||""}).filter(Boolean).join(" | ");
   const probs=Q.map((q,i)=>{const s=w[i]||{};const ex=q.type==="est"?" "+q._nums.map(plain).join(` ${q.op||""} `):"";
     return{p:(String(q.prompt||"").slice(0,90)+ex).trim(),d:s.done?1:0,w:s.done?workText(q,s):""}});
-  /* each level reports as its own set so the dashboard compares the same problems */
-  return{v:3,set:C.id+(lk==="ind"?"":"-"+lk),setTitle:(C.title||"")+(lk==="ind"?"":` (${LVN[lk]})`),lvl:lk,sup:SUP()?1:0,grade:C.grade||"",room:C.room||"",name:nameEl.value.trim(),day:d+1,dayTitle:D.title||"",t:Date.now(),
+  return{v:3,set:C.id,setTitle:C.title||"",lvl:C.group||"at",sup:SUP()?1:0,grade:C.grade||"",room:C.room||"",name:nameEl.value.trim(),day:d+1,dayTitle:D.title||"",t:Date.now(),
     skills:Object.entries(skills).map(([n,std])=>({n,std})),items,probs,
     sg:{done:store.get(`sg${d}done`,false)?1:0,br,bt,jot},ixl:(D.ixl||[]).map((_,i)=>!!store.get(`ixl${d}`,[])[i]),
     race:store.get(`race${d}`,{}),rc:raceChecks(D.race,store.get(`race${d}`,{})),hl:Object.keys(store.get(`hl${d}`,{})).length,subject:C.subject,conf:tn.conf||0,help:tn.help||[],tricky:tn.tricky||""};
@@ -867,7 +863,7 @@ function renderTurn(el,D){
   const need=C.third==="race"?0:Math.min(2,(D.ixl||[]).length),ixlN=store.get(`ixl${day}`,[]).filter(Boolean).length,race=store.get(`race${day}`,{}),raceN=["R","A","C","E"].filter(x=>(race[x]||"").trim()).length;
   el.innerHTML=`<section class="room turn"><h2>Turn in Day ${day+1}</h2>
     <ul class="checklist">
-      <li>${fin===NQ?"✅":"⬜"} Independent practice (${LVN[LKEY(day)]}): ${fin} of ${NQ} finished</li>
+      <li>${fin===NQ?"✅":"⬜"} Independent practice: ${fin} of ${NQ} finished</li>
       <li>${store.get(`sg${day}done`,false)?"✅":"⬜"} Small group lesson</li>
       ${need?`<li>${ixlN>=need?"✅":"⬜"} IXL skills: ${ixlN} of ${need}</li>`:""}
       ${D.race?`<li>${raceN===4?"✅":"⬜"} RACE response: ${raceN} of 4 parts</li>`:""}
@@ -895,7 +891,7 @@ function renderTurn(el,D){
     const pl=buildPayload(day),sk={};pl.items.forEach(x=>{if(!x.att)return;x.sk.forEach(n=>{sk[n]=sk[n]||[0,0];sk[n][1]++;if(x.ft)sk[n][0]++})});
     const std=n=>{const k=pl.skills.find(z=>z.n===n);return k&&k.std?` (${k.std})`:""};
     const lines=Object.entries(sk).map(([n,[a,b]])=>`- ${n}${std(n)}: ${a} of ${b} right on the first try`);
-    const txt=`${nameEl.value.trim()}, WIN Day ${day+1}${C.title?` (${C.title})`:""}, ${LVN[LKEY(day)]}${SUP()?" with supports":""}: ${fin} of ${NQ} problems finished, confidence ${tn.conf} of 4.\n${LIST(day).map((q,i)=>q.type==="open"&&(getS(i).val||"").trim()?`Problem ${i+1}: ${getS(i).val.trim()}\n`:"").join("")}${lines.length?lines.join("\n")+"\n":""}${tn.tricky?`Tricky: ${tn.tricky}\n`:""}WIN205:${enc(pl)}`;
+    const txt=`${nameEl.value.trim()}, WIN Day ${day+1}${C.title?` (${C.title})`:""}${SUP()?", with supports":""}: ${fin} of ${NQ} problems finished, confidence ${tn.conf} of 4.\n${LIST(day).map((q,i)=>q.type==="open"&&(getS(i).val||"").trim()?`Problem ${i+1}: ${getS(i).val.trim()}\n`:"").join("")}${lines.length?lines.join("\n")+"\n":""}${tn.tricky?`Tricky: ${tn.tricky}\n`:""}WIN205:${enc(pl)}`;
     $("#turnTxt").value=txt;
     try{await navigator.clipboard.writeText(txt);$("#tcmsg").textContent="Copied. Now paste it in Canvas."}
     catch(e){$("#tcmsg").textContent="Copy didn't work. Open \"Copy button not working?\" below.";$("#turnTxt").closest("details").open=true;$("#turnTxt").select()}};
@@ -907,6 +903,7 @@ render();
 </html>
 </script>
 <script src="standards.js"></script>
+<script src="lessons.js"></script>
 <script>
 /* =====================================================================
    Standards-based generator: Indiana Academic Standards (2023), grades 5 and 6.
@@ -1049,34 +1046,6 @@ function estItem(L){const w=()=>ri(1,L>1?12:6),f=()=>{const d=pick([3,4,5,6,8,9,
   const op=pick(["+","−","×"]);let a=[w(),...f()],b=[w(),...f()];if(op==="−"&&a[0]<=b[0]+1)a[0]=b[0]+ri(2,5);
   return{type:"est",prompt:pick(["Estimate.","Estimate by rounding each number first."]),nums:`${a[0]} ${a[1]}/${a[2]}, ${b[0]} ${b[1]}/${b[2]}`,op,skill:sid("6.NS.4")}}
 
-/* ---------- math mini-lessons ---------- */
-const ML={
-"6.NS.1":["Positive and negative numbers describe opposite directions. 0 is the starting point.","Above, gaining, and depositing are [[positive]]. Below, losing, and owing are [[negative]]. 0 is the [[starting point|start]].","A diver is 15 feet below sea level. →?\nStep 1: Find the starting point: sea level is 0.\nStep 2: Below sea level is the negative direction.\nStep 3: The diver is at **−15**.","The temperature rose 8 degrees. Which number? [[8|+8]]","Give your own example of a negative number in real life. What does 0 mean in your example?"],
-"6.NS.2":["Opposites are the same distance from 0 on opposite sides.","The opposite of 6 is [[−6|-6]]. The opposite of −6 is [[6]]. 0 is its own [[opposite]].","−(−9) = ?\nStep 1: The opposite of 9 is −9.\nStep 2: The opposite of −9 is 9.\nStep 3: So −(−9) = **9**.","−(−4) = [[4]]","Why is the opposite of the opposite of a number the number itself?"],
-"6.NS.3":["On a number line, numbers get greater as you move right.","A number to the right is always [[greater|bigger|larger]]. Every negative number is [[less|smaller]] than every positive number.","Order: 3, −7, −2, 5\nStep 1: Negatives come first. −7 is farther left than −2.\nStep 2: Then 3, then 5.\nStep 3: **−7, −2, 3, 5**.","Which is greater, −3 or −8? [[−3|-3]]","Explain why −3 is greater than −8 even though 8 is bigger than 3."],
-"6.NS.4":["Read the problem, decide the operation, then estimate to check your answer.","If the problem puts equal groups together, [[multiply]]. If it asks how many groups fit, [[divide]]. Always [[estimate]] first.","Each bag holds 3/4 pound. How much do 4 bags hold?\nStep 1: Equal groups, so multiply: 4 × 3/4.\nStep 2: 4 × 3 = 12, so 12/4.\nStep 3: 12/4 = **3 pounds**. Estimate: 4 bags of almost 1 pound is almost 4. ✓","Pens cost $1.25 each. How much do 4 pens cost? [[5|5.00|$5|$5.00]]","How did estimating help you check your answer?"],
-"6.NS.5":["Order of operations: parentheses, exponents, multiply and divide left to right, add and subtract left to right.","Do [[parentheses]] first, then [[exponents]]. Multiply and divide from [[left]] to right.","4 + 3 × 2² = ?\nStep 1: Exponent first: 2² = 4.\nStep 2: Multiply: 3 × 4 = 12.\nStep 3: Add: 4 + 12 = **16**.","6 + 2 × 5 = [[16]]","Why do we all need to follow the same order of operations?"],
-"6.NS.6":["The GCF is the greatest factor two numbers share. The LCM is the least multiple they share.","GCF uses [[factors]]. LCM uses [[multiples]].","Rewrite 24 + 36 with the GCF.\nStep 1: Factors of 24 and 36 in common: 1, 2, 3, 4, 6, 12.\nStep 2: The greatest is 12.\nStep 3: 24 + 36 = **12(2 + 3)**.","GCF of 18 and 27: [[9]]","When would you use the LCM in real life?"],
-"6.NS.7":["Equivalent expressions are equal for every value of the variable.","The distributive property: 3(x + 2) = 3x + [[6]]. You can only combine [[like]] terms.","Simplify 4(x + 5) + 2x\nStep 1: Distribute: 4x + 20.\nStep 2: Add 2x: 4x + 2x = 6x.\nStep 3: **6x + 20**.","5(n + 3) = 5n + [[15]]","How can you check whether two expressions are equivalent?"],
-"6.NS.8":["An exponent tells how many times to multiply the base by itself.","3² means 3 × [[3]]. (1/2)² means 1/2 × [[1/2]].","(2/3)² = ?\nStep 1: Multiply the fraction by itself: 2/3 × 2/3.\nStep 2: Numerators: 2 × 2 = 4. Denominators: 3 × 3 = 9.\nStep 3: **4/9**.","4² = [[16]]","Why is 3² not the same as 3 × 2?"],
-"6.RP.1":["Fractions, decimals, and percents are three ways to write the same amount.","Percent means per [[hundred|100]]. To change a decimal to a percent, move the decimal [[two|2]] places right.","Write 3/5 as a percent.\nStep 1: Make the denominator 100: 3/5 = 60/100.\nStep 2: 60 per hundred is 60%.\nStep 3: **3/5 = 0.6 = 60%**.","1/4 = [[25]]%","Which form, fraction, decimal, or percent, is easiest for you? Why?"],
-"6.RP.2":["A unit rate tells how much for exactly 1 unit.","To find a unit rate, [[divide]] the total by the number of units. Rate words include [[per]].","12 pencils cost $6. Cost per pencil?\nStep 1: Divide the cost by the number of pencils.\nStep 2: 6 ÷ 12 = 0.5.\nStep 3: **$0.50 per pencil**.","60 miles in 3 hours is [[20]] miles per hour.","Where do you see unit rates in real life?"],
-"6.RP.3":["In a ratio table, you multiply or divide both quantities by the same number.","To keep a ratio equivalent, [[multiply]] both numbers by the same amount. Adding the same amount does [[not]] keep the ratio.","2 cups flour : 3 cups sugar. How much sugar for 8 cups flour?\nStep 1: 2 × 4 = 8, so the factor is 4.\nStep 2: 3 × 4 = 12.\nStep 3: **12 cups of sugar**.","3 : 5 = 9 : [[15]]","Why doesn't adding the same number to both parts keep a ratio equivalent?"],
-"6.RP.4":["Use a tape diagram, table, or double number line to solve ratio problems.","In a tape diagram, all parts are [[equal]]. Percent is a ratio out of [[100|hundred]].","Boys to girls is 2:3. There are 25 students. How many girls?\nStep 1: Draw 5 equal parts (2 + 3).\nStep 2: 25 ÷ 5 = 5 students per part.\nStep 3: Girls = 3 parts = **15**.","25% of 80 = [[20]]","Which model helps you most for ratio problems? Why?"],
-"6.RP.5":["The dependent variable changes because of the independent variable.","In c = 5t, [[c]] is the dependent variable and [[t]] is the independent variable.","Tickets cost $5 each. Write an equation.\nStep 1: Total cost depends on the number of tickets.\nStep 2: Cost = 5 × tickets.\nStep 3: **c = 5t**.","If c = 5t, then when t = 4, c = [[20]]","How can a table help you write an equation?"],
-"6.AF.1":["A variable stands for a number. Evaluate by substituting and computing.","3n means 3 [[times|×]] n. \"5 more than\" means [[add]] 5.","Evaluate 4a + b when a = 3, b = 2.\nStep 1: Substitute: 4 × 3 + 2.\nStep 2: Multiply: 12 + 2.\nStep 3: **14**.","2x + 1 when x = 5: [[11]]","Write an expression for a real situation. What does your variable stand for?"],
-"6.AF.2":["Substitute each value to see if it makes the equation or inequality true.","A solution makes the statement [[true]]. To check, [[substitute]] the value.","Which makes 3x = 21 true: 6, 7, or 8?\nStep 1: 3 × 6 = 18. No.\nStep 2: 3 × 7 = 21. Yes!\nStep 3: **x = 7**.","Does x = 4 make x + 5 > 8 true? [[yes]]","Why should you always check your answer by substituting?"],
-"6.AF.3":["Use inverse operations to get the variable alone.","The inverse of adding is [[subtracting|subtraction]]. The inverse of multiplying is [[dividing|division]].","Solve 4x = 28.\nStep 1: x is multiplied by 4.\nStep 2: Divide both sides by 4.\nStep 3: **x = 7**. Check: 4 × 7 = 28 ✓","x + 9 = 15, x = [[6]]","Why do you do the same thing to both sides of an equation?"],
-"6.AF.4":["Inequalities show a range of values. Watch whether the number itself is included.","\"At least\" means [[≥|>=]]. \"No more than\" means [[≤|<=]].","You must be at least 48 inches tall to ride.\nStep 1: At least 48 means 48 or more.\nStep 2: 48 is included, so use ≥.\nStep 3: **h ≥ 48**.","\"Fewer than 10\" uses the symbol [[<]]","Give an example of a rule in your life that could be written as an inequality."],
-"6.AF.5":["Points on the same vertical or horizontal line: count the distance, crossing 0 when needed.","The first coordinate is [[x]]. When the signs are different, [[add]] the distances from 0.","Distance from (2, −3) to (2, 4)?\nStep 1: Same x, so count up and down.\nStep 2: −3 to 0 is 3 units. 0 to 4 is 4 units.\nStep 3: 3 + 4 = **7 units**.","Distance from (1, 2) to (6, 2): [[5]]","Why do you add when the points are on opposite sides of 0?"],
-"6.GM.1":["Use the conversion factor. Converting to a smaller unit means more of them.","If 1 mile ≈ 1.6 km, then miles to km means [[multiply]]. Km to miles means [[divide]].","1 kg ≈ 2.2 lb. How many pounds is 5 kg?\nStep 1: Each kg is 2.2 lb.\nStep 2: 5 × 2.2 = 11.\nStep 3: **About 11 lb**.","1 inch ≈ 2.5 cm. 4 inches ≈ [[10]] cm","How can you tell if your converted answer should be bigger or smaller?"],
-"6.GM.2":["Triangle angles add to 180°. Quadrilateral angles add to 360°.","A triangle's angles add to [[180]]°. A quadrilateral's angles add to [[360]]°.","A triangle has angles 50° and 60°. Third angle?\nStep 1: 50 + 60 = 110.\nStep 2: 180 − 110 = 70.\nStep 3: **70°**.","Angles 90°, 90°, 100° in a quadrilateral. Fourth: [[80]]","Why do you think a quadrilateral's angles add to twice a triangle's?"],
-"6.GM.3":["Break a complex shape into rectangles and triangles, then add (or subtract) the areas.","Area of a triangle = base × height ÷ [[2|two]]. For a cut-out corner, [[subtract]] its area.","Rectangle 10 × 4 with a triangle on top (base 10, height 3).\nStep 1: Rectangle: 10 × 4 = 40.\nStep 2: Triangle: 10 × 3 ÷ 2 = 15.\nStep 3: **55 square units**.","Triangle, base 8, height 5: area [[20]]","When would you subtract areas instead of adding them?"],
-"6.GM.4":["Volume = length × width × height, even with fraction edges.","V = l × w × [[h]]. Volume is measured in [[cubic]] units.","Box: 4 × 3 × 1/2.\nStep 1: 4 × 3 = 12.\nStep 2: 12 × 1/2 = 6.\nStep 3: **6 cubic units**.","2 × 5 × 1/2 = [[5]]","Why is volume measured in cubic units?"],
-"6.DS.1":["Graphs summarize data. A box plot shows five numbers: minimum, Q1, median, Q3, maximum.","The IQR is Q3 minus [[Q1|q1]]. The range is maximum minus [[minimum|min]].","Box plot: 2, 5, 8, 12, 15. Find the IQR.\nStep 1: Q3 = 12, Q1 = 5.\nStep 2: 12 − 5 = 7.\nStep 3: **IQR = 7**.","Box plot 1, 4, 6, 9, 14. IQR = [[5]]","What does a big IQR tell you about the data?"],
-"6.DS.2":["A statistical question expects different answers (variability).","\"How old am I?\" is [[not]] statistical. \"How old are students in my school?\" [[is]] statistical.","Is \"How many siblings do my classmates have?\" statistical?\nStep 1: Ask many people.\nStep 2: Expect different answers.\nStep 3: **Yes, it's statistical**.","\"What time is lunch?\" statistical? [[no]]","Write your own statistical question about our class."],
-"6.DS.3":["Mean and median describe the center. Range and IQR describe the spread.","To find the median, first put the data in [[order]]. To find the mean, add and then [[divide]].","Data: 7, 3, 9, 5, 6. Find the median.\nStep 1: Order: 3, 5, 6, 7, 9.\nStep 2: The middle value is the 3rd.\nStep 3: **Median = 6**.","Mean of 4, 6, 8: [[6]]","When is the median a better measure than the mean?"]
-};
 
 /* ---------- ELA passages and item banks (original text) ---------- */
 const PASS={
@@ -1194,22 +1163,6 @@ function elaBank(code){
   if(s==="5.W.7"){const g=pick(PUNC5);return MC(g[0],g[1],g[2],s,"Commas go after opening words and between list items. Apostrophes show who owns something.")}
   return null;
 }
-const EL={
-"6.RC.1":["Good readers find what the text says AND what it suggests, then prove it with evidence.","An inference is a smart guess based on [[evidence|clues]] and what you already know. You prove it by [[citing|quoting]] the text.","The story says: \"Her lungs burned before she reached the corner.\"\nStep 1: What does the text say? Her lungs burned quickly.\nStep 2: What do I know? Burning lungs mean you're out of breath.\nStep 3: Inference: **Maya is not used to running yet.**","\"He stared at it, his stomach twisting.\" Theo feels [[worried|guilty|nervous|upset]].","What is the difference between what a text says and what it suggests?"],
-"6.RC.2":["A theme is a life lesson. Details in the story build it.","A theme is a message about [[life]], not just the topic. A summary should not include [[opinions|opinion]].","Topic: running. What does Maya learn?\nStep 1: What does the character want? To run a full mile.\nStep 2: What changes? She improves one mailbox at a time.\nStep 3: Theme: **Small, steady steps lead to growth.**","The topic is \"mistakes.\" A theme could be: Everyone makes mistakes, but it matters how you [[fix|respond|handle]] them.","How is a theme different from a topic?"],
-"6.RC.3":["Every part of a story has a job: to introduce, build, turn, or resolve.","The [[turning point|climax]] is where things change. The [[resolution|ending]] is where the problem is solved.","Why does paragraph 4 of \"The Last Lap\" matter?\nStep 1: What happens? Maya practices for three weeks.\nStep 2: What does it lead to? Tryout day.\nStep 3: Job: **It builds toward the climax.**","A paragraph that introduces the characters is part of the [[exposition|beginning]].","Pick a paragraph. What would the story lose without it?"],
-"6.RC.5":["The central idea is what the whole text is mostly about. Details support it.","A detail is [[smaller|narrower]] than the central idea. An objective summary leaves out [[opinions|opinion]].","\"Why Honeybees Dance\"\nStep 1: What is each paragraph about? Problem, direction, distance, research, why it matters.\nStep 2: What connects them all? The dance.\nStep 3: Central idea: **Bees use a dance to share where food is.**","\"Karl von Frisch won the Nobel Prize\" is a [[detail]].","How do you know if an idea is central or just a detail?"],
-"6.RC.6":["Authors introduce an idea, then illustrate it with examples and elaborate with more detail.","Authors can introduce ideas with a [[question|problem]], an anecdote, or a fact. Examples [[illustrate|show]] the idea.","How does the bee text introduce the dance?\nStep 1: First sentence: a problem bees have.\nStep 2: Then: bees can't draw or speak.\nStep 3: **The author introduces the dance as the solution to a problem.**","An anecdote is a short [[story]].","Why might an author start with a question?"],
-"6.RC.7":["Authors write to inform, persuade, or entertain. Their word choices show their perspective.","Words like \"I believe\" show the author's [[perspective|opinion]]. A text that explains how something works is written to [[inform|explain]].","\"Later Start Times Would Help Students\"\nStep 1: Look for clues: \"I believe schools should start later.\"\nStep 2: The author gives reasons and evidence.\nStep 3: **Purpose: to persuade.**","A story about a dragon is mostly written to [[entertain]].","How can you tell an author's perspective without being told directly?"],
-"6.RC.8":["Strong claims are backed by reasons and evidence. Weak claims are not.","A supported claim has [[evidence|facts|a source]]. \"Everyone knows\" usually signals an [[unsupported|opinion]] claim.","Is \"Some schools reported better attendance\" supported?\nStep 1: Is there a fact or source? Yes, schools reported it.\nStep 2: Could we check it? Yes.\nStep 3: **Supported.**","\"Starting later is simply the right thing to do.\" This claim is [[unsupported|not supported]].","What makes evidence convincing?"],
-"6.RC.10":["Use the words and sentences around an unknown word to figure out its meaning.","Context clues can be [[examples|definitions|synonyms]] or opposites. Always [[reread|check]] the sentence with your meaning.","\"a good patch of flowers\"\nStep 1: A patch OF flowers.\nStep 2: The bee found it somewhere outside.\nStep 3: **patch = a small area.**","\"Her legs felt like concrete\" means her legs felt [[heavy|tired]].","What do you do when context clues aren't enough?"],
-"6.RC.11":["Knowing how two words are related helps you understand both.","A page is [[part]] of a book. An apple is a kind of [[fruit]].","wheel : bicycle\nStep 1: Is a wheel a part of a bicycle? Yes.\nStep 2: So the relationship is part/whole.\nStep 3: **branch : tree** matches.","spark : fire is a [[cause]]/effect relationship.","Make your own part/whole pair."],
-"6.RC.12":["Words can mean almost the same thing but carry different feelings.","Connotation is the [[feeling]] a word gives. \"Thrifty\" is [[positive]]; \"cheap\" is negative.","curious vs. nosy\nStep 1: Both mean wanting to know things.\nStep 2: \"Nosy\" suggests being rude.\nStep 3: **curious = positive, nosy = negative.**","\"Confident\" is positive; \"[[arrogant]]\" is negative.","Why do authors choose words carefully?"],
-"6.RC.13":["Greek and Latin roots are clues to word meaning.","\"port\" means [[carry]]. \"spect\" means [[look]].","\"spectator\"\nStep 1: Find the root: spect.\nStep 2: spect = look.\nStep 3: **A spectator is a person who watches.**","\"audible\": aud means [[hear]]","List three words with the same root."],
-"6.W.6":["Clear sentences use the right pronouns and complete thoughts.","Use \"I\" as a [[subject]] and \"me\" as an object. A fragment is missing a complete [[thought|idea]].","Jamal and ___ went to the store.\nStep 1: Take out \"Jamal and.\"\nStep 2: \"I went\" sounds right; \"me went\" doesn't.\nStep 3: **Jamal and I went to the store.**","\"Because it rained.\" is a [[fragment]]","How can reading a sentence aloud help you find errors?"],
-"6.W.7":["Punctuation helps readers understand how ideas connect.","A semicolon joins two complete [[sentences]]. A colon can introduce a [[list]].","The rain stopped ___ we went outside.\nStep 1: \"The rain stopped\" is complete.\nStep 2: \"we went outside\" is complete.\nStep 3: **Use a semicolon: The rain stopped; we went outside.**","Extra information needs commas on [[both]] sides.","When would you use a semicolon instead of a period?"]
-};
-const ELA_GENERIC=["We will read closely, talk about the text, and write about it using evidence.","Evidence is a [[quote|quotation]] or detail from the text. RACE means Restate, Answer, Cite, [[Explain]].","Restate: turn the question into a sentence.\nAnswer: give your answer.\nCite: quote the text.\nExplain: tell how the quote proves your answer.","Cite means to use [[evidence|a quote]] from the text.","What makes a written answer strong?"];
 const ELA_PASS_FOR={"6.RC.1":["maya","theo","bees"],"6.RC.2":["maya","theo"],"6.RC.3":["maya","theo"],"6.RC.4":["maya"],"6.RC.5":["bees","sleep"],"6.RC.6":["bees"],"6.RC.7":["bees","sleep"],"6.RC.8":["sleep"],"6.RC.9":["bees"],"6.RC.10":["maya","theo","bees"],"6.RC.12":["maya","sleep"],"6.W.1":["sleep"],"6.W.2":["bees"],"6.W.3":["maya"],"6.CC.2":["theo"],"6.CC.3":["sleep"]};
 const RACE_FOR={"6.RC.4":"Compare how Maya in \"The Last Lap\" and Theo in \"The Bread Starter\" respond to a setback. How are their lessons similar?","6.RC.9":"The text uses both description and numbers (like 1973 and \"longer waggle, farther away\"). How do these details work together to help you understand the dance?","6.W.1":"Should your school start later? State your claim and support it with at least one piece of evidence from the text.","6.W.2":"Explain how the waggle dance works to someone who has never heard of it. Use facts from the text.","6.W.3":"Write what happens on Maya's first Monday of practice. Use details from the story so your ending fits.","6.CC.2":"Write a question you would ask Theo, then answer it the way you think he would, using evidence.","6.CC.3":"Paraphrase the author's view AND the counterclaim in your own words. Then explain which is stronger."};
 
@@ -1298,27 +1251,6 @@ Object.assign(MG,{
   const t=vals[Math.floor(vals.length/2)],k=vals.filter(v=>v===t).length;return NUM(`A line plot shows how much water each beaker holds in liters: ${str}. What is the total of the beakers that hold ${frac(t,d)} liter?`,frac(k*t,d),[[k,"Counted the beakers instead of adding their amounts"],[frac(t,d),"Gave one beaker's amount"]],X5,`Count the ${frac(t,d)} marks, then multiply by ${frac(t,d)}.`,"liters")}
 });
 
-/* ---------- grade 5 math mini-lessons: big idea, notes, watch me, we do, stop and jot ---------- */
-Object.assign(ML,{
-"g5-compare":["To compare fractions and decimals, think about where each one sits on a number line.","Numbers farther to the [[right]] are greater. Write decimals with the same number of [[places|digits]] before comparing.","Compare 0.5 and 0.47 →?\nStep 1: Write 0.5 as 0.50.\nStep 2: Compare hundredths: 50 hundredths and 47 hundredths.\nStep 3: **0.5 > 0.47**.","Which is greater, 2/3 or 2/5? [[2/3]]","Why isn't the decimal with more digits always greater?"],
-"g5-fracdiv":["A fraction is also a division problem: the numerator divided by the denominator.","3/4 means 3 [[÷|divided by]] 4. When 3 pizzas are shared by 4 people, each gets [[3/4]] of a pizza.","4 friends share 3 sandwiches equally. How much does each get?\nStep 1: Sharing means divide: 3 ÷ 4.\nStep 2: 3 ÷ 4 is the fraction 3/4.\nStep 3: **Each friend gets 3/4 of a sandwich.**","5 ÷ 8 as a fraction: [[5/8]]","Draw a picture to show why 2 ÷ 3 = 2/3."],
-"g5-place":["Each place is worth 10 times the place to its right.","Multiplying by 10 moves every digit one place to the [[left]]. Dividing by 10 moves every digit one place to the [[right]].","3.45 × 10 = ?\nStep 1: Each digit moves one place left.\nStep 2: The 3 ones become 3 tens.\nStep 3: **3.45 × 10 = 34.5**.","6.2 ÷ 10 = [[0.62]]","Why doesn't adding a zero to the end of 3.45 multiply it by 10?"],
-"g5-round":["Rounding finds the nearest easier number at a place you choose.","Look at the digit to the [[right]] of the rounding place. 5 or more rounds [[up]].","Round 4.372 to the nearest tenth.\nStep 1: The tenths digit is 3.\nStep 2: The digit to its right is 7, which is 5 or more.\nStep 3: **4.372 ≈ 4.4**.","Round 8.649 to the nearest hundredth: [[8.65]]","Why doesn't rounding just mean cutting off digits?"],
-"g5-percent":["Percent means \"out of 100.\"","45% means 45 out of [[100]]. 1/2 is the same as [[50]]%.","Write 3/5 as a percent.\nStep 1: Make the denominator 100: multiply by 20.\nStep 2: 3 × 20 = 60, so 60/100.\nStep 3: **3/5 = 60%**.","1/4 = [[25]]%","Where do you see percents outside of school?"],
-"g5-divide":["Division splits a number into equal groups. The remainder is what's left over.","The remainder must be [[less|smaller]] than the divisor. Estimate the [[quotient]] first.","Divide 745 ÷ 23.\nStep 1: Estimate: 23 is about 25, and 750 ÷ 25 = 30.\nStep 2: 23 × 32 = 736, and 745 − 736 = 9.\nStep 3: **32 R 9**. 9 is less than 23. ✓","100 ÷ 12 = 8 R [[4]]","In a word problem, how do you decide what to do with the remainder?"],
-"g5-decimal":["Decimal operations work like whole numbers. Place value tells where the decimal point goes.","When adding or subtracting, line up the [[decimal points]]. Always [[estimate]] to check.","2.5 + 1.38 = ?\nStep 1: Write 2.5 as 2.50.\nStep 2: Line up the points and add: 2.50 + 1.38.\nStep 3: **3.88**. Estimate: 3 + 1 = 4. ✓","0.4 × 0.2 = [[0.08]]","How does estimating help you place the decimal point?"],
-"g5-fracadd":["To add or subtract fractions, the pieces must be the same size first.","Find a common [[denominator]]. Add or subtract only the [[numerators]].","1/2 + 1/3 = ?\nStep 1: A common denominator is 6.\nStep 2: 1/2 = 3/6 and 1/3 = 2/6.\nStep 3: **3/6 + 2/6 = 5/6**. Estimate: ½ + a bit less than ½ is a bit less than 1. ✓","1/4 + 1/2 = [[3/4]]","Why can't you add the denominators?"],
-"g5-fracmul":["Multiplying by a fraction finds a part of a group.","2/3 × 3/4 means 2/3 [[of]] 3/4. Multiply the numerators and multiply the [[denominators]].","3 × 2/5 = ?\nStep 1: 3 groups of 2/5.\nStep 2: 3 × 2 = 6, so 6/5.\nStep 3: **6/5 = 1 1/5**.","1/2 × 1/3 = [[1/6]]","Why does multiplying by a fraction less than 1 give a smaller answer?"],
-"g5-fracdivide":["Dividing asks how many groups fit, or how big each share is.","4 ÷ 1/3 asks how many [[thirds]] fit in 4. 1/3 ÷ 4 splits one third into [[4]] parts.","3 ÷ 1/4 = ?\nStep 1: How many fourths are in 1 whole? 4.\nStep 2: In 3 wholes: 3 × 4.\nStep 3: **12**.","2 ÷ 1/5 = [[10]]","Draw a model for 1/2 ÷ 3."],
-"g5-multiply":["The standard algorithm multiplies by each place, then adds the partial products.","When multiplying by the tens digit, write a [[zero|0]] first. Then [[add]] the partial products.","46 × 23 = ?\nStep 1: 46 × 3 = 138.\nStep 2: 46 × 20 = 920.\nStep 3: **138 + 920 = 1,058**.","32 × 11 = [[352]]","Why do you write a zero before multiplying by the tens digit?"],
-"g5-expr":["Parentheses show which step happens first.","In (4 + 5) × 2, you [[add]] first. Without parentheses, multiply before you [[add]].","Write: add 6 and 3, then multiply by 4.\nStep 1: Adding happens first, so it goes in parentheses: (6 + 3).\nStep 2: Then × 4.\nStep 3: **(6 + 3) × 4 = 36**.","(10 − 4) × 3 = [[18]]","How can parentheses change the value of an expression?"],
-"g5-shapes":["Shapes belong to families. A shape can have more than one name.","Every square is a [[rectangle]] and a rhombus. A [[trapezoid]] has at least one pair of parallel sides.","Is every rectangle a parallelogram?\nStep 1: A parallelogram needs 2 pairs of parallel sides.\nStep 2: A rectangle has 2 pairs of parallel sides.\nStep 3: **Yes, every rectangle is a parallelogram.**","A triangle with a 90° angle is a [[right]] triangle.","Is every rhombus a square? Explain."],
-"g5-coord":["An ordered pair tells how far to move over, then up.","In (3, 5), move 3 to the [[right]], then 5 [[up]].","Plot (4, 2).\nStep 1: Start at (0, 0).\nStep 2: Move 4 right along the x-axis.\nStep 3: **Move 2 up and mark the point.**","(0, 6) is on the [[y]]-axis.","Why does the order of the numbers in (2, 7) matter?"],
-"g5-convert":["Converting changes the unit, not the amount.","Big unit to small unit: [[multiply]]. Small unit to big unit: [[divide]].","How many inches are in 4 feet?\nStep 1: 1 foot = 12 inches.\nStep 2: Feet to inches is big to small, so multiply.\nStep 3: **4 × 12 = 48 inches**.","3 meters = [[300]] centimeters","How can you check that your conversion makes sense?"],
-"g5-volume":["Volume counts how many unit cubes fill a solid.","V = length × width × [[height]]. Volume is measured in [[cubic]] units.","A box is 4 cm × 3 cm × 2 cm.\nStep 1: One layer: 4 × 3 = 12 cubes.\nStep 2: There are 2 layers.\nStep 3: **12 × 2 = 24 cubic cm**.","5 × 2 × 3 = [[30]] cubic units","How is volume different from area?"],
-"g5-area":["Area of a rectangle is length × width, even with fractions.","Area uses [[square]] units. To find it, [[multiply]] the side lengths.","A rectangle is 1/2 ft by 3/4 ft.\nStep 1: Area = 1/2 × 3/4.\nStep 2: Multiply: 3/8.\nStep 3: **3/8 square foot**.","2/3 × 1/2 = [[1/3|2/6]] square unit","Draw a model to show 1/2 × 1/3."],
-"g5-lineplot":["A line plot shows how often each value happens. Each X is one data point.","Each X stands for [[one]] measurement. To find a total, [[add]] the values.","Line plot: 1/4, 1/4, 1/2, 3/4, 3/4, 3/4\nStep 1: Count the 3/4 marks: 3.\nStep 2: Total of those: 3 × 3/4.\nStep 3: **9/4 = 2 1/4**.","Three Xs at 1/2 total [[1 1/2|3/2]]","What question could you answer with a line plot of plant heights?"]
-});
 
 /* ---------- grade 5 ELA banks ---------- */
 const FIG=[
@@ -1348,11 +1280,6 @@ const PUNC5=[
  ["Which sentence uses an apostrophe correctly?","The students' desks are in rows.",[["The student's desks are in rows, all of them.","Used a singular possessive for many owners"],["The students desk's are in rows.","Put the apostrophe on the wrong word"]]],
  ["Which sentence uses a comma correctly with yes or no?","Yes, I finished my book.",[["Yes I finished, my book.","Put the comma in the wrong place"],["Yes I, finished my book.","Put the comma in the wrong place"]]]
 ];
-Object.assign(EL,{
-"5.RC.12":["Figurative language says one thing but means another, to paint a picture in your mind.","A simile compares using [[like]] or as. A metaphor says one thing [[is]] another. An idiom doesn't mean what the words say.","\"The hallway was an oven.\"\nStep 1: Is a hallway really an oven? No.\nStep 2: What do ovens have? Heat.\nStep 3: **The hallway was very hot.**","\"as busy as a bee\" is a [[simile]]","Write a simile about today's weather."],
-"5.W.6":["Clear writing keeps verb tenses steady and uses the right describing words.","Keep the same [[tense]] unless the time changes. Adverbs like \"quickly\" describe [[verbs|actions]].","Yesterday we ___ (walk) to school.\nStep 1: \"Yesterday\" tells us it's the past.\nStep 2: Past tense of walk: walked.\nStep 3: **Yesterday we walked to school.**","either ... [[or]]","How can reading your writing aloud help you catch tense shifts?"],
-"5.W.7":["Punctuation tells readers when to pause and who is speaking.","Use a comma after an [[introductory|opening]] word or phrase. Put spoken words inside [[quotation marks]].","After school ___ we played outside.\nStep 1: \"After school\" introduces the sentence.\nStep 2: Put a comma after it.\nStep 3: **After school, we played outside.**","The cat's toy: the apostrophe shows [[possession|ownership]]","When do you use an apostrophe, and when do you not?"]
-});
 
 /* ---------- build a unit ---------- */
 function stdInfo(subj,code){const x=STD_BY[code];return x?[x.c,x.t,x.e]:[code,code,0]}
@@ -1360,16 +1287,19 @@ const genOf=c=>(STD_BY[c]||{}).gen||c;
 const gradeOf=c=>(STD_BY[c]||{}).grade||String(c).split(".")[0];
 /* estimation (number line) items fit these generators */
 const EST_GEN={"6.NS.4":1,"g5-fracadd":1};
-function generateUnit({grade,subject,codes,days,perDay,seed,title}){
+/* each teacher runs W.I.N. with one group, so a unit is built for one level */
+const GROUPS={below:["Below grade level","Friendlier numbers, fewer answer choices, and supports turned on"],at:["At grade level","On-grade rigor that mirrors ILEARN: typed answers, two-part questions, and written explanations"],above:["Above grade level","Extension: about half the practice asks students to produce, justify, analyze errors, and create"]};
+function generateUnit({grade,subject,codes,days,perDay,seed,title,group}){group=GROUPS[group]?group:"at";
   R=rng(seed||Date.now());grade=String(grade||gradeOf(codes[0])||"6");
   const famCode={};codes.forEach(c=>{famCode[genOf(c)]=famCode[genOf(c)]||c});
   const retag=(q,c)=>{if(q)q.skill=sid(c);return q};
   const skills=codes.map(c=>({id:sid(c),name:SHORT[c]||stdInfo(subject,c)[1],std:"IN "+c}));
   const plan=[];for(let d=0;d<days;d++){const per=Math.max(1,Math.ceil(codes.length/days));const s=codes.slice((d*per)%codes.length,(d*per)%codes.length+per);plan.push(s.length?s:[codes[d%codes.length]])}
   const unit={id:(title||"unit").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,30)+"-"+Math.random().toString(36).slice(2,7),
-    title:title||`Grade ${grade} ${subject==="math"?"Math":"ELA"} WIN: ${codes.map(c=>SHORT[c]||c).slice(0,3).join(", ")}`,room:"",smart:80,grade,subject,third:subject==="ela"?"race":"ixl",
+    title:title||`Grade ${grade} ${subject==="math"?"Math":"ELA"} WIN: ${codes.map(c=>SHORT[c]||c).slice(0,3).join(", ")}`,room:"",smart:80,grade,subject,group,supports:group==="below",third:subject==="ela"?"race":"ixl",
     tools:{calc:false,mult:true,fracbars:true,numline:true,formulas:true},turnInNote:"Then open today's WIN assignment in Canvas, paste, and submit.",skills,days:[]};
-  const nAbove=Math.max(3,Math.ceil(perDay/2));
+  const nExt=group==="above"?Math.ceil(perDay/2):0;
+  const mixIn=(a,b)=>{const out=[];for(let i=0;i<Math.max(a.length,b.length);i++){if(a[i])out.push(a[i]);if(b[i])out.push(b[i])}return out};
   plan.forEach((cs,d)=>{
     const day={title:`Day ${d+1}: ${cs.map(c=>SHORT[c]||c).join(" and ")}`,target:"I can "+cs.map(c=>TGT[c]||lower(stdInfo(subject,c)[1])).join(", and I can ")+".",below:[],ind:[],above:[],sg:[],standards:cs.map(c=>`IN ${c}: ${stdInfo(subject,c)[1]}`),ixl:[],race:""};
     if(subject==="math"){
@@ -1377,10 +1307,10 @@ function generateUnit({grade,subject,codes,days,perDay,seed,title}){
       const make=(L,n)=>{const seen=new Set(),out=[];let est=0;for(let i=0;i<n;i++){const c=cs[i%cs.length],gn=genOf(c);let q;
         for(let t=0;t<8;t++){q=retag(EST_GEN[gn]&&est<2&&R()<.35?estItem(L):MG[gn](L),c);const key=q.type==="est"?q.nums:q.prompt.replace(/[\d.]+/g,"#").slice(0,40);if(!seen.has(key)||t===7){seen.add(key);break}}
         if(q.type==="est")est++;out.push(q)}return out};
-      day.below=balanceMath(make(1,perDay),cs[0]);
-      day.ind=balanceMath(make(2,perDay),cs[0]);
-      if(!day.ind.some(q=>q.type==="open")){const j=day.ind.map((q,i)=>q.type==="num"?i:-1).filter(i=>i>=0).pop();if(j!==undefined)day.ind[j]=twoPart(day.ind[j],cs[0])}
-      day.above=make(2,nAbove).map((q,k)=>extendMath(q,cs[k%cs.length],k+d));
+      /* below: friendlier numbers; at: on-grade numbers with a two-part item; above: on-grade items mixed with extension tasks */
+      day.ind=balanceMath(make(group==="below"?1:2,perDay-nExt),cs[0]);
+      if(group!=="below"&&!day.ind.some(q=>q.type==="open")){const j=day.ind.map((q,i)=>q.type==="num"?i:-1).filter(i=>i>=0).pop();if(j!==undefined)day.ind[j]=twoPart(day.ind[j],cs[0])}
+      if(nExt)day.ind=mixIn(day.ind,make(2,nExt).map((q,k)=>extendMath(q,cs[k%cs.length],k+d)));
       const L=ML[genOf(cs[0])];day.sg=lessonSteps(L);
       day.ixl=cs.map(c=>({t:`IXL skill plan: Indiana 2023, ${c}`,d:`In IXL, open the Indiana (2023) grade ${grade} skill plan and choose a skill under ${c}.`})).concat([{t:"IXL Math Arena",d:"Only after you reach your SmartScore goal."}]);
     } else {
@@ -1392,7 +1322,7 @@ function generateUnit({grade,subject,codes,days,perDay,seed,title}){
       const codeFor=f=>famCode[f]||gradeCode[f]||(grade==="6"?f:null);
       const pool=[];fs_.forEach(f=>P.items.filter(x=>x[0]===f).forEach(x=>pool.push(x)));
       P.items.filter(x=>!fs_.includes(x[0])&&codeFor(x[0])).forEach(x=>pool.push(x));
-      const nOpen=Math.ceil(perDay/2),nSel=perDay-nOpen,qs=[];
+      const nOpen=Math.ceil(perDay/2),nSel=perDay-nOpen,qs=[],below=group==="below";
       const seenE=new Set();cs.forEach(c=>{const f=genOf(c);if(!P.items.some(x=>x[0]===f)){for(let k=0;k<Math.ceil(nSel/cs.length);k++){let q=null;for(let t=0;t<10;t++){q=elaBank(f);if(!q||!seenE.has(q.prompt+q.options.find(o=>o.correct).text))break}if(q){seenE.add(q.prompt+q.options.find(o=>o.correct).text);qs.push(retag(q,c))}}}});
       pool.forEach(x=>{if(qs.length<nSel)qs.push(retag(itemFrom(x),codeFor(x[0])))});
       const sel=qs.slice(0,nSel),opens=[],opensB=[];
@@ -1402,16 +1332,17 @@ function generateUnit({grade,subject,codes,days,perDay,seed,title}){
       for(let k=0;opens.length<nOpen;k++){const x=rest[k];if(x){opens.push(mcOpen(x,codeFor(x[0]),5));opensB.push(mcOpen(x,codeFor(x[0]),4))}
         else{const f=fs_[k%fs_.length];opens.push(elaOpen(f,P,cs[k%cs.length],false));opensB.push(elaOpen(f,P,cs[k%cs.length],true))}}
       const mix=(a,b)=>{const out=[];for(let i=0;i<Math.max(a.length,b.length);i++){if(a[i])out.push(a[i]);if(b[i])out.push(b[i])}return out};
-      day.ind=mix(sel,opens);day.below=mix(sel.map(q=>belowEla(JSON.parse(JSON.stringify(q)))),opensB);
-      day.above=[...Array(nAbove)].map((_,k)=>extendEla(P,cs[k%cs.length],k+d));
+      day.ind=below?mix(sel.map(belowEla),opensB):mix(sel,opens);
+      /* above: extension tasks replace the written responses */
+      if(nExt)day.ind=mix(sel,[...Array(nExt)].map((_,k)=>extendEla(P,cs[k%cs.length],k+d)));
       const lk=fs_.find(f=>EL[f]);day.sg=lessonSteps(lk?EL[lk]:ELA_GENERIC);
       day.race=fs_.map(f=>RACE_FOR[f]).find(Boolean)||P.race;
     }
     unit.days.push(day);
   });
-  unit.test=buildTest(unit,codes,subject,grade,famCode);
+  unit.test=buildTest(unit,codes,subject,grade,famCode,group);
   /* every question's skill shows on the dashboard */
-  const all=[...unit.days.flatMap(D=>[...D.below,...D.ind,...D.above]),...unit.test.items];
+  const all=[...unit.days.flatMap(D=>D.ind),...unit.test.items];
   all.forEach(q=>{if(q.skill&&!skills.find(s=>s.id===q.skill)){const code=Object.keys(STD_BY).find(c=>sid(c)===q.skill)||q.skill;skills.push({id:q.skill,name:SHORT[code]||stdInfo(subject,code)[1],std:"IN "+code})}});
   return unit;
 }
@@ -1486,12 +1417,12 @@ function mcOpen(x,c,lines){const[,type,prompt,correct,,hint]=x;
   return OPEN(type==="evidence"?`${prompt.replace(/^Which sentence/,"What sentence").replace(/\?$/,"")}? Copy the sentence from the text, then explain how it supports the idea.`:`${prompt.replace(/—$/,"...")}\nAnswer in a complete sentence and support your answer with a detail from the text.`,`${correct}${hint?" ("+hint+")":""}`,c,{rubric:RUBRIC_ELA,lines:lines||4,frame:"The answer is ___. The text says \"___.\" This shows ___."})}
 function belowEla(q){if(!q.options||q.options.length<4)return q;const keep=q.options.filter(o=>o.correct).concat(q.options.filter(o=>!o.correct).slice(0,2));return{...q,options:shuf(keep)}}
 /* 12 open-ended questions across every standard in the unit, whatever the number of days */
-function buildTest(unit,codes,subject,grade,famCode){const items=[];const retag=(q,c)=>{if(q)q.skill=sid(c);return q};
+function buildTest(unit,codes,subject,grade,famCode,group){const items=[];const retag=(q,c)=>{if(q)q.skill=sid(c);return q};const L=group==="below"?1:2,every=group==="above"?2:4;
   if(subject==="math"){const seen=new Set();
-    for(let i=0;i<12;i++){const c=codes[i%codes.length];let q;for(let t=0;t<10;t++){q=retag(MG[genOf(c)](2),c);const key=q.prompt.replace(/[\d.]+/g,"#").slice(0,40)+q.type;if(!seen.has(key)||t===9){seen.add(key);break}}
+    for(let i=0;i<12;i++){const c=codes[i%codes.length];let q;for(let t=0;t<10;t++){q=retag(MG[genOf(c)](L),c);const key=q.prompt.replace(/[\d.]+/g,"#").slice(0,40)+q.type;if(!seen.has(key)||t===9){seen.add(key);break}}
       if(q.type==="mc")q=mcToNum(q);
       if(q.type==="mc"){const cc=q.options.find(o=>o.correct);q={...OPEN(`${q.prompt}\nWrite your answer and explain how you know.`,`${cc.text}. ${q.hint||""}`.trim(),c,{rubric:RUBRIC_MATH,work:true,lines:3}),skill:q.skill}}
-      if(i%4===3&&q.type==="num")q=twoPart(q,c);
+      if(i%every===every-1&&q.type==="num")q=twoPart(q,c);
       if(q.type==="num")q.work=true;items.push(q)}
     return{title:"End-of-unit assessment",items}}
   const used=new Set(unit.days.map(D=>D.passage&&D.passage.title)),keys=Object.keys(PASS),pk=keys.find(k=>!used.has(PASS[k].title))||keys[0],P=PASS[pk];
@@ -1499,7 +1430,7 @@ function buildTest(unit,codes,subject,grade,famCode){const items=[];const retag=
   const codeFor=f=>famCode[f]||gradeCode[f]||(grade==="6"?f:null);
   const fs_=codes.map(genOf),pool=P.items.filter(x=>codeFor(x[0])).sort((a,b)=>(fs_.includes(b[0])?1:0)-(fs_.includes(a[0])?1:0));
   pool.slice(0,6).forEach(x=>items.push(mcOpen(x,codeFor(x[0]))));
-  for(let i=0;items.length<12;i++){const c=codes[i%codes.length];items.push(elaOpen(genOf(c),P,c,false))}
+  for(let i=0;items.length<12;i++){const c=codes[i%codes.length];items.push(elaOpen(genOf(c),P,c,group==="below"))}
   return{title:"End-of-unit assessment",passage:{title:P.title,text:P.text},items}}
 function lower(s){return s.charAt(0).toLowerCase()+s.slice(1).replace(/\.$/,"")}
 function pickPassage(cs,d){const scores={};Object.keys(PASS).forEach(k=>scores[k]=0);cs.forEach(c=>{Object.keys(PASS).forEach(k=>{if(PASS[k].items.some(x=>x[0]===c))scores[k]+=10});(ELA_PASS_FOR[c]||[]).forEach((k,i)=>scores[k]+=3-i)});
@@ -1906,12 +1837,10 @@ const blankUnit=()=>({id:newId("unit"),title:"",room:"",grade:"",subject:"math",
 const store={get(k,d){try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 
 let U=store.get("winbuilder:unit",null)||JSON.parse(JSON.stringify(EXAMPLE));
-let cur=0,LV="ind",onTest=false;
-const LVS=[["below","Below grade level"],["ind","At grade level"],["above","Above grade level"]];
-const lvName=k=>(LVS.find(x=>x[0]===k)||LVS[1])[1];
+let cur=0,onTest=false;
 /* the question list being edited: a day's level, or the unit assessment */
-const L=()=>onTest?U.test.items:U.days[cur][LV];
-const LP=()=>onTest?"test.items":`days.${cur}.${LV}`;
+const L=()=>onTest?U.test.items:U.days[cur].ind;
+const LP=()=>onTest?"test.items":`days.${cur}.ind`;
 const save=()=>store.set("winbuilder:unit",U);
 function say(t,err){const m=$("#msg");m.textContent=t;m.className="msg"+(err?" err":"")}
 
@@ -1960,7 +1889,7 @@ function renderSteps(){
     .map(([n,t,d])=>`<button data-act="step" data-i="${n}" ${step===n?'aria-current="step"':""}><b>${n}</b><span>${t}<small>${d}</small></span></button>`).join("");
   const n=U.days.reduce((a,D)=>a+D.ind.length,0);
   $("#unitbar").innerHTML=`<div class="unitbar"><div class="t"><span class="note">Current unit:</span> <b>${esc(U.title||"Untitled unit")}</b>
-    ${U.grade?`<span class="chip">${gradeLabel(U.grade)}</span>`:""}<span class="chip">${U.subject==="ela"?"ELA":"Math"}</span><span class="chip">${U.days.length} day${U.days.length===1?"":"s"}</span><span class="chip">${n} question${n===1?"":"s"}</span></div>
+    ${U.grade?`<span class="chip">${gradeLabel(U.grade)}</span>`:""}<span class="chip">${U.subject==="ela"?"ELA":"Math"}</span><span class="chip">${esc((GROUPS[U.group]||GROUPS.at)[0])}</span><span class="chip">${U.days.length} day${U.days.length===1?"":"s"}</span><span class="chip">${n} question${n===1?"":"s"}</span></div>
     <button class="btn ghost sm" data-act="preview">Preview</button><button class="btn ghost sm" data-act="saveUnit">Save unit file</button></div>`;
 }
 function render(){
@@ -1975,12 +1904,11 @@ function render(){
 }
 /* units saved before levels existed get below and above sets and an assessment, built from what's already there */
 function upgradeUnit(U){let R0=R;R=rng(String(U.id||"u").split("").reduce((a,c)=>a*31+c.charCodeAt(0)>>>0,7));
-  U.days.forEach((D,d)=>{
-    if(!D.below)D.below=D.ind.map(q=>belowEla(JSON.parse(JSON.stringify(q))));
-    if(!D.above){const n=Math.max(3,Math.ceil(D.ind.length/2));D.above=U.subject==="ela"&&D.passage?[...Array(n)].map((_,k)=>{const q=extendEla({title:D.passage.title||"the passage",type:"lit"},"x",k+d);q.skill=(D.ind[0]||{}).skill||"";return q})
-      :D.ind.slice(0,n).map((q,k)=>{const x=extendMath(q,"x",k+d);x.skill=q.skill||"";if(q.type==="est"&&x.answer.startsWith("Answer: see")){const e=estInfo(q);if(e.ans!=null)x.answer=`Estimate: ${fmt(e.ans)}. Look for two valid strategies and a reason one is more efficient.`}return x})}});
+  /* an earlier version stored three levels per day; a unit now has one level, its group */
+  if(!GROUPS[U.group])U.group="at";if(U.supports===undefined)U.supports=U.group==="below";
+  U.days.forEach(D=>{delete D.below;delete D.above});
   if(!U.test){const codes=U.skills.map(k=>String(k.std||"").replace(/^IN\s*/,"")).filter(c=>STD_BY[c]&&STD_BY[c].subject===U.subject&&(U.subject==="ela"||MG[genOf(c)]));
-    if(codes.length){const fc={};codes.forEach(c=>{fc[genOf(c)]=fc[genOf(c)]||c});U.test=buildTest(U,codes,U.subject,U.grade||gradeOf(codes[0]),fc);U.test.items.forEach(q=>{if(!U.skills.find(s=>s.id===q.skill)){const code=Object.keys(STD_BY).find(c=>sid(c)===q.skill)||q.skill;U.skills.push({id:q.skill,name:SHORT[code]||code,std:"IN "+code})}})}
+    if(codes.length){const fc={};codes.forEach(c=>{fc[genOf(c)]=fc[genOf(c)]||c});U.test=buildTest(U,codes,U.subject,U.grade||gradeOf(codes[0]),fc,U.group);U.test.items.forEach(q=>{if(!U.skills.find(s=>s.id===q.skill)){const code=Object.keys(STD_BY).find(c=>sid(c)===q.skill)||q.skill;U.skills.push({id:q.skill,name:SHORT[code]||code,std:"IN "+code})}})}
     else{const pool=U.days.flatMap(D=>D.ind).filter(q=>q.type!=="est");U.test={title:"End-of-unit assessment",items:[...Array(Math.min(12,pool.length))].map((_,i)=>{const q=JSON.parse(JSON.stringify(pool[i%pool.length]));
       if(q.type==="num")return q;const c=(q.options||[]).find(o=>o.correct);return{type:"open",prompt:`${q.prompt}\nExplain your answer.`,answer:c?c.text:q.answer||"",rubric:U.subject==="ela"?RUBRIC_ELA:RUBRIC_MATH,frame:"",hint:q.hint||"",skill:q.skill,lines:4,work:U.subject==="math"}})}}}
   R=R0}
@@ -1993,10 +1921,12 @@ function editPanel(){
       <label class="f">Grade<select data-p="grade" data-re="1"><option value="">Choose</option>${GRADES.map(g=>`<option value="${g}" ${String(U.grade)===g?"selected":""}>Grade ${g}</option>`).join("")}</select></label>
       <label class="f">Subject<select data-p="subject" data-re="1"><option value="math" ${U.subject==="math"?"selected":""}>Math</option><option value="ela" ${U.subject==="ela"?"selected":""}>ELA</option></select></label>
       <label class="f">Class name<small> shows at the top, like "Room 205" or "Period 3"</small>${inp("room",U.room,"Room 205")}</label>
+      <label class="f">W.I.N. group<small> generate again to rebuild questions for a new level</small><select data-p="group" data-re="1">${Object.entries(GROUPS).map(([k,[t]])=>`<option value="${k}" ${U.group===k?"selected":""}>${t}</option>`).join("")}</select></label>
       ${U.subject==="math"?"":`<label class="f">Third room<select data-p="third" data-re="1"><option value="ixl" ${U.third==="ixl"?"selected":""}>IXL room</option><option value="race" ${U.third==="race"?"selected":""}>RACE room</option></select></label>`}
       <label class="f">IXL SmartScore goal<input type="number" min="1" max="100" data-p="smart" value="${esc(U.smart)}"></label>
       <label class="f">Turn-in directions${inp("turnInNote",U.turnInNote)}</label>
     </div>
+    <label class="chk" style="margin-top:.75rem"><input type="checkbox" data-p="supports" ${U.supports?"checked":""}> Supports on for everyone: worked example, hints, sentence starters, one fewer answer choice</label>
     ${U.subject==="math"?`<p class="f" style="margin:.75rem 0 .3rem;font-weight:700">Math tools students can open</p><div class="adds">${[["calc","Calculator"],["mult","Times table"],["fracbars","Fraction bars"],["numline","Number line"],["formulas","Formula sheet"]].map(([k,v])=>`<label class="chk"><input type="checkbox" data-tool="${k}" ${U.tools[k]?"checked":""}> ${v}</label>`).join("")}</div><p class="note">Turn the calculator off for standards that say "without a calculator," like 6.RP.1.</p>`:""}
     <h3 style="margin:1.1rem 0 .2rem">Skills</h3><p class="sub">Every question is tagged with one skill. The dashboard reports mastery by skill, so the standard code here is what shows up in your data.</p>
     ${U.skills.map((s,i)=>`<div class="row"><label class="f">Skill name${inp(`skills.${i}.name`,s.name,"Estimate sums and differences")}</label>
@@ -2024,15 +1954,14 @@ function editPanel(){
   </section>
 
   <section class="panel ind">
-    <h2>✏️ Independent practice</h2><p class="sub">Three levels. Students (or you) pick a level in the portal, and each level prints as its own worksheet. Multiple choice and typed answers check themselves. Open responses are scored by you with the scoring guide.</p>
-    <div class="seg" role="group" aria-label="Level" style="margin-bottom:.75rem">${LVS.map(([k,t])=>`<button data-act="lv" data-v="${k}" aria-pressed="${LV===k}">${t.replace(" grade level","")} <span class="chip">${(D[k]||[]).length}</span></button>`).join("")}</div>
-    <p class="note" style="margin:0 0 .6rem">${LV==="below"?"Friendlier numbers and fewer answer choices, for students who need to rebuild the skill.":LV==="above"?"Extension tasks: students explain, justify, analyze errors, and create their own problems.":"On-grade rigor that mirrors ILEARN: typed answers, multi-part items, and written explanations."} ${mixNote(D[LV]||[])}</p>
-    ${(D[LV]||[]).map((q,i)=>qCard(q,i,LP())).join("")||"<p class='note'>No questions at this level yet.</p>"}
+    <h2>✏️ Independent practice</h2><p class="sub">Rotation 1 of 3. Built for your group: <b>${esc(GROUPS[U.group][0])}</b>. Multiple choice and typed answers check themselves. Open responses are scored by you with the scoring guide.</p>
+    <p class="note" style="margin:0 0 .6rem">${mixNote(D.ind)}</p>
+    ${D.ind.map((q,i)=>qCard(q,i,LP())).join("")||"<p class='note'>No questions yet.</p>"}
     ${addBtns(U.subject==="ela"||D.passage)}
   </section>
 
   <section class="panel sg">
-    <h2>👂 Small group lesson</h2>
+    <h2>👂 Small group lesson</h2><p class="sub">Rotation 2 of 3. <a href="resources.html?deck=unit:${cur}">Present this lesson as slides →</a></p>
     <details class="help"><summary>Formatting help</summary><code>[[answer]]</code> makes a fill-in blank (separate accepted answers with |, like <code>[[1/2|half]]</code>). <code>{{3 4/5}}</code> makes a tappable number line. <code>**word**</code> is bold. Fractions like 3/4 or 2 1/3 display stacked. In "Watch me," the first line is the problem and each line after it is a step you reveal one at a time.</details>
     ${D.sg.map((s,i)=>`<div class="card"><div class="card-h"><b>Step ${i+1}</b>
       <button class="btn ghost sm" data-act="upS" data-i="${i}" ${i===0?"disabled":""}>Move up</button>
@@ -2047,7 +1976,7 @@ function editPanel(){
   </section>
 
   <section class="panel ixl">
-    <h2>${U.third==="race"?"✍️ RACE room":"💻 IXL room"}</h2>
+    <h2>${U.third==="race"&&U.subject==="ela"?"✍️ RACE":"💻 IXL"}</h2><p class="sub">Rotation 3 of 3.${U.subject==="ela"?" RACE or IXL: choose under Unit settings.":" Math uses IXL."}</p>
     ${U.third==="race"?`<p class="sub">Students highlight evidence in the passage, then write a RACE response with sentence starters and a live checklist.</p>`:""}
     ${U.third==="race"?"":D.ixl.map((k,i)=>`<div class="row"><label class="f">IXL skill name or code${inp(`${P}.ixl.${i}.t`,k.t)}</label><label class="f">Directions${inp(`${P}.ixl.${i}.d`,k.d)}</label>
       <button class="btn ghost sm" data-act="delIxl" data-i="${i}">Remove</button></div>`).join("")}
@@ -2092,6 +2021,11 @@ function sharePanel(){
       <li><b>Students work, then tap "Turn in my work."</b> The portal copies their results. They paste them into that day's assignment and submit.</li>
     </ol>
     <p class="note">Save the unit file so you or a colleague can open and edit this unit later.</p>
+  </section>
+  <section class="panel">
+    <h2>Small group slides</h2>
+    <p class="sub">Ready-made slides for each day's small group lesson, built from this unit. Present them, print them, or save them as a PDF.</p>
+    <div class="acts">${U.days.map((D,i)=>`<a class="btn ghost" href="resources.html?deck=unit:${i}" style="text-decoration:none">Day ${i+1} slides</a>`).join("")}</div>
   </section>
   ${packetPanel()}
   <section class="panel">
@@ -2190,7 +2124,7 @@ document.addEventListener("click",async e=>{
   const acts={
     addSkill:()=>U.skills.push({id:"k"+Date.now().toString(36),name:"",std:""}),
     delSkill:()=>U.skills.splice(i,1),
-    day:()=>{cur=i;onTest=false},test:()=>{onTest=true},lv:()=>{LV=b.dataset.v},
+    day:()=>{cur=i;onTest=false},test:()=>{onTest=true},
     addDay:()=>{U.days.push(blankDay(U.days.length+1));cur=U.days.length-1},
     delDay:()=>{if(confirm(`Delete Day ${cur+1} and everything in it?`)){U.days.splice(cur,1);cur=Math.max(0,cur-1)}},
     addQ:()=>{const t=b.dataset.t,sk=U.skills[0]?.id||"";
@@ -2206,14 +2140,14 @@ document.addEventListener("click",async e=>{
     delS:()=>D.sg.splice(i,1),upS:()=>mv(D.sg,i,-1),downS:()=>mv(D.sg,i,1),
     addIxl:()=>D.ixl.push({t:"",d:""}),delIxl:()=>D.ixl.splice(i,1),
     step:()=>{step=i;scrollTo(0,0)},
-    gset:()=>{if(G[b.dataset.k]!==b.dataset.v){G[b.dataset.k]=b.dataset.v;G.codes=[]}saveG()},
+    gset:()=>{if(G[b.dataset.k]!==b.dataset.v){G[b.dataset.k]=b.dataset.v;if(b.dataset.k!=="group")G.codes=[]}saveG()},
     gall:()=>{const cs=stdList(G.grade,G.subject).map(x=>x[0]).filter(c=>domainOf(c)===b.dataset.d);const all=cs.every(c=>G.codes.includes(c));G.codes=all?G.codes.filter(c=>!cs.includes(c)):[...new Set([...G.codes,...cs])]},
   };
   if(acts[a]){acts[a]();save();render();if(a==="step")showIssues([]);return}
   if(a==="gen"){if(!G.codes.length){say("Check at least one standard first.",true);return}
     if(U.days.some(D=>D.ind.length)&&!confirm("Replace the current unit with a new generated unit? Save your current unit file first if you want to keep it."))return;
-    U=generateUnit({grade:G.grade,subject:G.subject,codes:chosen(),days:G.days,perDay:G.per,level:G.level,seed:Date.now(),title:G.title||""});cur=0;step=2;save();render();showIssues(issues());scrollTo(0,0);
-    say(`Generated ${G.days} day${G.days===1?"":"s"} for grade ${G.grade}. Look it over, edit anything, then go to Preview and share.`);return}
+    U=generateUnit({grade:G.grade,subject:G.subject,codes:chosen(),days:G.days,perDay:G.per,group:G.group,seed:Date.now(),title:G.title||""});cur=0;step=2;save();render();showIssues(issues());scrollTo(0,0);
+    say(`Generated ${G.days} day${G.days===1?"":"s"} for your ${GROUPS[G.group][0].toLowerCase()} group, grade ${G.grade}. Look it over, edit anything, then go to Preview and share.`);return}
   if(a==="genPrompt"){if(!G.codes.length){say("Check at least one standard.",true);return}
     const txt=aiPrompt(G.subject,chosen(),G.days,G.per,G.grade);
     try{await navigator.clipboard.writeText(txt);say("Prompt copied. Paste it into Copilot or another AI tool, then paste its answer below.")}catch(err){$("#aiIn").value=txt;say("Copy didn't work, so the prompt is in the box below. Select it and copy.",true)}return}
@@ -2247,8 +2181,8 @@ $("#openUnit").onchange=async e=>{const f=e.target.files[0];if(!f)return;
 $("#modal").addEventListener("click",e=>{if(e.target.id==="modal"){$("#modal").hidden=true;$("#pv").srcdoc=""}});
 
 /* ---- step 1: choose standards ---- */
-const G=Object.assign({grade:GRADES.includes("6")?"6":GRADES[0],subject:"math",codes:[],days:3,per:6,level:1,title:"",q:""},store.get("winbuilder:gen",{}));
-const saveG=()=>store.set("winbuilder:gen",{grade:G.grade,subject:G.subject,days:G.days,per:G.per,level:G.level});
+const G=Object.assign({grade:GRADES.includes("6")?"6":GRADES[0],subject:"math",codes:[],days:3,per:6,group:"at",title:"",q:""},store.get("winbuilder:gen",{}));
+const saveG=()=>store.set("winbuilder:gen",{grade:G.grade,subject:G.subject,days:G.days,per:G.per,group:G.group});
 (()=>{const q=new URLSearchParams(location.search);if(GRADES.includes(q.get("grade"))){G.grade=q.get("grade");G.codes=[]}if(["math","ela"].includes(q.get("subject"))){G.subject=q.get("subject");G.codes=[]}if(q.get("grade")||q.get("subject"))step=1})();
 const chosen=()=>stdList(G.grade,G.subject).map(x=>x[0]).filter(c=>G.codes.includes(c));
 function genPanel(){const list=stdList(G.grade,G.subject);
@@ -2275,7 +2209,9 @@ function genPanel(){const list=stdList(G.grade,G.subject);
       <label class="f">Questions per day<input type="number" data-g="per" min="3" max="12" value="${G.per}"></label>
 
     </div>
-    <p class="note" style="margin:.6rem 0 0">Every day gets practice at three levels: <b>below</b> grade level (friendlier numbers, fewer choices), <b>at</b> grade level (ILEARN-style rigor), and <b>above</b> grade level (extension tasks where students explain, justify, and create). About half of each set is open-ended. Every unit also gets a 12-question open-ended end-of-unit assessment.</p>
+    <p class="f" style="margin:.9rem 0 .3rem;font-weight:700">Which W.I.N. group do you teach?</p>
+    <div class="seg" role="group" aria-label="W.I.N. group">${Object.entries(GROUPS).map(([k,[t]])=>`<button data-act="gset" data-k="group" data-v="${k}" aria-pressed="${G.group===k}">${t.replace(" grade level","")}</button>`).join("")}</div>
+    <p class="note" style="margin:.4rem 0 0">${esc(GROUPS[G.group][1])}. Each day has three rotations: independent practice, small group with you, and ${G.subject==="ela"?"RACE or IXL":"IXL"}. About half the practice is open-ended, and every unit gets a 12-question open-ended end-of-unit assessment.</p>
     <div class="nextbar"><span class="note">Generating replaces the current unit. Save its unit file first if you want to keep it.</span><button class="btn go big" data-act="gen">Generate unit →</button></div>
     <details style="margin-top:.75rem"><summary class="note">Use Copilot or another AI tool for new passages or more variety</summary>
       <p class="note">1. Check standards and tap "Copy prompt for Copilot." 2. Paste it into Copilot. 3. Paste Copilot's whole answer here and import. Always check the answers before students see them.</p>
@@ -2310,8 +2246,8 @@ function issues(){
       if(q.type==="open"&&!String(q.prompt||"").trim())out.push(`${P}: type the question.`);
       if(q.type!=="est"&&!q.skill)out.push(`${P}: choose a skill.`)});
   U.days.forEach((D,d)=>{const L=`Day ${d+1}`;
-    if(!D.ind.length)out.push(`${L}: add at least one at-grade-level question.`);
-    LVS.forEach(([k,t])=>check(D[k]||[],`${L} ${t.replace(" grade level","").toLowerCase()} level`,D.passage));
+    if(!D.ind.length)out.push(`${L}: add at least one independent practice question.`);
+    check(D.ind,L,D.passage);
   });
   if(U.test)check(U.test.items,"Unit assessment",U.test.passage);
   if(U.skills.some(s=>!s.name.trim()))out.push("Name every skill or remove the blank ones.");
@@ -2327,14 +2263,14 @@ async function saveFile(name,data){
   try{const a=document.createElement("a");const url=URL.createObjectURL(data instanceof Blob?data:new Blob([data],{type:name.endsWith(".json")?"application/json":"text/html"}));a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);return "saved"}catch(e){return "failed"}
 }
 /* ---- paper packet: lesson plans, worksheets, keys, and a score sheet for classes that don't use Canvas ---- */
-const PK=Object.assign({lesson:true,key:true,sheet:true,notes:true,practice:true,third:true,test:true,testKey:true,lvbelow:true,lvind:true,lvabove:true,sup:"below",day:"all",order:"day",roster:""},store.get("winbuilder:packet",{}));
+const PK=Object.assign({lesson:true,key:true,sheet:true,notes:true,practice:true,third:true,test:true,testKey:true,sup:"auto",day:"all",order:"day",roster:""},store.get("winbuilder:packet",{}));
+if(!["auto","on","off"].includes(PK.sup))PK.sup="auto";
 const savePK=()=>store.set("winbuilder:packet",PK);
 const PARTS=[["lesson","Teacher lesson plan","teacher"],["key","Answer key","teacher"],["sheet","Class score sheet","teacher"],["notes","Small group notes","student"],["practice","Practice worksheet","student"],["third","","student"],["testKey","Assessment key and scoring guide","teacher",1],["test","End-of-unit assessment","student",1]];
-/* the three practice levels; the student-facing name avoids "below" */
-const LVP={below:["Level 1","Level 1 (below grade level)"],ind:["Level 2","Level 2 (at grade level)"],above:["Level 3: Extension","Level 3 (above grade level: extension)"]};
-const LVKEYS=["below","ind","above"];
-const supported=lv=>PK.sup==="all"||(PK.sup==="below"&&lv==="below");
-const partName=(k,lv,full)=>lv?`${k==="key"?"Answer key":"Practice"}: ${LVP[lv][full?1:0]}${k==="practice"&&supported(lv)?" with supports":""}`:k==="third"?(U.subject==="math"?"IXL page":U.third==="race"?"RACE response page":"IXL and RACE page"):PARTS.find(x=>x[0]===k)[1];
+/* worksheets get supports when the unit has them on (below-grade-level groups), unless the teacher overrides */
+const supported=()=>PK.sup==="on"||(PK.sup!=="off"&&!!U.supports);
+const THIRD=()=>U.subject==="ela"&&U.third==="race"?"RACE":"IXL";
+const partName=k=>k==="practice"&&supported()?"Practice worksheet with supports":k==="third"?(U.subject==="math"?"IXL page":U.third==="race"?"RACE response page":"IXL and RACE page"):PARTS.find(x=>x[0]===k)[1];
 const rosters=()=>store.get("win205roster",{});
 const RACE_P=[["R","Restate","Turn the question into a sentence."],["A","Answer","Answer the question."],["C","Cite",""],["E","Explain","Tell why your evidence proves your answer."]];
 const CONF_P=["I'm lost","I need more help","I almost got it","I can teach it"];
@@ -2362,24 +2298,23 @@ const whoLine=()=>`<div class="who"><span>Name<i></i></span><span>Date<i></i></s
 const dayHead=(D,d,kind)=>`<h1>${esc(kind)}</h1><p class="dt">Day ${d+1}${D.title&&!/^Day \d+$/.test(D.title)?`: ${pfr(String(D.title).replace(/^Day \d+:\s*/,""))}`:""}</p>${D.target?`<div class="target"><b>Learning target:</b> ${pfr(D.target)}</div>`:""}`;
 function misList(D){const m={};D.ind.forEach((q,i)=>{const add=t=>{if(!t)return;(m[t]=m[t]||new Set()).add(i+1)};(q.options||[]).forEach(o=>!o.correct&&add(o.mis));(q.wrongs||[]).forEach(w=>add(w.mis))});
   return Object.entries(m).sort((a,b)=>b[1].size-a[1].size).slice(0,6)}
-function pLesson(D,d){const steps=D.sg||[],mis=misList(D),race=U.third==="race"&&U.subject==="ela";
-  const lv=LVKEYS.filter(k=>(D[k]||[]).length).map(k=>`${LVP[k][1]}: ${D[k].length} ${k==="above"?"extension task":"problem"}${D[k].length===1?"":"s"}`).join("<br>");
-  const rows=[["Small group with you",`The lesson below${steps.length?` (${steps.length} steps)`:""}. Start with the <b>Below</b> group.`,"Small group notes page"],
-    ["Independent practice",`${lv}<br>About half of each level is open-ended. Students show their work on every problem.`,"Practice worksheet for each student's level"],
-    race?["RACE",D.race?`Written response: ${pfr(D.race)}`:"Written response.","RACE response page"]
-      :["IXL",`${(D.ixl||[]).map(k=>esc(k.t)).join("; ")||"Assigned IXL skills"}. Goal: SmartScore ${esc(U.smart||80)}.${D.race?" Then the RACE response.":""}`,U.subject==="math"?"IXL page":"IXL and RACE page"]];
+/* three rotations a day: the class splits into three small groups that rotate through all three stations */
+function pLesson(D,d){const steps=D.sg||[],mis=misList(D),T=THIRD();
+  const st={ind:["Independent practice",`${D.ind.length} problem${D.ind.length===1?"":"s"}, about half open-ended. Students show their work on every one.`,"Practice worksheet"],
+    sg:["Small group with you",`The lesson below${steps.length?` (${steps.length} steps)`:""}. Use the ready-made small group slides on the Resources page.`,"Small group notes page"],
+    third:T==="RACE"?["RACE",D.race?`Written response: ${pfr(D.race)}`:"Written response.","RACE response page"]:["IXL",`${(D.ixl||[]).map(k=>esc(k.t)).join("; ")||"Assigned IXL skills"}. Goal: SmartScore ${esc(U.smart||80)}.`,"IXL page"]};
+  const order=[["sg","ind","third"],["ind","third","sg"],["third","sg","ind"]],nm={sg:"Small group",ind:"Independent",third:T};
   return `${dayHead(D,d,"Lesson plan")}
-    ${(D.standards||[]).length?`<p class="std">${D.standards.map(esc).join("<br>")}</p>`:""}
-    ${D.passage&&D.passage.title?`<p><b>Passage:</b> ${esc(D.passage.title)} (on the practice worksheets)</p>`:""}
-    <h2>Groups and stations</h2>
-    <table class="grid"><tr><th>Group (from the score sheet)</th><th>Rotation</th></tr>
-      <tr><td><b>Below</b></td><td>Small group lesson first, then Level 1 practice${PK.sup!=="none"?" with supports":""}.</td></tr>
-      <tr><td><b>At</b></td><td>Level 2 practice first, then small group or ${U.subject==="math"||!race?"IXL":"RACE"}.</td></tr>
-      <tr><td><b>Above</b></td><td>Level 3 extension tasks, then ${U.subject==="math"||!race?"IXL":"RACE"}. Check in briefly.</td></tr></table>
-    <table class="grid"><tr><th>Station</th><th>What students do</th><th>Paper</th></tr>${rows.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("")}</table>
+    <p class="std"><b>W.I.N. group:</b> ${esc((GROUPS[U.group]||GROUPS.at)[0])}${supported()?", supports on":""}${(D.standards||[]).length?"<br>"+D.standards.map(esc).join("<br>"):""}</p>
+    ${D.passage&&D.passage.title?`<p><b>Passage:</b> ${esc(D.passage.title)} (on the practice worksheet)</p>`:""}
+    <h2>Three rotations</h2>
+    <table class="grid"><tr><th>Rotation</th><th>Group A</th><th>Group B</th><th>Group C</th><th class="c">Minutes</th></tr>
+      ${order.map((o,i)=>`<tr><td><b>${i+1}</b></td>${o.map(k=>`<td>${nm[k]}</td>`).join("")}<td class="c soft">____</td></tr>`).join("")}</table>
+    <p class="soft">Split your W.I.N. group into three small groups. Group A starts with you: put the students who struggled most yesterday there.</p>
+    <table class="grid"><tr><th>Station</th><th>What students do</th><th>Paper</th></tr>${["ind","sg","third"].map(k=>`<tr><td><b>${st[k][0]}</b></td><td>${st[k][1]}</td><td>${st[k][2]}</td></tr>`).join("")}</table>
     <h2>Small group lesson</h2>
     ${steps.map((s,i)=>`<div class="stp"><p class="sh"><span class="tag">${i+1}. ${esc(TAGS[s.tag]||"Listen")}</span> <b>${pfr(s.title||"")}</b></p><p class="cue">${CUE[s.tag]||""}</p>${pStep(s,true)}</div>`).join("")||"<p>No lesson steps yet. Add them in Edit the unit.</p>"}
-    ${mis.length?`<h2>Watch for these mistakes</h2><ul class="mis">${mis.map(([t,ps])=>`<li>${esc(t)} <span class="soft">(Level 2 problem${ps.size>1?"s":""} ${[...ps].join(", ")})</span></li>`).join("")}</ul>`:""}`}
+    ${mis.length?`<h2>Watch for these mistakes</h2><ul class="mis">${mis.map(([t,ps])=>`<li>${esc(t)} <span class="soft">(problem${ps.size>1?"s":""} ${[...ps].join(", ")})</span></li>`).join("")}</ul>`:""}`}
 function pNotes(D,d){const steps=D.sg||[];if(!steps.length)return "";
   return `${whoLine()}${dayHead(D,d,"Small group notes")}${steps.map(s=>`<div class="stp"><p class="sh"><b>${pfr(s.title||TAGS[s.tag]||"")}</b></p>${pStep(s,false)}</div>`).join("")}`}
 /* one question with room to work: a work box for math, writing lines for explanations and ELA */
@@ -2400,14 +2335,14 @@ function pQ(q,i,sup){const math=U.subject==="math",P=t=>pfr(t).replace(/\n/g,"<b
     if(math&&q.work!==false)h+=work(1.3)+`<p class="how"><b>Explain:</b></p>`;h+=lines(Math.max(2,+q.lines||(math?3:5))+(sup?1:0))}
   else h+=(math?work(1.2):"")+`<p class="ansline">Answer: <span class="blank wide"></span> ${esc(q.unit||"")}</p>`;
   return `<div class="q"><div class="qn">${i+1}</div><div class="qb">${h}</div></div>`}
-function pPractice(D,d,lv){const list=D[lv]||[];if(!list.length)return "";const math=U.subject==="math",sup=supported(lv),est=list.some(q=>q.type==="est");
+function pPractice(D,d){const list=D.ind||[];if(!list.length)return "";const math=U.subject==="math",sup=supported(),est=list.some(q=>q.type==="est"),ext=U.group==="above";
   const paras=D.passage&&D.passage.text?String(D.passage.text).split(/\n\s*\n/).map(p=>p.replace(/\s+/g," ").trim()).filter(Boolean):[];
   const fill=(D.sg||[]).find(s=>s.tag==="fill"),watch=(D.sg||[]).find(s=>s.tag==="watch");
   const remember=sup&&(fill||watch)?`<div class="remember"><b>Remember</b>${fill?pStep(fill,true):""}${watch?`<p class="sh"><b>Example</b></p>${pStep(watch,true)}`:""}</div>`:"";
-  return `${whoLine()}${dayHead(D,d,`Practice · ${LVP[lv][0]}`)}
+  return `${whoLine()}${dayHead(D,d,"Practice")}
     ${remember}
     ${paras.length?`<div class="passage"><h2>${esc(D.passage.title||"Passage")}</h2>${paras.map((p,i)=>`<p><span class="pn">${i+1}</span>${pfr(p)}</p>`).join("")}</div>`:""}
-    <p class="dir">${lv==="above"?"These are extension tasks. Show every step and explain your thinking in complete sentences.":math?"Show your work in the box for every problem.":"Read carefully. Answer in complete sentences and use evidence from the text."}${list.some(q=>q.options)?" Circle the letter of the best answer.":""}${est?" To estimate, round mixed numbers to the nearest whole number and fractions to 0, ½, or 1.":""}</p>
+    <p class="dir">${ext?"Some of these are extension tasks. Show every step and explain your thinking in complete sentences. ":""}${math?"Show your work in the box for every problem.":"Read carefully. Answer in complete sentences and use evidence from the text."}${list.some(q=>q.options)?" Circle the letter of the best answer.":""}${est?" To estimate, round mixed numbers to the nearest whole number and fractions to 0, ½, or 1.":""}</p>
     ${list.map((q,i)=>pQ(q,i,sup)).join("")}
     <div class="conf"><b>How do you feel about today's skill?</b> ${CONF_P.map((t,i)=>`<span><span class="box"></span>${i+1} ${t}</span>`).join("")}</div>`}
 function pThird(D,d){const race=U.third==="race",ixl=!race&&(D.ixl||[]).length;if(!ixl&&!D.race)return "";
@@ -2428,16 +2363,16 @@ function keyRows(list,sup){return list.map((q,i)=>{let a="";const w=[];
     else{a=`<b>${pfr(q.answer)}</b> ${esc(q.unit||"")}${q.alts?`<br><span class="soft">Also accept: ${pfr(q.alts)}</span>`:""}`;(q.wrongs||[]).forEach(x=>x.ans&&w.push(`<b>${pfr(x.ans)}</b>: ${esc(x.mis||"")}`))}
     return `<tr><td class="c">${i+1}</td><td>${a}</td><td>${esc(codeOf(q.skill))}</td><td>${w.join("<br>")||"<span class='soft'>–</span>"}</td></tr>`}).join("")}
 const KEYHEAD=`<tr><th class="c">#</th><th>Answer, or what to look for</th><th>Skill</th><th>Wrong answers show... / scoring</th></tr>`;
-function pKey(D,d,lv){const list=D[lv]||[];if(!list.length)return "";
-  return `${dayHead(D,d,`Answer key · ${LVP[lv][1]}${supported(lv)?" (with supports)":""}`)}<table class="grid key">${KEYHEAD}${keyRows(list,supported(lv))}</table>
-    ${lv==="ind"&&(D.sg||[]).some(s=>/\[\[/.test(s.text||""))?`<p class="soft">Blanks on the small group notes page are filled in on the lesson plan.</p>`:""}
-    ${list.some(q=>q.type==="open")?`<p class="soft">Open responses: use the scoring guide. On Level 3, look for complete products and precise reasoning, not one right answer.</p>`:""}`}
+function pKey(D,d){const list=D.ind||[];if(!list.length)return "";
+  return `${dayHead(D,d,`Answer key${supported()?" (matches the worksheet with supports)":""}`)}<table class="grid key">${KEYHEAD}${keyRows(list,supported())}</table>
+    ${(D.sg||[]).some(s=>/\[\[/.test(s.text||""))?`<p class="soft">Blanks on the small group notes page are filled in on the lesson plan.</p>`:""}
+    ${list.some(q=>q.type==="open")?`<p class="soft">Open responses: use the scoring guide. On extension tasks, look for complete products and precise reasoning, not one right answer.</p>`:""}`}
 function pSheet(D,d){const names=(rosters()[PK.roster]||[]),rows=Math.max(names.length,18);
   return `${dayHead(D,d,"Class score sheet")}
-    <p>Mark each worksheet with the answer key for its level. Write the number correct, the points on open responses, and the confidence the student circled. Then circle tomorrow's group.</p>
-    <table class="grid sheet"><thead><tr><th>Student</th><th class="c">Level<br><span class="soft">1  2  3</span></th><th class="c">Correct<br><span class="soft">auto-checked</span></th><th class="c">Open<br><span class="soft">points</span></th><th class="c">Percent</th><th class="c">Conf.<br><span class="soft">1–4</span></th><th class="c">Next group</th></tr></thead>
-    <tbody>${[...Array(rows)].map((_,r)=>`<tr><td>${esc(names[r]||"")}</td><td class="c soft">1  2  3</td><td class="c soft">/</td><td class="c soft">/</td><td class="c soft">%</td><td></td><td class="c soft">Below  At  Above</td></tr>`).join("")}</tbody></table>
-    <p class="legend"><b>Below</b> (small group reteach, Level 1 with supports): under 60%, or confidence 1 to 2. <b>At</b> (Level 2): 60 to 84%. <b>Above</b> (Level 3 extension): 85% or more and confidence 3 to 4. Students who finish Level 3 well stay Above.</p>`}
+    <p>Mark each worksheet with the answer key. Write the number correct, the points on open responses, and the confidence the student circled. At the end of the cycle, circle the W.I.N. group each student should join next.</p>
+    <table class="grid sheet"><thead><tr><th>Student</th><th class="c">Correct<br><span class="soft">auto-checked</span></th><th class="c">Open<br><span class="soft">points</span></th><th class="c">Percent</th><th class="c">Conf.<br><span class="soft">1–4</span></th><th class="c">Next group</th></tr></thead>
+    <tbody>${[...Array(rows)].map((_,r)=>`<tr><td>${esc(names[r]||"")}</td><td class="c soft">/</td><td class="c soft">/</td><td class="c soft">%</td><td></td><td class="c soft">Below  At  Above</td></tr>`).join("")}</tbody></table>
+    <p class="legend">Next group: <b>Below</b> under 60%, or confidence 1 to 2. <b>At</b> 60 to 84%. <b>Above</b> 85% or more and confidence 3 to 4. Share moves with the teacher who has that group.</p>`}
 function pTest(){const T=U.test;if(!T||!T.items.length)return "";const math=U.subject==="math";
   const paras=T.passage&&T.passage.text?String(T.passage.text).split(/\n\s*\n/).map(p=>p.replace(/\s+/g," ").trim()).filter(Boolean):[];
   return `${whoLine()}<h1>${esc(T.title||"End-of-unit assessment")}</h1><p class="dt">${esc(U.title||"")}</p>
@@ -2461,24 +2396,23 @@ function makePacketPdf(){return new Promise((ok,no)=>{const f=document.createEle
   f.onload=()=>{const w=f.contentWindow;if(!w.makePDF)return done(new Error("packet didn't load"));w.makePDF().then(b=>done(null,b),e=>done(e))};
   f.srcdoc=buildPacket();document.body.appendChild(f)})}
 function buildPacket(autoprint){
-  const all=U.days.map((D,d)=>d),days=PK.day==="all"||!U.days[+PK.day]?all:[+PK.day],want=PARTS.filter(([k,,,unit])=>PK[k]&&!unit),lvs=LVKEYS.filter(k=>PK["lv"+k]);
-  const pages=[];const add=(k,who,d,lv)=>{const body=BUILD[k](U.days[d],d,lv);if(body)pages.push({k,who,d,lv,body})};
-  const addDay=(k,who,d)=>k==="key"||k==="practice"?lvs.forEach(lv=>add(k,who,d,lv)):add(k,who,d);
-  if(PK.order==="type")want.forEach(([k,,who])=>days.forEach(d=>addDay(k,who,d)));else days.forEach(d=>want.forEach(([k,,who])=>addDay(k,who,d)));
+  const all=U.days.map((D,d)=>d),days=PK.day==="all"||!U.days[+PK.day]?all:[+PK.day],want=PARTS.filter(([k,,,unit])=>PK[k]&&!unit);
+  const pages=[];const add=(k,who,d)=>{const body=BUILD[k](U.days[d],d);if(body)pages.push({k,who,d,body})};
+  if(PK.order==="type")want.forEach(([k,,who])=>days.forEach(d=>add(k,who,d)));else days.forEach(d=>want.forEach(([k,,who])=>add(k,who,d)));
   PARTS.filter(([k,,,unit])=>unit&&PK[k]).forEach(([k,,who])=>{const body=BUILD[k]();if(body)pages.push({k,who,d:null,body})});
   const tp=pages.filter(p=>p.who==="teacher"),sp=pages.filter(p=>p.who==="student");
-  const nm_=p=>partName(p.k,p.lv,true);
-  const list=ps=>[...new Set(ps.map(nm_))].map(n=>{const g=ps.filter(p=>nm_(p)===n),ds=g.filter(p=>p.d!=null);return `<tr><td>${esc(n)}</td><td>${ds.length?`Day${ds.length>1?"s":""} ${ds.map(p=>p.d+1).join(", ")}`:"End of unit"}</td><td>${g[0].k==="notes"?"1 per student in small group":g[0].k==="practice"?"1 per student at this level":g[0].who==="student"?"1 per student":"1 for you"}</td></tr>`}).join("");
+  const nm_=p=>partName(p.k);
+  const list=ps=>[...new Set(ps.map(nm_))].map(n=>{const g=ps.filter(p=>nm_(p)===n),ds=g.filter(p=>p.d!=null);return `<tr><td>${esc(n)}</td><td>${ds.length?`Day${ds.length>1?"s":""} ${ds.map(p=>p.d+1).join(", ")}`:"End of unit"}</td><td>${g[0].k==="notes"?"1 per student in small group":g[0].k==="practice"?"1 per student":g[0].who==="student"?"1 per student":"1 for you"}</td></tr>`}).join("");
   const title=U.title||"WIN unit",sub=[U.grade?`Grade ${U.grade}`:"",U.subject==="ela"?"ELA":"Math",`${days.length} day${days.length===1?"":"s"}`,U.room].filter(Boolean).join(" · ");
-  const logo=new URL("logo.png",location.href).href;
-  const cover=`<div class="brandrow"><img src="${esc(logo)}" alt="" onerror="this.remove()"><span>LSIS W.I.N Builder</span></div><h1 class="big">${esc(title)}</h1><p class="dt">${esc(sub)}</p>
+  const logo=window.WIN_LOGO||"";
+  const cover=`<div class="brandrow">${logo?`<img src="${esc(logo)}" alt="">`:""}<span>LSIS W.I.N Builder</span></div><h1 class="big">${esc(title)}</h1><p class="dt">${esc(sub)}</p>
     <h2>Running WIN on paper</h2><ol class="how"><li><b>Before class:</b> copy the student pages for the day. Keep the lesson plan and answer key.</li>
-      <li><b>During WIN:</b> give each student the practice worksheet for their level: Level 1 (below grade level), Level 2 (at grade level), or Level 3 (above grade level, extension). Teach the small group lesson while the others practice, then ${U.subject==="math"?"IXL":"IXL or RACE"}. Rotate.</li>
-      <li><b>After class:</b> mark the worksheets with the answer key for each level and fill in the class score sheet. It sorts students into tomorrow's Below, At, and Above groups.</li>
+      <li><b>During WIN:</b> split your ${esc((GROUPS[U.group]||GROUPS.at)[0].toLowerCase())} group into three small groups and run three rotations: independent practice, small group with you, and ${THIRD()}. The lesson plan has the rotation chart.</li>
+      <li><b>After class:</b> mark the worksheets with the answer key and fill in the class score sheet.</li>
       <li><b>End of unit:</b> give the 12-question open-ended assessment and score it with the scoring guide.</li></ol>
     <h2>What's in this packet</h2><p class="soft">Every page starts on a new sheet. The top of each page says whether it is a teacher or student page, so you can pull out just what you need.</p>
     <table class="grid"><tr><th>Page</th><th>Days</th><th>Copies</th></tr>${tp.length?`<tr><th colspan="3">For you</th></tr>${list(tp)}`:""}${sp.length?`<tr><th colspan="3">For students</th></tr>${list(sp)}`:""}</table>`;
-  const page=(p,i)=>`<section class="page ${p.who}"><div class="run"><span>${esc(title)} · ${p.d==null?"Unit assessment":`Day ${p.d+1}`}</span><span>${p.who==="teacher"?"TEACHER · ":""}${esc(partName(p.k,p.lv,p.who==="teacher"))}</span></div>${p.body}</section>`;
+  const page=(p,i)=>`<section class="page ${p.who}"><div class="run"><span>${esc(title)} · ${p.d==null?"Unit assessment":`Day ${p.d+1}`}</span><span>${p.who==="teacher"?"TEACHER · ":""}${esc(partName(p.k))}</span></div>${p.body}</section>`;
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${esc(title)}: printable packet</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
@@ -2589,15 +2523,13 @@ function packetPanel(){const rs=Object.keys(rosters()),n=PARTS.filter(([k])=>PK[
   const chk=(k,label)=>`<label class="chk"><input type="checkbox" data-pk="${k}" ${PK[k]?"checked":""}> ${esc(label)}</label>`;
   return `<section class="panel">
     <h2>No Canvas? Print a paper packet</h2>
-    <p class="sub">Turn this unit into a PDF with a lesson plan for you, worksheets at three levels with room to show work, answer keys, a score sheet that sorts students into Below, At, and Above groups, and the end-of-unit assessment.</p>
+    <p class="sub">Turn this unit into a PDF: a lesson plan with the three-rotation chart, worksheets with room to show work, answer keys, a score sheet, small group notes, and the end-of-unit assessment.</p>
     <p class="f" style="margin:.2rem 0 .3rem;font-weight:700">Pages for you</p>
     <div class="adds">${PARTS.filter(p=>p[2]==="teacher").map(([k])=>chk(k,partName(k))).join("")}</div>
     <p class="f" style="margin:.75rem 0 .3rem;font-weight:700">Pages for students</p>
     <div class="adds">${PARTS.filter(p=>p[2]==="student").map(([k])=>chk(k,partName(k))).join("")}</div>
-    <p class="f" style="margin:.75rem 0 .3rem;font-weight:700">Worksheet levels</p>
-    <div class="adds">${LVKEYS.map(k=>chk("lv"+k,LVP[k][1])).join("")}</div>
     <div class="grid" style="margin-top:.75rem">
-      <label class="f">Needs supports<small> hints, a worked example, sentence starters, one fewer answer choice</small><select data-pk="sup"><option value="below" ${PK.sup==="below"?"selected":""}>Level 1 worksheets</option><option value="all" ${PK.sup==="all"?"selected":""}>Every worksheet</option><option value="none" ${PK.sup==="none"?"selected":""}>No supports</option></select></label>
+      <label class="f">Needs supports<small> hints, a worked example, sentence starters, one fewer answer choice</small><select data-pk="sup"><option value="auto" ${PK.sup==="auto"?"selected":""}>Match the unit (${U.supports?"on":"off"})</option><option value="on" ${PK.sup==="on"?"selected":""}>On</option><option value="off" ${PK.sup==="off"?"selected":""}>Off</option></select></label>
       <label class="f">Days<select data-pk="day"><option value="all">All ${U.days.length} day${U.days.length===1?"":"s"}</option>${U.days.map((D,i)=>`<option value="${i}" ${String(PK.day)===String(i)?"selected":""}>Day ${i+1} only</option>`).join("")}</select></label>
       <label class="f">Page order<select data-pk="order"><option value="day" ${PK.order!=="type"?"selected":""}>By day: all of Day 1, then Day 2</option><option value="type" ${PK.order==="type"?"selected":""}>By page: all worksheets together</option></select></label>
       ${rs.length?`<label class="f">Names on the score sheet<small> rosters from the dashboard</small><select data-pk="roster"><option value="">Blank rows</option>${rs.map(r=>`<option value="${esc(r)}" ${PK.roster===r?"selected":""}>${esc(r)}</option>`).join("")}</select></label>`:""}
