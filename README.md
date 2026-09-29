@@ -62,13 +62,15 @@ The dashboard opens on **Results**: one simple view of the whole unit.
 3. The dashboard opens on **Next steps**: who needs reteaching, who is on track, and who is ready to extend, a reteach focus, and (after you add a roster) who hasn't turned in. **Copy groups** puts the groups on your clipboard for an email or your plans.
 4. Filter by **grade**, **class**, **unit**, and **day**. Export a CSV with one row per turn-in, or a **standards CSV** with one row per student and a column for each standard.
 
-## Checking the standards list
+## The standards list
 
-The grade 6 list came with the original builder. The grade 5 list was added from the 2023 Indiana Academic Standards and has not yet been checked line by line against IDOE's grade 5 documents, so the builder shows a reminder above it. To check it:
+`standards.js` holds every grade 5 and grade 6 math and ELA standard from IDOE's 2023 Indiana Academic Standards documents: the code, the official wording, and whether it is essential (E). It was checked line by line against those documents.
 
-1. Open IDOE's grade 5 math and ELA standards from [in.gov/doe](https://www.in.gov/doe/students/indiana-academic-standards/).
-2. Open `standards.js` and compare each `c` (code) and `t` (text). Fix anything that differs. Don't change `gen`: it picks the question generator.
-3. When a grade's list matches, change its line under `review` to `""`. The reminder goes away.
+- Grade 5 math: 23 standards (14 essential). Grade 6 math: 25 (14 essential).
+- Grade 5 ELA: 30 standards (18 essential). Grade 6 ELA: 28 (15 essential).
+- Writing-process, research, speaking, and listening standards (marked `alt:1`) borrow the closest reading or writing questions, since they can't be auto-scored.
+
+To fix a code or its wording, open `standards.js` and edit `c` (code) or `t` (text). Don't change `gen`: it picks the question generator and small group lesson.
 
 ## Put the site online with GitHub Pages
 
@@ -127,4 +129,4 @@ Check with your district's technology office before sharing the site with studen
 
 ## Standards
 
-Generated units use the Indiana Academic Standards (2023) for grades 5 and 6. Math items are generated with random numbers each time. ELA items come from original passages and question banks written for this tool. Always preview a unit before students use it.
+Generated units use the Indiana Academic Standards (2023) for grades 5 and 6, math and ELA. Math items are generated with random numbers each time. ELA items come from original passages and question banks written for this tool. Always preview a unit before students use it.

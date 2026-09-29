@@ -1043,7 +1043,7 @@ $("#sample").onclick=()=>{
         nums.forEach((x,j)=>{if(x.fixed)return;const hard=!!x.w&&x.r>Math.floor(x.v),wrong=[];
           if(rnd()>(trunc&&hard?.25:ab)){const m=x.w?(x.r>Math.floor(x.v)?x.r-1:x.r+1):[0,.5,1].filter(v=>v!==x.r)[Math.floor(rnd()*2)];
             wrong.push({v:`${plain(x)} → ${fmt(m)}`,m:x.w?(m<x.r?"Dropped the fraction instead of rounding up":"Rounded up with a fraction under ½"):(m<x.r?"Picked a benchmark that's too low":"Picked a benchmark that's too high")})}
-          if(!keep)ok=false;const sk=x.w?BI.m:BI.b;skills[sk]="IN 5.CA.3";items.push({q:i,k:"round",sk:[sk],att:1,ft:keep&&!wrong.length?1:0,wrong});parts.push(`${plain(x)} ≈ ${fmt(x.r)}`)});
+          if(!keep)ok=false;const sk=x.w?BI.m:BI.b;skills[sk]="IN 5.CA.4";items.push({q:i,k:"round",sk:[sk],att:1,ft:keep&&!wrong.length?1:0,wrong});parts.push(`${plain(x)} ≈ ${fmt(x.r)}`)});
         if(q.op&&ok){const r=nums.map(rv),ans=r.slice(1).reduce((a,y)=>calc(a,q.op,y),r[0]),wrong=[];
           if(rnd()>(opmix?.45:ab+.05)){const wo=opmix?["+","×","−"].find(o=>o!==q.op):null;const v=wo?r.slice(1).reduce((a,y)=>calc(a,wo,y),r[0]):ans+(rnd()<.5?1:-1);
             wrong.push({v:`= ${fmt(Math.max(0,v))}`,m:wo?"Used the wrong operation":"Small computation slip after rounding"})}

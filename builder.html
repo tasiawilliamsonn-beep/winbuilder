@@ -460,7 +460,7 @@ function parseSpec(str){
 }
 const plain=x=>x.fixed?String(x.v):(x.w?x.w+" ":"")+x.n+"/"+x.d;
 const rv=x=>x.fixed?x.v:x.r;
-const BI={b:{n:"Round fractions to 0, ½, 1",std:"IN 5.CA.3"},m:{n:"Round mixed numbers",std:"IN 5.CA.3"},reas:{n:"Judge if an answer is reasonable",std:""}};
+const BI={b:{n:"Round fractions to 0, ½, 1",std:"IN 5.CA.4"},m:{n:"Round mixed numbers",std:"IN 5.CA.4"},reas:{n:"Judge if an answer is reasonable",std:""}};
 const skillOf=id=>{const s=(C.skills||[]).find(x=>x.id===id);return s?{n:s.name,std:s.std||""}:{n:"General",std:""}};
 const REAS_OPTS=["Yes, it's close","No, it's too big","No, it's too small"];
 
@@ -1268,6 +1268,58 @@ Object.assign(MG,{
   if(r<.75){const mx=vals[vals.length-1],mn=vals[0];if(mx===mn)return MG["g5-lineplot"](L);return NUM(`A line plot shows plant heights in feet: ${str}. What is the difference between the tallest and shortest plant?`,frac(mx-mn,d),[[frac(mx,d),"Gave the tallest height instead of the difference"],[frac(mx+mn,d),"Added instead of subtracted"]],X5,"Subtract the least value from the greatest.","foot")}
   const t=vals[Math.floor(vals.length/2)],k=vals.filter(v=>v===t).length;return NUM(`A line plot shows how much water each beaker holds in liters: ${str}. What is the total of the beakers that hold ${frac(t,d)} liter?`,frac(k*t,d),[[k,"Counted the beakers instead of adding their amounts"],[frac(t,d),"Gave one beaker's amount"]],X5,`Count the ${frac(t,d)} marks, then multiply by ${frac(t,d)}.`,"liters")}
 });
+/* grade 5 generators added when the standards were checked against IDOE's documents */
+Object.assign(MG,{
+"g5-wholeword":L=>{const r=R(),who=nm();
+  if(r<.6){const per=ri(L>1?12:5,L>1?35:12),q=ri(L>1?12:4,L>1?40:12),rem=ri(1,per-1),n=per*q+rem;
+    const c=pick([
+      [`${n} students are going on a field trip. Each bus holds ${per} students. How many buses are needed?`,q+1,[[q,"Ignored the remainder: some students have no seat"],[rem,"Gave the remainder as the answer"]],"Every student needs a seat, so the leftover students need one more bus.","buses"],
+      [`${who} has ${n} stickers to share equally with ${per} friends. How many stickers does each friend get?`,q,[[q+1,"Rounded up, but leftover stickers can't be shared equally"],[rem,"Gave the remainder as the answer"]],"Leftover stickers can't be shared equally, so they are left over.","stickers"],
+      [`A ribbon is ${n} inches long. How many full ${per}-inch pieces can be cut from it?`,q,[[q+1,"Counted the short leftover piece as a full piece"],[rem,"Gave the leftover length as the answer"]],"A short leftover piece isn't a full piece, so drop the remainder.","pieces"]]);
+    return NUM(c[0],c[1],c[2],X5,c[3],c[4])}
+  const a=ri(L>1?24:12,L>1?96:40),b=ri(L>1?12:4,L>1?48:12);
+  return NUM(`A school orders ${a} boxes of pencils. Each box has ${b} pencils. How many pencils is that?`,a*b,[[a+b,"Added instead of multiplied"],[a*b-b,"Left out one group"]],X5,`Equal groups: ${a} boxes of ${b}. Multiply.`,"pencils")},
+"g5-fracword":L=>{const P=shuf([[2,3],[2,4],[3,4],[2,5],[3,6],[4,8],[2,6],[3,5],[5,10],[4,12],[3,12]])[0],[d1,d2]=shuf(P),D=lcm(d1,d2),who=nm(),r=R();
+  const n1=ri(Math.ceil(d1/2),d1-1),n2=ri(Math.ceil(d2/2),d2-1);
+  if(r<.3){const wrong=frac(n1+n2,d1+d2);return MC(`${who} says ${n1}/${d1} + ${n2}/${d2} = ${wrong}. Is that answer reasonable?`,`No. Both fractions are at least 1/2, so the sum is at least 1.`,[[`Yes. ${wrong} is close to the answer.`,"Didn't use benchmark fractions to check"],[`No. The sum must be less than 1/2.`,"Misjudged the size of each fraction"]],X5,"Compare each fraction to 1/2. What does that tell you about the sum?")}
+  const sub=r<.65&&n1/d1>n2/d2;
+  if(sub)return NUM(`${who} had ${n1}/${d1} of a pizza left and ate ${n2}/${d2} of the whole pizza. How much of the pizza is left now?`,frac(n1*(D/d1)-n2*(D/d2),D),[[frac(Math.abs(n1-n2),Math.abs(d1-d2)||d1),"Subtracted the denominators too"]],X5,`Rename both fractions with a common denominator, like ${D}. Then subtract.`,"of the pizza");
+  return NUM(`${who} walked ${n1}/${d1} mile before lunch and ${n2}/${d2} mile after lunch. How far did ${who} walk in all?`,frac(n1*(D/d1)+n2*(D/d2),D),[[frac(n1+n2,d1+d2),"Added the denominators too"],[frac(n1+n2,Math.max(d1,d2)),"Didn't make equal-size pieces first"]],X5,`Rename both fractions with a common denominator, like ${D}. Then add. Both are at least 1/2, so the answer should be at least 1.`,"miles")},
+"g5-fracdiv2":L=>{if(R()<.5)return MG["g5-fracdivide"](L);
+  const den=pick([2,3,4,5]),k=pick([2,3,4]),a=ri(1,den-1);
+  return NUM(`Divide: ${a}/${den} ÷ 1/${den*k}`,a*k,[[frac(a,den*den*k),"Multiplied instead of divided"],[frac(1,a*k),"Flipped the first fraction instead of the second"]],X5,`How many 1/${den*k}s fit in ${a}/${den}? Rename ${a}/${den} with a denominator of ${den*k}.`)},
+"g5-fracmulword":L=>{const r=R(),who=nm();
+  if(r<.5){const w=ri(1,L>1?4:2),d=pick([2,3,4]),n=ri(1,d-1),k=ri(2,L>1?6:4),N=(w*d+n)*k;
+    return NUM(`A recipe uses ${w} ${n}/${d} cups of flour. How much flour is needed for ${k} batches?`,frac(N,d),[[frac(w*k,1)+"",`Multiplied only the whole number`],[frac(n*k,d*k),"Multiplied the denominator too"]],X5,`Change ${w} ${n}/${d} to a fraction greater than 1, then multiply by ${k}.`,"cups")}
+  const F=pick([[1,2],[2,3],[3,4],[1,3],[1,4]]),w=ri(2,L>1?6:4);
+  return NUM(`${who} has ${w} yards of fabric and uses ${F[0]}/${F[1]} of it for a banner. How many yards does the banner use?`,frac(w*F[0],F[1]),[[frac(F[0],F[1]*w),"Divided instead of multiplied"],[frac(w+F[0],F[1]),"Added instead of multiplied"]],X5,`${F[0]}/${F[1]} of ${w} means ${F[0]}/${F[1]} × ${w}.`,"yards")},
+"g5-fracdivword":L=>{const u=ri(2,L>1?8:5),w=ri(2,L>1?9:6),who=nm();
+  if(R()<.5)return NUM(`${w} pounds of trail mix are packed into bags that each hold 1/${u} pound. How many bags can be filled?`,w*u,[[frac(w,u),"Divided by the denominator instead of finding how many parts fit"],[frac(1,w*u),"Divided in the wrong order"]],X5,`How many 1/${u}-pound bags fit in 1 pound? Then in ${w} pounds?`,"bags");
+  return NUM(`${who} has 1/${u} of a pan of brownies left and shares it equally with ${w} friends. What fraction of the whole pan does each friend get?`,frac(1,u*w),[[frac(w,u),"Multiplied instead of divided"],[frac(1,u+w),"Added the whole number to the denominator"]],X5,`Split 1/${u} into ${w} equal parts. How big is each part of the whole pan?`,"of the pan")},
+"g5-decimalword":L=>{const r=R(),who=nm();
+  if(r<.35){const p=pick([1.25,2.5,0.75,3.49,4.1,2.05]),k=ri(3,L>1?9:5);return NUM(`${who} buys ${k} notebooks that cost $${p.toFixed(2)} each. How much does ${who} spend?`,dec(p*k),[[dec(p*k*10),"Misplaced the decimal point"],[dec(p+k),"Added instead of multiplied"]],X5,"Multiply the price by the number of notebooks. Estimate first to check the decimal.","dollars")}
+  if(r<.7){const a=pick([4.75,6.2,3.99,8.45]),b=pick([2.5,5.35,1.8,7.05]),t=20;return NUM(`${who} pays with a $20 bill for items that cost $${a.toFixed(2)} and $${b.toFixed(2)}. How much change should ${who} get?`,dec(t-a-b),[[dec(a+b),"Found the total cost instead of the change"],[dec(t-a),"Subtracted only one item"]],X5,"Add the costs, then subtract the total from $20.","dollars")}
+  const k=pick([2,4,5]),e=pick([3.5,4.25,6.8,2.4,7.5]),tot=dec(e*k);return NUM(`${k} friends split a $${(+tot).toFixed(2)} bill equally. How much does each friend pay?`,dec(e),[[dec(tot*k),"Multiplied instead of divided"],[dec(tot-k),"Subtracted instead of divided"]],X5,`Divide $${(+tot).toFixed(2)} by ${k}. Check: each share × ${k} should equal the bill.`,"dollars")},
+"g5-triangles":L=>{const r=R();
+  if(r<.6){const kind=pick(["right","acute","obtuse"]);let a,b,c;
+    if(kind==="right"){a=90;b=ri(20,70);c=90-b}else if(kind==="obtuse"){a=ri(100,140);b=ri(10,180-a-10);c=180-a-b}else{do{a=ri(50,85);b=ri(50,85);c=180-a-b}while(c>=90||c<=10)}
+    const ang=shuf([a,b,c]),name=kind[0].toUpperCase()+kind.slice(1)+" triangle";
+    return MC(`A triangle has angles of ${ang.join("°, ")}°. What kind of triangle is it?`,name,[["Right triangle","Called it right without a 90° angle"],["Acute triangle","Missed the angle that is 90° or more"],["Obtuse triangle","Called it obtuse without an angle over 90°"]].filter(w=>w[0]!==name),X5,"Look at the largest angle. Is it less than, equal to, or more than 90°?")}
+  const rad=ri(2,L>1?25:10);
+  if(R()<.5)return NUM(`A circle has a radius of ${rad} cm. What is its diameter?`,2*rad,[[rad/2,"Halved the radius instead of doubling it"],[rad,"Thought the radius and diameter are the same"]],X5,"The diameter goes all the way across the circle: it is 2 radii.","cm");
+  return NUM(`A circle has a diameter of ${2*rad} cm. What is its radius?`,rad,[[4*rad,"Doubled instead of halving"],[2*rad,"Thought the radius and diameter are the same"]],X5,"The radius goes from the center to the edge: half the diameter.","cm")},
+"g5-polyarea":L=>{const r=R();
+  if(r<.35){const b=ri(2,L>1?12:8)*2,h=ri(3,L>1?15:9);return NUM(`A triangle has a base of ${b} cm and a height of ${h} cm. What is its area?`,b*h/2,[[b*h,"Forgot to divide by 2"],[b+h,"Added instead of multiplied"]],X5,"A triangle is half of a rectangle: base × height ÷ 2.","square cm")}
+  if(r<.7){const b=ri(4,L>1?20:12),h=ri(3,L>1?15:9);return NUM(`A parallelogram has a base of ${b} m and a height of ${h} m. What is its area?`,b*h,[[b*h/2,"Used the triangle formula"],[2*(b+h),"Found the perimeter instead of the area"]],X5,"Cut off a triangle and move it: a parallelogram becomes a rectangle. A = base × height.","square m")}
+  let b1=ri(3,10),b2=ri(b1+1,b1+8),h=ri(2,10);if((b1+b2)*h%2)h++;
+  return NUM(`A trapezoid has bases of ${b1} in. and ${b2} in. and a height of ${h} in. What is its area?`,(b1+b2)*h/2,[[(b1+b2)*h,"Forgot to divide by 2"],[b1*b2*h/2,"Multiplied the bases instead of adding them"]],X5,"Add the two bases, multiply by the height, then divide by 2.","square inches")},
+"g5-center":L=>{const n=pick([5,7]),mean=ri(4,L>1?20:10);let d=Array.from({length:n-1},()=>mean+ri(-4,4));d[1]=d[0];d.push(mean*n-d.reduce((a,b)=>a+b,0));
+  if(d.some(x=>x<0))return MG["g5-center"](L);d=shuf(d);const s=[...d].sort((a,b)=>a-b),med=s[(n-1)/2];
+  const cnt={};d.forEach(v=>cnt[v]=(cnt[v]||0)+1);const top=Math.max(...Object.values(cnt)),modes=Object.keys(cnt).filter(k=>cnt[k]===top).map(Number),r=R();
+  if(r<.34)return NUM(`Find the mean: ${d.join(", ")}`,mean,[[mean*n,"Added the values but didn't divide"],...(med!==mean?[[med,"Found the median instead of the mean"]]:[])],X5,"Add all the values, then divide by how many there are.");
+  if(r<.67||modes.length>1)return NUM(`Find the median: ${d.join(", ")}`,med,[...(d[(n-1)/2]!==med?[[d[(n-1)/2],"Didn't put the numbers in order first"]]:[]),...(mean!==med?[[mean,"Found the mean instead of the median"]]:[])],X5,"Put the numbers in order. The median is the middle one.");
+  return NUM(`Find the mode: ${d.join(", ")}`,modes[0],[...(med!==modes[0]?[[med,"Found the median instead of the mode"]]:[]),[top,"Gave how many times it appears instead of the value"]],X5,"The mode is the value that appears most often.")}
+});
 
 
 /* ---------- grade 5 ELA banks ---------- */
@@ -1304,7 +1356,7 @@ function stdInfo(subj,code){const x=STD_BY[code];return x?[x.c,x.t,x.e]:[code,co
 const genOf=c=>(STD_BY[c]||{}).gen||c;
 const gradeOf=c=>(STD_BY[c]||{}).grade||String(c).split(".")[0];
 /* estimation (number line) items fit these generators */
-const EST_GEN={"6.NS.4":1,"g5-fracadd":1};
+const EST_GEN={"6.NS.4":1,"g5-fracadd":1,"g5-fracword":1};
 /* IXL skills for a day's standards come from ixl.js. Codes (like E.7) change each year, so teachers copy them from IXL's skill plan. */
 const IXLD=window.WIN_IXL||{plan:{},skills:{}};
 const ixlPlan=(subject,grade)=>((IXLD.plan||{})[subject]||{})[String(grade)]||"";
@@ -1343,7 +1395,7 @@ function generateUnit({grade,subject,codes,days,perDay,seed,title,group}){group=
       day.passage={title:P.title,text:P.text};
       R=rng((seed||1)+d*97);
       /* passage items are written for grade 6 codes; map each to this grade's matching standard */
-      const gradeCode={};stdList(grade,"ela").forEach(([c])=>{const f=genOf(c);if(!gradeCode[f])gradeCode[f]=c});
+      const gradeCode={};stdList(grade,"ela").forEach(([c,,,x])=>{const f=genOf(c);if(!gradeCode[f]&&!x.alt)gradeCode[f]=c});
       const codeFor=f=>famCode[f]||gradeCode[f]||(grade==="6"?f:null);
       const pool=[];fs_.forEach(f=>P.items.filter(x=>x[0]===f).forEach(x=>pool.push(x)));
       P.items.filter(x=>!fs_.includes(x[0])&&codeFor(x[0])).forEach(x=>pool.push(x));
@@ -1451,7 +1503,7 @@ function buildTest(unit,codes,subject,grade,famCode,group){const items=[];const 
       if(q.type==="num")q.work=true;items.push(q)}
     return{title:"End-of-unit assessment",items}}
   const used=new Set(unit.days.map(D=>D.passage&&D.passage.title)),keys=Object.keys(PASS),pk=keys.find(k=>!used.has(PASS[k].title))||keys[0],P=PASS[pk];
-  const gradeCode={};stdList(grade,"ela").forEach(([c])=>{const f=genOf(c);if(!gradeCode[f])gradeCode[f]=c});
+  const gradeCode={};stdList(grade,"ela").forEach(([c,,,x])=>{const f=genOf(c);if(!gradeCode[f]&&!x.alt)gradeCode[f]=c});
   const codeFor=f=>famCode[f]||gradeCode[f]||(grade==="6"?f:null);
   const fs_=codes.map(genOf),pool=P.items.filter(x=>codeFor(x[0])).sort((a,b)=>(fs_.includes(b[0])?1:0)-(fs_.includes(a[0])?1:0));
   pool.slice(0,6).forEach(x=>items.push(mcOpen(x,codeFor(x[0]))));
@@ -2189,7 +2241,7 @@ document.addEventListener("click",async e=>{
       U={...blankUnit(),id:newId(G.title||"ai-unit"),title:G.title||"AI draft",grade:G.grade,subject:G.subject,third:G.subject==="ela"?"race":"ixl",skills:r.skills,days:r.days};cur=0;step=2;save();render();showIssues(issues());say("AI draft imported. Check every answer before students use it.")}
     catch(err){say(err.message,true)}return}
   if(a==="elaExample"){if(confirm("Replace what's here with an ELA example unit?")){U=generateUnit({grade:"6",subject:"ela",codes:["6.RC.1","6.RC.2","6.RC.8","6.RC.13","6.W.7"],days:3,perDay:6,level:1,seed:42,title:"ELA WIN: Evidence and theme"});cur=0;step=2;save();render();showIssues([]);say("ELA example loaded.")}return}
-  if(a==="g5Example"){if(confirm("Replace what's here with a grade 5 math example unit?")){U=generateUnit({grade:"5",subject:"math",codes:["5.CA.3","5.CA.4","5.NS.1"],days:3,perDay:6,level:1,seed:5,title:"Grade 5 WIN: Fraction operations"});cur=0;step=2;save();render();showIssues([]);say("Grade 5 math example loaded.")}return}
+  if(a==="g5Example"){if(confirm("Replace what's here with a grade 5 math example unit?")){U=generateUnit({grade:"5",subject:"math",codes:["5.CA.3","5.CA.5","5.NS.1"],days:3,perDay:6,level:1,seed:5,title:"Grade 5 WIN: Fraction operations"});cur=0;step=2;save();render();showIssues([]);say("Grade 5 math example loaded.")}return}
   if(a==="preview"){openModal("Student preview","Answers you type here are practice only.",buildPortal(),false);return}
   if(a==="packet"){openModal("Paper packet","Letter-size pages. Download the PDF, or print.",buildPacket(),true);return}
   if(a==="packetPrint"){const w=window.open("","_blank");

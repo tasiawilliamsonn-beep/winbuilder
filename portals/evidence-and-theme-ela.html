@@ -295,7 +295,7 @@ function parseSpec(str){
 }
 const plain=x=>x.fixed?String(x.v):(x.w?x.w+" ":"")+x.n+"/"+x.d;
 const rv=x=>x.fixed?x.v:x.r;
-const BI={b:{n:"Round fractions to 0, ½, 1",std:"IN 5.CA.3"},m:{n:"Round mixed numbers",std:"IN 5.CA.3"},reas:{n:"Judge if an answer is reasonable",std:""}};
+const BI={b:{n:"Round fractions to 0, ½, 1",std:"IN 5.CA.4"},m:{n:"Round mixed numbers",std:"IN 5.CA.4"},reas:{n:"Judge if an answer is reasonable",std:""}};
 const skillOf=id=>{const s=(C.skills||[]).find(x=>x.id===id);return s?{n:s.name,std:s.std||""}:{n:"General",std:""}};
 const REAS_OPTS=["Yes, it's close","No, it's too big","No, it's too small"];
 
